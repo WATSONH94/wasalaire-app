@@ -1,0 +1,12 @@
+# Dépendances épinglées (P2-03) : versions testées et reproductibles.
+# Mettre à jour volontairement (jamais de plage ouverte en production).
+fastapi==0.133.1
+uvicorn[standard]==0.41.0
+psycopg[binary]==3.3.6
+psycopg_pool==3.3.3          # A-08 : pool de connexions (api_v2)
+reportlab==5.0.1
+openpyxl==3.1.5
+httpx==0.28.1
+# boto3 : dépendance OPTIONNELLE (stockage S3/MinIO, A-06). Importée paresseusement
+# par storage.py : à installer uniquement si S3_* est configuré (sinon LocalStorage).
+# boto3==1.35.*

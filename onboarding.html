@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WaSalaire — Démarrer</title>
+<link rel="icon" href="/assets/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--indigo:#1E2A78;--teal:#2EC4B6;--ink:#0F172A;--bg:#F8FAFC;--sand:#F4D7B0;--muted:#64748B;--line:#E2E8F0;--ok:#16A34A;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+  header{background:var(--indigo);color:#fff;padding:16px 24px;display:flex;align-items:center;gap:10px}
+  .logo{width:28px;height:28px;border-radius:8px;background:var(--teal);display:grid;place-items:center;font-weight:800;color:var(--indigo)}
+  .wrap{max-width:720px;margin:24px auto;padding:0 16px}
+  .steps{display:flex;gap:8px;margin-bottom:20px}
+  .steps .s{flex:1;text-align:center;font-size:12px;font-weight:700;color:var(--muted)}
+  .steps .s .bar{height:6px;border-radius:3px;background:var(--line);margin-bottom:6px}
+  .steps .s.on .bar{background:var(--teal)} .steps .s.on{color:var(--indigo)}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px}
+  h1{font-size:22px;margin:0 0 4px} .lead{color:var(--muted);margin:0 0 18px}
+  label{display:block;font-size:13px;font-weight:600;margin:12px 0 6px;color:#334155}
+  input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;background:#fff}
+  input:focus,select:focus{outline:2px solid var(--teal);border-color:transparent}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .btn{padding:13px 18px;border:0;border-radius:12px;background:var(--teal);color:#04312c;font-weight:800;font-size:15px;cursor:pointer}
+  .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--indigo)}
+  .actions{display:flex;justify-content:space-between;margin-top:20px}
+  table{width:100%;border-collapse:collapse;margin-top:8px} th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
+  th{color:var(--indigo);font-size:12px;text-transform:uppercase}
+  .num{text-align:right;font-variant-numeric:tabular-nums}
+  .done{text-align:center;padding:16px}
+  .check{width:64px;height:64px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:34px;margin:0 auto 12px}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px}
+  @media(max-width:560px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="logo">W</div><b>WaSalaire</b><span style="margin-left:auto;opacity:.85;font-size:13px">Démarrer en quelques minutes</span></header>
+<div class="wrap">
+  <div class="steps" id="steps"></div>
+  <div class="card" id="card"></div>
+</div>
+<script>
+const STEPS=["Société","Paramètres","Salariés","Accès","Terminé"];
+let step=0; const data={societe:{},params:{},salaries:[{nom:"KOFFI Alain",salaire:200000,methode:"mobile_money"}],acces:[]};
+const $=id=>document.getElementById(id);
+function renderSteps(){$('steps').innerHTML=STEPS.map((s,i)=>`<div class="s ${i<=step?'on':''}"><div class="bar"></div>${s}</div>`).join('');}
+function render(){renderSteps();({0:s0,1:s1,2:s2,3:s3,4:s4}[step])();}
+
+function s0(){$('card').innerHTML=`
+  <h1>Votre société</h1><p class="lead">Les informations légales de l'entreprise.</p>
+  <label>Raison sociale</label><input id="rs" value="${data.societe.rs||''}" placeholder="Ex. Alpha SARL">
+  <div class="grid2">
+    <div><label>IFU</label><input id="ifu" value="${data.societe.ifu||''}" placeholder="13 chiffres"></div>
+    <div><label>N° employeur CNSS</label><input id="cnss" value="${data.societe.cnss||''}"></div>
+  </div>
+  <div class="grid2">
+    <div><label>Forme juridique</label><select id="forme"><option>SARL</option><option>SA</option><option>SAS</option><option>Ets / SNC</option></select></div>
+    <div><label>Secteur</label><input id="secteur" value="${data.societe.secteur||''}" placeholder="Ex. Commerce"></div>
+  </div>
+  <div class="actions"><span></span><button class="btn" onclick="next0()">Continuer →</button></div>`;}
+function next0(){data.societe={rs:$('rs').value,ifu:$('ifu').value,cnss:$('cnss').value,forme:$('forme').value,secteur:$('secteur').value};step=1;render();}
+
+function s1(){$('card').innerHTML=`
+  <h1>Paramètres de paie</h1><p class="lead">Ce qui détermine le calcul, conforme au Bénin.</p>
+  <div class="grid2">
+    <div><label>Taux AT/MP (notifié par la CNSS)</label><input id="atmp" type="number" step="0.1" value="${data.params.atmp||2}"> <span class="hint">Entre 1 % et 4 %</span></div>
+    <div><label>Régime VPS</label><select id="vps"><option value="normal">Normal (4 %)</option><option value="enseignement">Enseignement privé (2 %)</option></select></div>
+  </div>
+  <label>Convention collective</label>
+  <select id="conv"><option>CCGT (interprofessionnelle 2005)</option><option>Banques & établissements financiers</option><option>Commerce</option><option>BTP</option></select>
+  <div class="hint">La grille sectorielle peut prévoir mieux que la loi (ancienneté, 13e). À confirmer.</div>
+  <div class="actions"><button class="btn ghost" onclick="step=0;render()">← Retour</button><button class="btn" onclick="next1()">Continuer →</button></div>`;}
+function next1(){data.params={atmp:$('atmp').value,vps:$('vps').value,conv:$('conv').value};step=2;render();}
+
+function s2(){$('card').innerHTML=`
+  <h1>Salariés</h1><p class="lead">Importez un fichier ou ajoutez-les un par un.</p>
+  <div style="display:flex;gap:10px;margin-bottom:10px">
+    <button class="btn ghost" onclick="alert('Import CSV/Excel — à câbler')">📄 Importer un fichier</button>
+    <button class="btn ghost" onclick="addSal()">+ Ajouter un salarié</button>
+  </div>
+  <table><thead><tr><th>Nom</th><th class="num">Salaire base</th><th>Méthode</th></tr></thead>
+  <tbody>${data.salaries.map(s=>`<tr><td>${s.nom}</td><td class="num">${s.salaire.toLocaleString('fr-FR')} F</td><td>${s.methode}</td></tr>`).join('')}</tbody></table>
+  <div class="hint">⛔ Chaque salaire doit être ≥ SMIG (52 000 F) et ≥ minimum conventionnel.</div>
+  <div class="actions"><button class="btn ghost" onclick="step=1;render()">← Retour</button><button class="btn" onclick="step=3;render()">Continuer →</button></div>`;}
+function addSal(){const nom=prompt("Nom du salarié ?");if(!nom)return;const sal=+prompt("Salaire de base (FCFA) ?","150000")||0;
+  data.salaries.push({nom,salaire:sal,methode:"especes"});render();}
+
+function s3(){$('card').innerHTML=`
+  <h1>Accès</h1><p class="lead">Qui pourra gérer la paie ? (connexion par téléphone + code)</p>
+  <div class="grid2">
+    <div><label>Téléphone</label><input id="tel" placeholder="+229…" value="+229"></div>
+    <div><label>Rôle</label><select id="role"><option>Administrateur</option><option>Gestionnaire paie</option><option>RH</option><option>Comptable</option></select></div>
+  </div>
+  <div class="hint">Le salarié aura un accès « soi-même » (bulletins) via l'app mobile.</div>
+  <div class="actions"><button class="btn ghost" onclick="step=2;render()">← Retour</button><button class="btn" onclick="step=4;render()">Terminer →</button></div>`;}
+
+function s4(){$('card').innerHTML=`
+  <div class="done"><div class="check">✓</div>
+    <h1>${data.societe.rs||'Votre société'} est prête</h1>
+    <p class="lead">${data.salaries.length} salarié(s) · convention ${data.params.conv||'CCGT'} · AT/MP ${data.params.atmp||2} %</p>
+    <p class="hint">Vous pouvez lancer la première paie. La checklist de conformité (IFU, CNSS, AMO) suivra automatiquement.</p>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:16px">
+      <a class="btn" href="/console">Ouvrir la console</a>
+      <a class="btn ghost" href="/">Voir l'app mobile</a>
+    </div>
+  </div>`;}
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WaSalaire — Console</title>
+<link rel="icon" href="/assets/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --indigo:#1E2A78;--teal:#2EC4B6;--ink:#0F172A;--bg:#F8FAFC;--sand:#F4D7B0;
+    --muted:#64748B;--line:#E2E8F0;--surface:#fff;--ok:#16A34A;--warn:#D97706;--danger:#B91C1C;
+    --r-md:12px;--r-lg:16px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+  .num{font-variant-numeric:tabular-nums;text-align:right}
+  button{font-family:inherit;cursor:pointer}
+  .btn{padding:10px 16px;border:0;border-radius:var(--r-md);background:var(--teal);color:#04312c;font-weight:800}
+  .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--indigo)}
+  .btn.sm{padding:7px 12px;font-size:13px}
+  input,select{padding:10px;border:1px solid var(--line);border-radius:var(--r-md);font-family:inherit;font-size:14px;background:#fff}
+  input:focus,select:focus{outline:2px solid var(--teal);border-color:transparent}
+  /* Login */
+  #login{min-height:100vh;display:grid;place-items:center}
+  #login .card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:28px;width:360px}
+  .logo{width:30px;height:30px;border-radius:8px;background:var(--teal);display:grid;place-items:center;font-weight:800;color:var(--indigo)}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+  h1{font-size:22px;margin:6px 0} .lead{color:var(--muted);margin:0 0 16px}
+  label{display:block;font-size:13px;font-weight:600;margin:10px 0 6px;color:#334155}
+  .devcode{background:var(--sand);color:#5b4626;border-radius:10px;padding:8px 10px;text-align:center;font-weight:700;letter-spacing:2px;margin-top:8px}
+  .err{color:var(--danger);font-size:13px;min-height:16px;margin-top:8px}
+  /* Shell */
+  #app{display:none;grid-template-columns:240px 1fr;min-height:100vh}
+  aside{background:var(--indigo);color:#fff;padding:18px 14px;display:flex;flex-direction:column;gap:6px}
+  aside .brand{color:#fff;margin-bottom:16px;padding:0 6px}
+  nav a{display:flex;gap:10px;align-items:center;color:#c7cbe8;text-decoration:none;padding:10px 12px;border-radius:10px;font-weight:600}
+  nav a.active{background:#ffffff18;color:#fff}
+  nav a .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);opacity:0;margin-left:auto}
+  nav a.active .dot{opacity:1}
+  aside .foot{margin-top:auto}
+  main{display:flex;flex-direction:column;min-width:0}
+  header.top{display:flex;align-items:center;gap:14px;padding:14px 24px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:5}
+  header.top .ctx{margin-left:auto;display:flex;gap:10px;align-items:center}
+  .content{padding:24px;overflow:auto}
+  .kpis{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:14px 16px;min-width:150px}
+  .kpi b{display:block;font-size:22px;color:var(--indigo)} .kpi span{font-size:12px;color:var(--muted)}
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;margin-bottom:16px}
+  .card h2{font-size:16px;margin:0 0 12px}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left}
+  th{background:#EEF2FF;color:var(--indigo);font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+  tbody tr:hover{background:#EEF2FF66}
+  .pill{display:inline-block;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700}
+  .pill.teal{background:#2EC4B622;color:#0f766e}.pill.indigo{background:#EEF2FF;color:var(--indigo)}
+  .pill.warn{background:#FEF3C7;color:#92400e}.pill.err{background:#FEE2E2;color:#991b1b}.pill.mut{background:#F1F5F9;color:var(--muted)}
+  .stepper{display:flex;gap:6px;margin-bottom:16px}.stepper i{height:5px;flex:1;border-radius:3px;background:var(--line)}.stepper i.on{background:var(--teal)}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+  .ano{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+  .toast{position:fixed;right:20px;bottom:20px;background:var(--ink);color:#fff;padding:12px 16px;border-radius:12px;opacity:0;transition:.3s}
+  .toast.show{opacity:1}.toast.ok{background:var(--ok)}.toast.err{background:var(--danger)}
+  .muted{color:var(--muted)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="card">
+    <div class="brand"><div class="logo">W</div> WaSalaire <span class="muted" style="font-weight:600">Console</span></div>
+    <h1 id="lgTitle">Connexion</h1>
+    <p class="lead" id="lgLead">Espace cabinet / RH. Connectez-vous avec votre numéro.</p>
+    <div id="lgStep1">
+      <label>Numéro de téléphone</label>
+      <input id="tel" style="width:100%" value="+22961000009">
+      <button class="btn" style="width:100%;margin-top:12px" onclick="reqOtp()">Recevoir le code</button>
+    </div>
+    <div id="lgStep2" style="display:none">
+      <label>Code à 6 chiffres</label>
+      <input id="otp" style="width:100%" placeholder="––––––">
+      <div id="devcode"></div>
+      <button class="btn" style="width:100%;margin-top:12px" onclick="verOtp()">Se connecter</button>
+    </div>
+    <div class="err" id="lgErr"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <aside>
+    <div class="brand"><div class="logo">W</div> WaSalaire</div>
+    <nav id="nav">
+      <a data-v="accueil" class="active" onclick="go('accueil')">🏠 Accueil <span class="dot"></span></a>
+      <a data-v="portefeuille" onclick="go('portefeuille')">🗂️ Portefeuille <span class="dot"></span></a>
+      <a data-v="equipe" onclick="go('equipe')">👥 Équipe <span class="dot"></span></a>
+      <a data-v="paie" onclick="go('paie')">💰 Paie <span class="dot"></span></a>
+      <a data-v="declarations" onclick="go('declarations')">📤 Déclarations <span class="dot"></span></a>
+      <a data-v="compta" onclick="go('compta')">📒 Comptabilité <span class="dot"></span></a>
+      <a data-v="conformite" onclick="go('conformite')">✅ Conformité <span class="dot"></span></a>
+      <a data-v="reporting" onclick="go('reporting')">📊 Reporting <span class="dot"></span></a>
+      <a data-v="parametres" onclick="go('parametres')">⚙️ Paramètres <span class="dot"></span></a>
+    </nav>
+    <div class="foot"><a onclick="logout()" style="color:#c7cbe8;cursor:pointer">↩ Se déconnecter</a></div>
+  </aside>
+  <main>
+    <header class="top">
+      <b id="viewTitle">Accueil</b>
+      <div class="ctx">
+        <span class="muted">Société</span>
+        <select id="companySel" onchange="onCompany()"></select>
+      </div>
+    </header>
+    <div class="content" id="view"></div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const API=""; let TOKEN=null, COMPANIES=[], COMP=null, PHONE="", PERIOD=null, RUN=null, VARS=0;
+const $=id=>document.getElementById(id);
+const money=n=>(Math.round(n||0)).toLocaleString('fr-FR').replace(/ /g,' ')+' F';
+function toast(msg,cls=''){const t=$('toast');t.textContent=msg;t.className='toast show '+cls;setTimeout(()=>t.className='toast',2200);}
+async function api(path,{method='GET',body=null}={}){
+  const r=await fetch(API+path,{method,headers:{'Content-Type':'application/json',...(TOKEN?{'Authorization':'Bearer '+TOKEN}:{})},body:body?JSON.stringify(body):null});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(j.detail||('Erreur '+r.status));
+  return j;
+}
+
+/* Auth */
+async function reqOtp(){try{PHONE=$('tel').value.trim();const r=await api('/v1/auth/request-otp',{method:'POST',body:{telephone:PHONE,canal:'sms'}});
+  $('lgStep1').style.display='none';$('lgStep2').style.display='block';$('lgTitle').textContent='Code de vérification';$('lgLead').textContent='Entrez le code envoyé au '+PHONE;
+  if(r.dev_code){$('devcode').className='devcode';$('devcode').textContent='Code (démo) : '+r.dev_code;$('otp').value=r.dev_code;}
+}catch(e){$('lgErr').textContent=e.message;}}
+async function verOtp(){try{const r=await api('/v1/auth/verify-otp',{method:'POST',body:{telephone:PHONE,code:$('otp').value.trim()}});
+  TOKEN=r.token;COMPANIES=r.companies;await boot();
+}catch(e){$('lgErr').textContent=e.message;}}
+function logout(){TOKEN=null;location.reload();}
+
+async function boot(){
+  $('login').style.display='none';$('app').style.display='grid';
+  let comps=[];try{comps=(await api('/v1/companies')).companies;}catch(e){}
+  const sel=$('companySel');sel.innerHTML=comps.map(c=>`<option value="${c.id}">${c.nom}</option>`).join('')||'<option>—</option>';
+  COMP=comps[0]?comps[0].id:(COMPANIES[0]||null);
+  go('accueil');
+}
+function onCompany(){COMP=$('companySel').value;go(currentView);}
+
+/* Router */
+let currentView='accueil';
+const VIEWS={accueil:viewAccueil,portefeuille:viewPortefeuille,equipe:viewEquipe,paie:viewPaie,
+  declarations:viewDeclarations,compta:viewCompta,conformite:viewConformite,reporting:viewReporting,parametres:viewParametres};
+const TITLES={accueil:'Accueil',portefeuille:'Portefeuille',equipe:'Équipe',paie:'Paie',
+  declarations:'Déclarations',compta:'Comptabilité',conformite:'Conformité',reporting:'Reporting',parametres:'Paramètres'};
+function go(v){currentView=v;
+  document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('active',a.dataset.v===v));
+  $('viewTitle').textContent=TITLES[v];
+  VIEWS[v]();
+}
+
+/* Accueil */
+async function viewAccueil(){
+  $('view').innerHTML='<p class="muted">Chargement…</p>';
+  let emps=[];try{emps=(await api('/v1/employees?company_id='+COMP)).employes;}catch(e){}
+  const masse=emps.reduce((s,e)=>s+e.salaire_base,0);
+  $('view').innerHTML=`
+    <div class="kpis">
+      <div class="kpi"><b>${COMPANIES.length}</b><span>Société(s) au périmètre</span></div>
+      <div class="kpi"><b>${emps.length}</b><span>Salariés (société active)</span></div>
+      <div class="kpi"><b>${money(masse)}</b><span>Masse salariale de base</span></div>
+    </div>
+    <div class="card"><h2>Votre prochaine action</h2>
+      <p class="muted">Lancez la paie du mois pour la société sélectionnée.</p>
+      <button class="btn" onclick="go('paie')">Aller à la paie →</button></div>
+    <div class="card"><h2>À faire ensuite</h2>
+      <div class="ano"><span>Déclaration ITS / VPS</span><span class="pill indigo">le 10</span></div>
+      <div class="ano"><span>Déclaration CNSS</span><span class="pill indigo">J+15</span></div>
+    </div>`;
+}
+
+/* Équipe */
+let EMPS=[];
+async function viewEquipe(){
+  $('view').innerHTML='<p class="muted">Chargement…</p>';
+  EMPS=(await api('/v1/employees?company_id='+COMP)).employes;
+  $('view').innerHTML=`
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <h2 style="margin:0">Salariés — ${EMPS.length}</h2>
+        <input id="q" placeholder="Rechercher…" oninput="filterEmps()" style="width:220px">
+      </div>
+      <table style="margin-top:12px"><thead><tr><th>Nom</th><th>Matricule</th><th>Méthode</th><th class="num">Salaire de base</th><th></th></tr></thead>
+      <tbody id="empRows">${empRows(EMPS)}</tbody></table>
+    </div>`;
+}
+function empRows(list){return list.map((e,i)=>`<tr onclick="showFiche(${EMPS.indexOf(e)})" style="cursor:pointer">
+  <td><b>${e.nom}</b></td><td>${e.matricule}</td><td><span class="pill mut">${e.methode}</span></td>
+  <td class="num">${money(e.salaire_base)}</td><td class="muted">›</td></tr>`).join('');}
+function filterEmps(){const q=$('q').value.toLowerCase();
+  $('empRows').innerHTML=empRows(EMPS.filter(e=>e.nom.toLowerCase().includes(q)||e.matricule.toLowerCase().includes(q)));}
+function showFiche(i){const e=EMPS[i];const init=e.nom.split(' ').map(x=>x[0]).slice(0,2).join('');
+  $('view').innerHTML=`
+    <a onclick="go('equipe')" style="cursor:pointer;color:var(--indigo);font-weight:600">← Équipe</a>
+    <div class="card" style="margin-top:12px;display:flex;gap:16px;align-items:center">
+      <div style="width:56px;height:56px;border-radius:50%;background:var(--indigo);color:#fff;display:grid;place-items:center;font-weight:800;font-size:20px">${init}</div>
+      <div><h2 style="margin:0">${e.nom}</h2><span class="muted">${e.matricule} · <span class="pill teal">Actif</span></span></div>
+      <div style="margin-left:auto"><button class="btn ghost sm" onclick="toast('Édition à venir')">Modifier</button></div>
+    </div>
+    <div class="row" style="align-items:stretch">
+      <div class="card" style="flex:1"><h2>Rémunération</h2>
+        <div class="ano"><span>Salaire de base</span><span class="num" style="font-weight:800">${money(e.salaire_base)}</span></div>
+        <div class="ano"><span>Méthode de paiement</span><span class="pill mut">${e.methode}</span></div>
+      </div>
+      <div class="card" style="flex:1"><h2>Contrat</h2>
+        <div class="ano"><span>Type</span><span class="pill indigo">CDI</span></div>
+        <div class="ano"><span>Statut</span><span class="pill teal">Actif</span></div>
+      </div>
+    </div>
+    <div class="card"><h2>Documents</h2>
+      <div class="ano"><span>📄 Contrat de travail</span><span class="pill teal">Signé</span></div>
+      <div class="ano"><span>📄 Dernier bulletin</span><button class="btn ghost sm" onclick="toast('PDF à venir')">Ouvrir</button></div>
+      <button class="btn ghost sm" style="margin-top:10px" onclick="toast('WaDocs à venir')">+ Créer un document</button>
+    </div>`;
+}
+
+/* Paie */
+function viewPaie(){
+  const now=new Date();
+  $('view').innerHTML=`
+    <div class="stepper"><i class="on"></i><i></i><i></i><i></i></div>
+    <div class="card"><h2>1 · Période</h2>
+      <div class="row">
+        <div><label>Mois</label><input id="m" type="number" min="1" max="12" value="${now.getMonth()+1}" style="width:90px"></div>
+        <div><label>Année</label><input id="y" type="number" value="${now.getFullYear()}" style="width:110px"></div>
+        <button class="btn" onclick="openPeriod()">Ouvrir la période</button>
+      </div></div>
+    <div id="paieBody"></div>`;
+}
+async function openPeriod(){try{
+  const p=await api('/v1/periods',{method:'POST',body:{company_id:COMP,mois:+$('m').value,annee:+$('y').value}});
+  PERIOD=p.period_id;VARS=0;toast('Période ouverte','ok');
+  const emps=(await api('/v1/employees?company_id='+COMP)).employes;
+  $('paieBody').innerHTML=`
+    <div class="card"><h2>2 · Variables du mois</h2>
+      <div class="row">
+        <div><label>Salarié</label><select id="vemp">${emps.map(e=>`<option value="${e.id}">${e.nom}</option>`).join('')}</select></div>
+        <div><label>Type</label><input id="vtype" value="Prime" style="width:140px"></div>
+        <div><label>Montant</label><input id="vmontant" type="number" value="30000" style="width:120px"></div>
+        <button class="btn ghost" onclick="addVar()">Ajouter</button>
+        <span class="muted" id="varinfo"></span>
+      </div>
+      <button class="btn" style="margin-top:14px" onclick="calc()">3 · Calculer la paie</button>
+    </div>`;
+  // besoin de l'employee_id : on récupère via un mapping matricule→id côté calcul (l'API variable prend employee_id)
+  window._emps = emps;
+}catch(e){toast(e.message,'err');}}
+async function addVar(){try{
+  // NB : l'endpoint attend employee_id ; ce prototype console mappe via /v1/employees (matricule) — ici on illustre l'ajout.
+  await api('/v1/periods/variables',{method:'POST',body:{company_id:COMP,period_id:PERIOD,
+    employee_id:$('vemp').value,type:$('vtype').value,montant:+$('vmontant').value}});
+  VARS++;$('varinfo').textContent=VARS+' variable(s) ajoutée(s)';toast('Variable ajoutée','ok');
+}catch(e){toast(e.message,'err');}}
+async function calc(){try{
+  const y=+$('y').value,m=+$('m').value;
+  const r=await api('/v1/periods/calculate',{method:'POST',body:{company_id:COMP,period_id:PERIOD,periode:`${y}-${String(m).padStart(2,'0')}-01`}});
+  RUN=r.run_id;await showRun();
+}catch(e){toast(e.message,'err');}}
+async function showRun(){
+  const [ctrl,decl,slips]=await Promise.all([
+    api(`/v1/runs/${RUN}/controls`),api(`/v1/runs/${RUN}/declaration`),api(`/v1/runs/${RUN}/payslips`)]);
+  const b=slips.bulletins;const brut=b.reduce((s,x)=>s+x.brut,0),net=b.reduce((s,x)=>s+x.net,0);
+  $('paieBody').innerHTML=`
+    <div class="stepper"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+    <div class="kpis">
+      <div class="kpi"><b>${b.length}</b><span>Bulletins</span></div>
+      <div class="kpi"><b>${money(brut)}</b><span>Masse brute</span></div>
+      <div class="kpi"><b>${money(net)}</b><span>Net à payer</span></div>
+      <div class="kpi"><b>${money(decl.its_vps.its_total)}</b><span>ITS à déclarer</span></div>
+    </div>
+    <div class="card"><h2>Contrôles</h2>
+      ${ctrl.bloquants===0?'<span class="pill teal">Aucune anomalie bloquante</span>':`<span class="pill err">${ctrl.bloquants} bloquant(s)</span>`}
+      ${ctrl.anomalies.map(a=>`<div class="ano"><span>${a.gravite==='bloquant'?'⛔':'⚠️'} ${a.message} <span class="muted">(${a.employe||''})</span></span></div>`).join('')}
+    </div>
+    <div class="card"><h2>Bulletins</h2>
+      <table><thead><tr><th>Salarié</th><th class="num">Brut</th><th class="num">Base ITS</th><th class="num">Net</th></tr></thead>
+      <tbody>${b.map(x=>`<tr><td>${x.nom}</td><td class="num">${money(x.brut)}</td><td class="num">${money(x.base_its)}</td><td class="num" style="font-weight:800;color:var(--indigo)">${money(x.net)}</td></tr>`).join('')}</tbody></table></div>
+    <div class="card"><h2>Déclarations</h2>
+      <div class="row">
+        <div class="kpi"><b>${money(decl.its_vps.its_total)}</b><span>ITS/VPS (le 10)</span></div>
+        <div class="kpi"><b>${money(decl.cnss.salariale+decl.cnss.patronale)}</b><span>CNSS total (J+15)</span></div>
+      </div></div>
+    <div class="card"><h2>4 · Décaissement & clôture</h2>
+      <div class="row">
+        <button class="btn ghost" onclick="payout()">Préparer les paiements</button>
+        <button class="btn" onclick="closeRun()">Valider et clôturer</button>
+      </div>
+      <div id="payoutBox" style="margin-top:12px"></div>
+    </div>`;
+}
+async function payout(){try{
+  const r=await api(`/v1/runs/${RUN}/payout?company_id=${COMP}`,{method:'POST'});
+  const pm=r.par_methode;
+  $('payoutBox').innerHTML=`<p class="muted">Passerelle : ${r.passerelle}</p>`+
+    Object.entries(pm).map(([k,v])=>`<div class="ano"><span><span class="pill teal">${k}</span> ${v.n} salarié(s)</span><span class="num" style="font-weight:800">${money(v.montant)}</span></div>`).join('');
+  toast('Ordres de décaissement créés','ok');
+}catch(e){toast(e.message,'err');}}
+async function closeRun(){try{await api(`/v1/runs/${RUN}/close?period_id=${PERIOD}`,{method:'POST'});
+  toast('Paie clôturée — bulletins verrouillés','ok');
+  document.querySelector('#paieBody .stepper').innerHTML='<i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>';
+}catch(e){toast(e.message,'err');}}
+
+/* Portefeuille (cabinet multi-société) */
+async function viewPortefeuille(){
+  $('view').innerHTML='<p class="muted">Chargement…</p>';
+  let comps=[];try{comps=(await api('/v1/companies')).companies;}catch(e){}
+  const etats=['Validée','En cours','À préparer'];const pills={'Validée':'teal','En cours':'indigo','À préparer':'mut'};
+  $('view').innerHTML=`
+    <div class="kpis">
+      <div class="kpi"><b>${comps.length}</b><span>Sociétés au portefeuille</span></div>
+      <div class="kpi"><b>${comps.length}</b><span>Paies du mois</span></div>
+      <div class="kpi"><b>0</b><span>Alertes</span></div>
+    </div>
+    <div class="card"><h2>Sociétés</h2>
+      <table><thead><tr><th>Société</th><th>Paie du mois</th><th class="num">Salariés</th><th>Alertes</th></tr></thead>
+      <tbody>${comps.map((c,i)=>{const e=etats[i%3];return `<tr onclick="COMP='${c.id}';$('companySel').value='${c.id}';go('paie')" style="cursor:pointer">
+        <td><b>${c.nom}</b></td><td><span class="pill ${pills[e]}">${e}</span></td><td class="num">—</td><td class="muted">—</td></tr>`;}).join('')}</tbody></table>
+      <p class="hint muted" style="margin-top:8px">Cliquez une société pour lancer sa paie.</p>
+    </div>
+    <div class="card"><h2>Campagne de paie — ${new Date().toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}</h2>
+      <div style="height:8px;background:#EEF2FF;border-radius:5px;overflow:hidden;margin:6px 0 12px">
+        <div style="height:8px;width:66%;background:var(--teal)"></div></div>
+      <p class="muted" style="margin:0 0 10px">${comps.length} société(s) · avancement 66 %</p>
+      ${comps.map((c,i)=>{const e=etats[i%3];return `<div class="ano"><span>${c.nom}</span><span class="pill ${pills[e]}">${e}</span></div>`;}).join('')}
+      <div class="row" style="margin-top:12px">
+        <button class="btn ghost" onclick="toast('Calcul de masse — sélectionnez les sociétés')">Calculer (masse)</button>
+        <button class="btn ghost" onclick="toast('Génération des déclarations — masse')">Déclarer (masse)</button>
+        <button class="btn ghost" onclick="toast('Décaissement — masse')">Décaisser (masse)</button>
+      </div>
+      <p class="hint muted" style="margin-top:8px">Chaque société reste un run indépendant (machine à états propre). Confirmation chiffrée avant action de masse.</p>
+    </div>`;
+}
+
+/* Déclarations */
+function viewDeclarations(){
+  $('view').innerHTML=`
+    <div class="card"><h2>Échéancier</h2>
+      <div class="ano"><span>📤 Déclaration ITS / VPS (DGI, e-services)</span><span><span class="pill indigo">le 10</span> <span class="pill mut">à générer</span></span></div>
+      <div class="ano"><span>📤 Liste nominative CNSS (carriere@cnss.bj)</span><span><span class="pill indigo">J+15</span> <span class="pill mut">à générer</span></span></div>
+      <div class="ano"><span>📤 AMO (via CNSS)</span><span><span class="pill warn">échéance 29/10/2026</span></span></div>
+    </div>
+    <div class="card"><h2>Générer depuis la paie</h2>
+      <p class="muted">Les déclarations sont produites automatiquement à partir de la paie clôturée (agrégats ITS/VPS + CNSS + AMO).</p>
+      <button class="btn" onclick="go('paie')">Aller au cycle de paie →</button>
+      <div class="row" style="margin-top:14px">
+        <button class="btn ghost" onclick="toast('Export CSV DGI — à câbler')">Exporter CSV DGI</button>
+        <button class="btn ghost" onclick="toast('Export XLSX CNSS — à câbler')">Exporter liste CNSS (.xlsx)</button>
+      </div>
+    </div>
+    <div class="card"><h2>Suivi des dépôts</h2>
+      <table><thead><tr><th>Période</th><th>Déclaration</th><th>Statut</th><th>Accusé</th></tr></thead>
+      <tbody><tr><td>—</td><td colspan="3" class="muted">Aucun dépôt enregistré. Clôturez une paie pour générer.</td></tr></tbody></table>
+    </div>`;
+}
+
+/* Comptabilité */
+function viewCompta(){
+  const rows=[['641','Charges de personnel — salaires bruts','680 000',''],
+    ['6641','Charges sociales patronales (CNSS)','118 320',''],
+    ['4311','CNSS à payer (part salariale + patronale)','','142 800'],
+    ['447','État — ITS / VPS à payer','','63 500'],
+    ['422','Personnel — rémunérations dues (net)','','592 020']];
+  $('view').innerHTML=`
+    <div class="card"><h2>Journal de paie (SYSCOHADA)</h2>
+      <table><thead><tr><th>Compte</th><th>Libellé</th><th class="num">Débit</th><th class="num">Crédit</th></tr></thead>
+      <tbody>${rows.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class="num">${r[2]||''}</td><td class="num">${r[3]||''}</td></tr>`).join('')}
+      <tr style="font-weight:800"><td colspan="2">Équilibre</td><td class="num">798 320</td><td class="num">798 320</td></tr></tbody></table>
+      <div class="row" style="margin-top:12px">
+        <button class="btn ghost" onclick="toast('Export FEC — à câbler')">Exporter (CSV / FEC)</button>
+        <span class="pill teal">Débit = Crédit ✓</span>
+      </div>
+    </div>`;
+}
+
+/* Conformité */
+function viewConformite(){
+  const items=[['IFU renseigné','ok','Conforme'],['Immatriculation CNSS','ok','Conforme'],
+    ['Contrats visés','warn','2 en attente de visa'],['AMO — affiliation','warn','Échéance 29/10/2026'],
+    ['Registre APDP','mut','À confirmer avec l\'APDP']];
+  $('view').innerHTML=`
+    <div class="card"><h2>Checklist des obligations</h2>
+      ${items.map(i=>`<div class="ano"><span>${i[1]==='ok'?'✅':i[1]==='warn'?'⚠️':'⬜'} ${i[0]}</span><span class="pill ${i[1]==='ok'?'teal':i[1]==='warn'?'warn':'mut'}">${i[2]}</span></div>`).join('')}
+    </div>
+    <div class="card"><h2>Alertes d'expiration</h2>
+      <div class="ano"><span>Permis de travail — salarié expatrié</span><span class="pill warn">expire dans 45 j</span></div>
+      <div class="ano"><span>AMO obligatoire (secteur privé)</span><span class="pill warn">29/10/2026</span></div>
+    </div>`;
+}
+
+/* Reporting */
+function viewReporting(){
+  const bars=[['Administration',180000],['Commercial',300000],['Production',200000]];
+  const max=Math.max(...bars.map(b=>b[1]));
+  $('view').innerHTML=`
+    <div class="kpis">
+      <div class="kpi"><b>${money(680000)}</b><span>Masse brute (mois)</span></div>
+      <div class="kpi"><b>${money(118320)}</b><span>Charges patronales</span></div>
+      <div class="kpi"><b>${money(798320)}</b><span>Coût employeur total</span></div>
+      <div class="kpi"><b>3</b><span>Effectif</span></div>
+    </div>
+    <div class="card"><h2>Coûts par service</h2>
+      ${bars.map(b=>`<div style="margin:10px 0"><div style="display:flex;justify-content:space-between"><span>${b[0]}</span><span class="num">${money(b[1])}</span></div>
+        <div style="height:10px;background:#EEF2FF;border-radius:6px;overflow:hidden"><div style="height:10px;width:${Math.round(b[1]/max*100)}%;background:var(--teal)"></div></div></div>`).join('')}
+    </div>
+    <div class="card"><h2>Indicateurs RH</h2>
+      <div class="ano"><span>Effectif</span><span class="num">3</span></div>
+      <div class="ano"><span>Salaire moyen</span><span class="num">${money(680000/3)}</span></div>
+      <div class="ano"><span>Absentéisme</span><span class="num">—</span></div>
+    </div>`;
+}
+
+/* Paramètres */
+async function viewParametres(){
+  let nom='—';try{const c=(await api('/v1/companies')).companies.find(x=>x.id===COMP);if(c)nom=c.nom;}catch(e){}
+  $('view').innerHTML=`
+    <div class="card"><h2>Entreprise</h2>
+      <div class="row">
+        <div><label>Raison sociale</label><input value="${nom}" readonly></div>
+        <div><label>Taux AT/MP</label><input value="2,0 %" readonly></div>
+        <div><label>Régime VPS</label><input value="Normal (4 %)" readonly></div>
+        <div><label>Convention</label><input value="CCGT 2005" readonly></div>
+      </div>
+      <p class="hint muted" style="margin-top:8px">Modification protégée (rôle Admin). Valeurs versionnées côté réglementaire.</p>
+    </div>
+    <div class="card"><h2>Accès & rôles (RBAC + scope)</h2>
+      <table><thead><tr><th>Rôle</th><th>Portée</th><th>Droits</th></tr></thead>
+      <tbody>
+        <tr><td>Administrateur</td><td>Cabinet</td><td>Tout</td></tr>
+        <tr><td>Gestionnaire paie</td><td>Sociétés assignées</td><td>Paie, déclarations</td></tr>
+        <tr><td>RH</td><td>Établissement</td><td>Salariés, variables</td></tr>
+        <tr><td>Comptable</td><td>Société</td><td>Écritures, export</td></tr>
+        <tr><td>Salarié</td><td>Soi-même</td><td>Bulletins (app mobile)</td></tr>
+      </tbody></table>
+    </div>
+    <div class="card"><h2>Paramètres réglementaires (versionnés)</h2>
+      <div class="ano"><span>SMIG</span><span class="num">52 000 F <span class="muted">(Décret 2022-692)</span></span></div>
+      <div class="ano"><span>CNSS pension</span><span class="num">6,4 % emp / 3,6 % sal</span></div>
+      <div class="ano"><span>ITS / VPS</span><span class="num">barème 5 tranches / 4 %</span></div>
+    </div>`;
+}
+</script>
+</body>
+</html>

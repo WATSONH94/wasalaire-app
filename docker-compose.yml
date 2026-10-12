@@ -1,0 +1,62 @@
+# WaSalaire — pile déployable (API v2 + console/onboarding web + PostgreSQL).
+# Séquence : db (healthy) → migrate (schéma + rôle applicatif) → api (rôle wasalaire_app, RLS active).
+# Variables sensibles à fournir via .env (voir .env.example) — ne rien committer en clair.
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-wasalaire}
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ${POSTGRES_DB:-wasalaire}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  migrate:
+    build: .
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      PGUSER: postgres                     # migration = superuser
+      PGPASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      PGDATABASE: ${POSTGRES_DB:-wasalaire}
+      WASALAIRE_DB_PASSWORD: ${WASALAIRE_DB_PASSWORD:-change-me-in-prod}
+    command: ["bash", "migrations/run_migrations.sh"]
+    restart: "no"
+
+  api:
+    build: .
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      PGUSER: wasalaire_app                # ⚠️ rôle NON-superuser → RLS réellement appliquée
+      PGPASSWORD: ${WASALAIRE_DB_PASSWORD:-change-me-in-prod}
+      PGDATABASE: ${POSTGRES_DB:-wasalaire}
+      WASALAIRE_DEV: ${WASALAIRE_DEV:-0}    # 0 = OTP non renvoyé en clair (prod)
+      WASALAIRE_SECRET: ${WASALAIRE_SECRET:?WASALAIRE_SECRET requis (>=16 car.)}  # fail-closed
+      WASALAIRE_ORIGINS: ${WASALAIRE_ORIGINS:-}   # vide = même origine seulement (CORS nominatif)
+      # A-06 : stockage documentaire persistant sur volume (défaut) ; ou S3/MinIO si configuré.
+      WASALAIRE_STORAGE_DIR: /data/storage
+      # S3_ENDPOINT / S3_BUCKET / S3_ACCESS_KEY / S3_SECRET_KEY / S3_REGION (si stockage objet)
+      # A-08 : taille du pool de connexions (défauts 1/10)
+      # WASALAIRE_POOL_MIN / WASALAIRE_POOL_MAX
+      # Intégrations (optionnelles) : FEDAPAY_SECRET_KEY / WHATSAPP_TOKEN+WHATSAPP_PHONE_ID / SMS_API_KEY
+    volumes: ["wasalaire_storage:/data/storage"]   # artefacts hors FS éphémère (A-06)
+    ports: ["8000:8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health').status==200 else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  pgdata:
+  wasalaire_storage:

@@ -1,0 +1,17 @@
+# Contexte de build minimal : ne jamais embarquer secrets ni artefacts.
+.env
+.env.*
+*.env
+pgdata/
+__pycache__/
+*.pyc
+*.pyo
+.git/
+.gitignore
+*.log
+.pytest_cache/
+.DS_Store
+# artefacts de démo
+*.pdf
+*_demo.csv
+*_demo.xlsx

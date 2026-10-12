@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# Applique les migrations WaSalaire de façon REJOUABLE (idempotente au niveau fichier).
+#
+# Chaque fichier de migrations/sql/*.sql est appliqué UNE SEULE FOIS, dans une transaction,
+# puis enregistré dans la table de suivi `schema_migrations` (nom + empreinte sha256).
+# Un second passage saute les fichiers déjà appliqués. Un fichier historique modifié après
+# application est refusé (empreinte différente), pour préserver la traçabilité (jamais de
+# réécriture destructive d'une migration déjà jouée : ajouter un nouveau fichier numéroté).
+#
+# Usage : variables PG* en environnement (superuser pour la migration), puis ./run_migrations.sh
+set -euo pipefail
+DIR="$(cd "$(dirname "$0")/sql" && pwd)"
+
+# 0) Table de suivi des migrations (créée une fois, idempotent).
+psql -v ON_ERROR_STOP=1 -q <<'SQL'
+CREATE TABLE IF NOT EXISTS schema_migrations (
+    filename    text PRIMARY KEY,
+    checksum    text NOT NULL,
+    applied_at  timestamptz NOT NULL DEFAULT now()
+);
+SQL
+
+# 1) Application ordonnée, une fois par fichier.
+for f in "$DIR"/*.sql; do
+  base="$(basename "$f")"
+  sum="$(sha256sum "$f" | awk '{print $1}')"
+  applied="$(psql -tAqc "SELECT checksum FROM schema_migrations WHERE filename='${base}'")"
+  if [ -z "$applied" ]; then
+    echo ">> migration ${base} (application)"
+    # Fichier + enregistrement dans la MÊME transaction : si le fichier échoue, rien n'est marqué.
+    psql -v ON_ERROR_STOP=1 --single-transaction -f "$f" \
+      -c "INSERT INTO schema_migrations(filename, checksum) VALUES ('${base}', '${sum}')"
+  elif [ "$applied" != "$sum" ]; then
+    echo "!! ERREUR : ${base} a été modifié après application (empreinte différente)." >&2
+    echo "!! Une migration jouée est immuable : créez un nouveau fichier numéroté." >&2
+    exit 1
+  else
+    echo ">> migration ${base} (déjà appliquée, ignorée)"
+  fi
+done
+
+# 2) Rôle applicatif + privilèges (idempotent, rejoué à chaque fois pour couvrir les tables neuves).
+echo ">> rôle applicatif (scope-RLS)"
+APP_PWD="${WASALAIRE_DB_PASSWORD:-change-me-in-prod}"
+psql -v ON_ERROR_STOP=1 -q <<SQL
+DO \$\$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='wasalaire_app') THEN
+    CREATE ROLE wasalaire_app LOGIN PASSWORD '${APP_PWD}';
+  ELSE
+    ALTER ROLE wasalaire_app LOGIN PASSWORD '${APP_PWD}';
+  END IF;
+END \$\$;
+GRANT USAGE ON SCHEMA public TO wasalaire_app;
+-- Moindre privilège (P1-08) : SELECT/INSERT/UPDATE par défaut (jamais DELETE : soft-delete),
+-- puis restrictions ciblées. Couvre aussi les tables neuves (défaut sûr), le référentiel
+-- restant en lecture seule et l'audit en écriture seule.
+GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO wasalaire_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE ON TABLES TO wasalaire_app;
+-- Référentiel réglementaire : lecture seule (aucune écriture par le runtime).
+REVOKE INSERT, UPDATE ON rate_table, tax_bracket, regulatory_rule, role FROM wasalaire_app;
+-- Journal d'audit : écriture seule (le runtime n'a pas à relire ni modifier l'audit).
+REVOKE SELECT, UPDATE ON audit_log FROM wasalaire_app;
+-- Table de suivi des migrations : hors de portée du runtime.
+REVOKE ALL ON schema_migrations FROM wasalaire_app;
+SQL
+
+echo ">> Migrations appliquées. L'application se connecte avec le rôle wasalaire_app (RLS active)."

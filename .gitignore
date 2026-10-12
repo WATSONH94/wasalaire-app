@@ -1,0 +1,22 @@
+# Secrets & env
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Artefacts de démo / sorties
+*.pdf
+*_demo.csv
+*_demo.xlsx
+pgdata*/
+
+# OS / éditeurs
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WaSalaire</title>
+<link rel="icon" href="/assets/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --indigo:#1E2A78; --teal:#2EC4B6; --ink:#0F172A; --bg:#F8FAFC;
+    --sand:#F4D7B0; --muted:#64748B; --line:#E2E8F0; --ok:#16A34A; --warn:#D97706;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+  /* Cadre "téléphone" : mobile-first, centré sur desktop */
+  .app{max-width:430px;margin:0 auto;min-height:100vh;background:var(--bg);display:flex;flex-direction:column}
+  header{background:var(--indigo);color:#fff;padding:16px 20px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
+  header .logo{width:26px;height:26px;border-radius:7px;background:var(--teal);display:grid;place-items:center;font-weight:800;color:var(--indigo)}
+  header b{font-weight:800;letter-spacing:.2px}
+  header .sub{margin-left:auto;font-size:12px;opacity:.85}
+  main{flex:1;padding:20px 18px 90px}
+  h1{font-size:22px;margin:4px 0 2px} .lead{color:var(--muted);margin:0 0 18px;font-size:14px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  label{display:block;font-size:13px;font-weight:600;margin:10px 0 6px;color:#334155}
+  input,select{width:100%;padding:14px;border:1px solid var(--line);border-radius:12px;font-size:16px;font-family:inherit;background:#fff}
+  input:focus,select:focus{outline:2px solid var(--teal);border-color:transparent}
+  .btn{width:100%;padding:15px;border:0;border-radius:12px;background:var(--teal);color:#04312c;font-weight:800;font-size:16px;font-family:inherit;cursor:pointer;margin-top:14px}
+  .btn:active{transform:translateY(1px)} .btn[disabled]{opacity:.5}
+  .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--indigo)}
+  .row{display:flex;gap:10px} .row>*{flex:1}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px}
+  .devcode{background:var(--sand);color:#5b4626;border-radius:10px;padding:10px 12px;font-weight:700;text-align:center;margin-top:10px;letter-spacing:2px}
+  .pill{display:inline-block;background:#EEF2FF;color:var(--indigo);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700}
+  .slip{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
+  .slip:last-child{border-bottom:0} .slip .net{font-weight:800;color:var(--indigo)}
+  .slip small{color:var(--muted)}
+  .steps{display:flex;gap:6px;margin-bottom:16px}
+  .steps i{height:5px;flex:1;border-radius:3px;background:var(--line)} .steps i.on{background:var(--teal)}
+  .done{display:grid;place-items:center;text-align:center;padding:24px 0}
+  .done .check{width:64px;height:64px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:34px;margin-bottom:10px}
+  .err{color:#B91C1C;font-size:13px;margin-top:10px;min-height:16px}
+  .kpi{display:flex;gap:12px;margin:2px 0 16px}
+  .kpi .k{flex:1;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
+  .kpi .k b{display:block;font-size:20px;color:var(--indigo)} .kpi .k span{font-size:12px;color:var(--muted)}
+  .muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">W</div><b>WaSalaire</b>
+    <span class="sub" id="hdr">La paie, simplement.</span>
+  </header>
+  <main id="view"></main>
+</div>
+
+<script>
+const API = ""; // même origine (servi par l'API)
+let TOKEN=null, COMPANIES=[], PHONE="", PERIOD=null, RUN=null;
+const $ = h => { document.getElementById('view').innerHTML = h; };
+const money = n => (n||0).toLocaleString('fr-FR').replace(/ /g,' ') + ' F';
+async function api(path, {method='GET', body=null}={}) {
+  const r = await fetch(API+path, {method, headers:{
+      'Content-Type':'application/json', ...(TOKEN?{'Authorization':'Bearer '+TOKEN}:{})},
+      body: body?JSON.stringify(body):null});
+  const j = await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(j.detail||('Erreur '+r.status));
+  return j;
+}
+
+/* ---------- Écran 1 : connexion par téléphone + OTP ---------- */
+function loginPhone(){
+  $(`<h1>Bienvenue</h1><p class="lead">Connectez-vous avec votre numéro de téléphone.</p>
+    <div class="card">
+      <label>Numéro de téléphone</label>
+      <input id="tel" inputmode="tel" placeholder="+229 ..." value="+22961000009">
+      <button class="btn" onclick="reqOtp()">Recevoir le code</button>
+      <div class="err" id="e"></div>
+    </div>
+    <p class="hint">Prototype : le code est affiché à l'écran (pas de SMS branché).</p>`);
+}
+async function reqOtp(){
+  try{ PHONE=document.getElementById('tel').value.trim();
+    const r=await api('/v1/auth/request-otp',{method:'POST',body:{telephone:PHONE,canal:'whatsapp'}});
+    loginOtp(r.dev_code);
+  }catch(e){ document.getElementById('e').textContent=e.message; }
+}
+function loginOtp(devcode){
+  $(`<h1>Code de vérification</h1><p class="lead">Entrez le code envoyé au ${PHONE}.</p>
+    <div class="card">
+      <label>Code à 6 chiffres</label>
+      <input id="otp" inputmode="numeric" maxlength="6" placeholder="––––––">
+      ${devcode?`<div class="devcode">Code (démo) : ${devcode}</div>`:''}
+      <button class="btn" onclick="verOtp()">Se connecter</button>
+      <button class="btn ghost" onclick="loginPhone()">Changer de numéro</button>
+      <div class="err" id="e"></div>
+    </div>`);
+  if(devcode) document.getElementById('otp').value=devcode;
+}
+async function verOtp(){
+  try{ const code=document.getElementById('otp').value.trim();
+    const r=await api('/v1/auth/verify-otp',{method:'POST',body:{telephone:PHONE,code}});
+    TOKEN=r.token; COMPANIES=r.companies; home();
+  }catch(e){ document.getElementById('e').textContent=e.message; }
+}
+
+/* ---------- Écran 2 : accueil orienté action ---------- */
+function home(){
+  document.getElementById('hdr').textContent = COMPANIES.length+' société(s)';
+  $(`<h1>Bonjour 👋</h1><p class="lead">Votre prochaine action vous attend.</p>
+    <div class="card" style="background:linear-gradient(135deg,#1E2A78,#2b3aa0);color:#fff;border:0">
+      <span class="pill" style="background:#ffffff22;color:#fff">Paie du mois</span>
+      <h2 style="margin:12px 0 4px;font-size:19px">Lancer la paie</h2>
+      <p style="opacity:.85;margin:0 0 4px;font-size:14px">Calculer, vérifier et clôturer en quelques secondes.</p>
+      <button class="btn" onclick="cycle()">Commencer</button>
+    </div>
+    <div class="card">
+      <b>À faire ensuite</b>
+      <div class="slip"><span>Déclaration ITS / VPS</span><small>le 10</small></div>
+      <div class="slip"><span>Déclaration CNSS</span><small>J+15</small></div>
+    </div>
+    <button class="btn ghost" onclick="equipeMobile()">👥 Voir mon équipe</button>
+    <button class="btn ghost" onclick="bulletinsMobile()">📄 Mes bulletins</button>
+    <button class="btn ghost" onclick="echeancesMobile()">📅 Mes échéances</button>
+    <button class="btn ghost" onclick="notifsMobile()">🔔 Notifications</button>
+    <button class="btn ghost" onclick="TOKEN=null;loginPhone()">Se déconnecter</button>`);
+}
+
+/* ---------- Mes bulletins (self-service salarié, mobile) ---------- */
+function bulletinsMobile(){
+  const mois=['Septembre 2026','Août 2026','Juillet 2026'];
+  $(`<h1>Mes bulletins</h1><p class="lead">Consultez et recevez vos bulletins.</p>
+    <div class="card" style="background:#2EC4B622;border:0">
+      <div class="slip" style="border:0"><span>💬 Vous recevez votre bulletin par WhatsApp</span></div>
+    </div>
+    <div class="card">${mois.map((m,i)=>`<div class="slip">
+      <div>${m}<br><small>Net payé</small></div>
+      <div style="display:flex;gap:8px;align-items:center"><span class="net">${money(160020-i*2000)}</span></div></div>`).join('')}
+    </div>
+    <p class="hint">Prototype : la liste réelle s'alimente après chaque paie clôturée.</p>
+    <button class="btn ghost" onclick="home()">← Accueil</button>`);
+}
+
+/* ---------- Échéances (mobile) ---------- */
+function echeancesMobile(){
+  $(`<h1>Mes échéances</h1><p class="lead">Ne ratez aucun délai légal.</p>
+    <div class="card">
+      <div class="slip"><div>Déclaration ITS / VPS<br><small>DGI · e-services</small></div><span class="pill">le 10</span></div>
+      <div class="slip"><div>Liste nominative CNSS<br><small>carriere@cnss.bj</small></div><span class="pill">J+15</span></div>
+      <div class="slip"><div>AMO obligatoire<br><small>secteur privé, via CNSS</small></div><span class="pill" style="background:#FEF3C7;color:#92400e">29/10/2026</span></div>
+    </div>
+    <p class="hint">Un rappel vous est envoyé 3 jours avant chaque échéance.</p>
+    <button class="btn ghost" onclick="home()">← Accueil</button>`);
+}
+
+/* ---------- Notifications (mobile) ---------- */
+function notifsMobile(){
+  $(`<h1>Notifications</h1><p class="lead">Ce que WaSalaire vous signale.</p>
+    <div class="card">
+      <div class="slip"><div>✅ Salaires envoyés<br><small>3 salariés · mobile money & virement</small></div><small>auj.</small></div>
+      <div class="slip"><div>📄 Bulletins envoyés par WhatsApp<br><small>à 3 salariés</small></div><small>auj.</small></div>
+      <div class="slip"><div>⏰ Déclaration ITS/VPS bientôt due<br><small>le 10</small></div><small>dans 3 j</small></div>
+    </div>
+    <button class="btn ghost" onclick="home()">← Accueil</button>`);
+}
+
+/* ---------- Écran Équipe (mobile) ---------- */
+let EMPS=[];
+async function equipeMobile(){
+  try{ EMPS=(await api('/v1/employees?company_id='+COMPANIES[0])).employes;
+    $(`<h1>Mon équipe</h1><p class="lead">${EMPS.length} salarié(s).</p>
+      <div class="card">${EMPS.map((e,i)=>`<div class="slip" onclick="ficheMobile(${i})" style="cursor:pointer">
+        <div>${e.nom}<br><small>${e.matricule} · ${e.methode}</small></div>
+        <div class="net">${money(e.salaire_base)}</div></div>`).join('')}</div>
+      <button class="btn ghost" onclick="home()">← Accueil</button>`);
+  }catch(e){ $(`<div class="card"><div class="err">${e.message}</div></div>
+    <button class="btn ghost" onclick="home()">← Accueil</button>`); }
+}
+function ficheMobile(i){const e=EMPS[i];const init=e.nom.split(' ').map(x=>x[0]).slice(0,2).join('');
+  $(`<div class="card" style="text-align:center">
+      <div style="width:64px;height:64px;border-radius:50%;background:var(--indigo);color:#fff;display:grid;place-items:center;font-weight:800;font-size:22px;margin:0 auto 10px">${init}</div>
+      <h1 style="margin:0">${e.nom}</h1><p class="lead">${e.matricule} · <span class="pill">Actif</span></p>
+    </div>
+    <div class="card">
+      <div class="slip"><span>Salaire de base</span><span class="net">${money(e.salaire_base)}</span></div>
+      <div class="slip"><span>Méthode de paiement</span><small>${e.methode}</small></div>
+      <div class="slip"><span>Contrat</span><small>CDI · Actif</small></div>
+    </div>
+    <div class="card">
+      <b>Documents</b>
+      <div class="slip"><span>📄 Dernier bulletin</span><small>WhatsApp / PDF</small></div>
+      <div class="slip"><span>📄 Contrat</span><small>Signé</small></div>
+    </div>
+    <button class="btn ghost" onclick="equipeMobile()">← Équipe</button>`);
+}
+
+/* ---------- Écran 3 : cycle de paie (persisté sur l'API réelle) ---------- */
+function cycle(){
+  const now=new Date();
+  $(`<div class="steps"><i class="on"></i><i></i><i></i></div>
+    <h1>Période de paie</h1><p class="lead">Société ${COMPANIES[0].slice(0,8)}…</p>
+    <div class="card">
+      <div class="row">
+        <div><label>Mois</label><input id="m" type="number" min="1" max="12" value="${now.getMonth()+1}"></div>
+        <div><label>Année</label><input id="y" type="number" value="${now.getFullYear()}"></div>
+      </div>
+      <button class="btn" onclick="calc()">Calculer la paie</button>
+      <div class="err" id="e"></div>
+    </div>`);
+}
+async function calc(){
+  try{
+    const m=+document.getElementById('m').value, y=+document.getElementById('y').value;
+    const cid=COMPANIES[0];
+    const p=await api('/v1/periods',{method:'POST',body:{company_id:cid,mois:m,annee:y}});
+    PERIOD=p.period_id;
+    const r=await api('/v1/periods/calculate',{method:'POST',
+      body:{company_id:cid,period_id:PERIOD,periode:`${y}-${String(m).padStart(2,'0')}-01`}});
+    RUN=r.run_id; showSlips();
+  }catch(e){ document.getElementById('e').textContent=e.message; }
+}
+async function showSlips(){
+  const r=await api(`/v1/runs/${RUN}/payslips`);
+  const b=r.bulletins; const brut=b.reduce((s,x)=>s+x.brut,0), net=b.reduce((s,x)=>s+x.net,0);
+  $(`<div class="steps"><i class="on"></i><i class="on"></i><i></i></div>
+    <h1>Vérifier</h1><p class="lead">${b.length} bulletin(s) calculé(s).</p>
+    <div class="kpi"><div class="k"><b>${money(brut)}</b><span>Masse brute</span></div>
+      <div class="k"><b>${money(net)}</b><span>Net à payer</span></div></div>
+    <div class="card">${b.map(x=>`<div class="slip"><div>${x.nom}<br><small>base ITS ${money(x.base_its)}</small></div>
+      <div class="net">${money(x.net)}</div></div>`).join('')}</div>
+    <button class="btn" onclick="closeRun()">Valider et clôturer</button>
+    <div class="err" id="e"></div>`);
+}
+async function closeRun(){
+  try{ await api(`/v1/runs/${RUN}/close?period_id=${PERIOD}`,{method:'POST'});
+    $(`<div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+      <div class="done"><div class="check">✓</div><h1>Paie clôturée</h1>
+      <p class="lead">Bulletins verrouillés. Prochaines étapes : déclarations et virements.</p></div>
+      <button class="btn" onclick="home()">Retour à l'accueil</button>`);
+  }catch(e){ document.getElementById('e').textContent=e.message; }
+}
+
+loginPhone();
+</script>
+</body>
+</html>

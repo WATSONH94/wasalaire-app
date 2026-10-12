@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WaSalaire — La paie, simplement.</title>
+<link rel="icon" href="/assets/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* Design tokens WaSalaire v1.1 */
+  :root{
+    --indigo:#1E2A78; --teal:#2EC4B6; --ink:#0F172A; --bg:#F8FAFC; --sand:#F4D7B0; --white:#FFFFFF;
+    --muted:#64748b; --line:#e6e9f0;
+    --teal-d:#249b90; --indigo-d:#182158; --tealbg:#e7faf7;
+    --r-sm:8px; --r-md:12px; --r-lg:18px;
+    --font:'Plus Jakarta Sans',Inter,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font);background:var(--bg);color:var(--ink);line-height:1.5}
+  header{background:var(--indigo);color:#fff;padding:16px}
+  .hwrap{max-width:760px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  header img{height:38px;display:block}
+  .tag{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);font-weight:700}
+  .sub{max-width:760px;margin:8px auto 0;font-size:12px;color:#c7cbe8}
+  main{max-width:760px;margin:0 auto;padding:16px}
+  .card{background:var(--white);border:1px solid var(--line);border-radius:var(--r-md);padding:18px;margin-bottom:16px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  h2{font-size:15px;font-weight:700;margin:0 0 12px;color:var(--indigo)}
+  label{display:block;font-size:12px;color:var(--muted);margin:10px 0 4px;font-weight:500}
+  input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:var(--r-sm);font-size:15px;font-family:var(--font);background:#fff;color:var(--ink)}
+  input:focus,select:focus{outline:2px solid var(--teal);border-color:var(--teal)}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>div{flex:1;min-width:120px}
+  .rub{display:grid;grid-template-columns:1fr 92px 42px 42px 42px 30px;gap:6px;align-items:center;margin-bottom:6px}
+  .rub input[type=text]{font-size:13px}
+  .rub input[type=number]{font-size:13px;text-align:right}
+  .chk{display:flex;justify-content:center}
+  input[type=checkbox]{width:18px;height:18px;accent-color:var(--teal)}
+  .hd{font-size:10px;color:var(--muted);text-align:center;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+  button{background:var(--teal);color:#08312d;border:0;border-radius:var(--r-sm);padding:13px 18px;font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer}
+  button:hover{background:var(--teal-d);color:#fff}
+  button.ghost{background:#fff;color:var(--indigo);border:1px solid var(--line);padding:8px 12px;font-size:13px;font-weight:600}
+  button.ghost:hover{background:var(--bg);color:var(--indigo)}
+  button:active{transform:translateY(1px)}
+  .pill{display:inline-block;background:var(--tealbg);color:var(--teal-d);border-radius:999px;padding:2px 10px;font-size:10px;font-weight:700;vertical-align:middle}
+  .kv{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .kv:last-of-type{border-bottom:0}
+  .kv b{font-variant-numeric:tabular-nums;font-weight:600}
+  .kv.neg b{color:#b91c1c}
+  .net{background:var(--indigo);border-radius:var(--r-md);padding:16px;margin-top:12px;display:flex;justify-content:space-between;align-items:center;font-weight:800;color:#fff;font-size:18px}
+  .net .amt{color:var(--teal)}
+  .note{font-size:11px;color:var(--muted);margin-top:8px}
+  .err{color:#b91c1c;font-size:13px;margin-top:8px;font-weight:500}
+  .result{display:none}
+  code{background:var(--bg);padding:1px 5px;border-radius:4px;font-size:12px}
+  footer{max-width:760px;margin:0 auto;padding:8px 16px 32px;color:var(--muted);font-size:11px;text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <img src="/assets/logo_blanc.png" alt="WaSalaire">
+    <span class="tag">La paie, simplement.</span>
+  </div>
+  <p class="sub">Démo de calcul branchée sur le moteur vérifié (58/58 tests). Prototype — non contractuel.</p>
+</header>
+<main>
+  <div class="card">
+    <h2>Connexion API</h2>
+    <div class="row">
+      <div><label>URL de l'API (vide = même origine)</label><input id="api" value="" placeholder="http://127.0.0.1:8000"></div>
+      <div><label>Entreprise (X-Company-Id)</label><input id="company" value="demo-001"></div>
+    </div>
+    <p class="note">Lancer l'API : <code>uvicorn api_demo:app --reload</code> dans le dossier du prototype.</p>
+  </div>
+
+  <div class="card">
+    <h2>Salarié</h2>
+    <div class="row">
+      <div><label>Nom</label><input id="nom" value="DOSSOU Awa"></div>
+      <div><label>Catégorie</label>
+        <select id="categorie"><option>employe</option><option>cadre</option><option>ouvrier_horaire</option></select>
+      </div>
+    </div>
+    <div class="row">
+      <div><label>Taux AT/MP</label>
+        <select id="atmp"><option value="0.01">1 %</option><option value="0.02" selected>2 %</option><option value="0.03">3 %</option><option value="0.04">4 %</option></select>
+      </div>
+      <div><label>Période</label><input id="periode" type="month" value="2026-01"></div>
+    </div>
+
+    <h2 style="margin-top:18px">Rubriques <span class="pill">3 assiettes : CNSS · ITS · VPS</span></h2>
+    <div class="rub"><div class="hd" style="text-align:left">Libellé</div><div class="hd">Montant</div><div class="hd">CNSS</div><div class="hd">ITS</div><div class="hd">VPS</div><div></div></div>
+    <div id="rubriques"></div>
+    <button class="ghost" onclick="addRub()">+ Ajouter une rubrique</button>
+    <p class="note">Exemple des 3 assiettes : l'indemnité de transport est imposable à l'ITS mais hors assiette CNSS (décocher CNSS).</p>
+
+    <div style="margin-top:18px"><button onclick="calc()">Calculer le bulletin</button></div>
+    <div id="err" class="err"></div>
+  </div>
+
+  <div class="card result" id="result">
+    <h2>Bulletin calculé</h2>
+    <div id="out"></div>
+    <div class="net"><span>NET À PAYER</span><span class="amt" id="net"></span></div>
+    <p class="note" id="src"></p>
+  </div>
+</main>
+<footer>WaSalaire — Une paie plus simple pour des équipes qui font avancer le Bénin.</footer>
+
+<script>
+const fmt = n => (Math.round(n)).toLocaleString('fr-FR').replace(/ /g,' ') + ' F';
+const rubDiv = document.getElementById('rubriques');
+
+function addRub(lib='', montant=0, cnss=true, its=true, vps=true){
+  const d = document.createElement('div'); d.className='rub';
+  d.innerHTML = `
+    <input type="text" value="${lib}" placeholder="Libellé">
+    <input type="number" value="${montant}">
+    <div class="chk"><input type="checkbox" ${cnss?'checked':''}></div>
+    <div class="chk"><input type="checkbox" ${its?'checked':''}></div>
+    <div class="chk"><input type="checkbox" ${vps?'checked':''}></div>
+    <button class="ghost" style="padding:4px 8px" onclick="this.parentElement.remove()">×</button>`;
+  rubDiv.appendChild(d);
+}
+addRub('Salaire de base', 150000, true, true, true);
+addRub('Prime de rendement', 20000, true, true, true);
+addRub('Indemnité de transport', 15000, false, true, true);
+
+async function calc(){
+  document.getElementById('err').textContent='';
+  const rubs = [...rubDiv.children].map(d=>{
+    const i = d.querySelectorAll('input');
+    return {libelle:i[0].value, montant:Number(i[1].value),
+            soumis_cnss:i[2].checked, soumis_its:i[3].checked, soumis_vps:i[4].checked};
+  });
+  const body = {
+    nom:document.getElementById('nom').value,
+    categorie:document.getElementById('categorie').value,
+    at_mp:Number(document.getElementById('atmp').value),
+    periode:document.getElementById('periode').value + '-01',
+    rubriques:rubs
+  };
+  try{
+    const r = await fetch(document.getElementById('api').value + '/v1/payroll/calculate', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Company-Id':document.getElementById('company').value},
+      body:JSON.stringify(body)
+    });
+    if(!r.ok){ throw new Error('HTTP '+r.status+' — '+(await r.text())); }
+    render((await r.json()).bulletin);
+  }catch(e){
+    document.getElementById('err').textContent = 'La demande n\'a pas abouti : '+e.message+'. Vos données n\'ont pas été enregistrées. Vérifiez que l\'API est lancée.';
+  }
+}
+
+function render(b){
+  const lines = [
+    ['Salaire brut', b.brut, false],
+    ['Assiette CNSS', b.assiette_cnss, false],
+    ['Base ITS (brute)', b.base_its, false],
+    ['CNSS salarié (3,6 %)', -b.cnss_sal, true],
+    ['ITS (+ ORTB)', -b.its, true],
+  ];
+  if(b.amo_sal) lines.push(['AMO (part salarié)', -b.amo_sal, true]);
+  lines.push(['Coût employeur', b.cout_employeur, false]);
+  document.getElementById('out').innerHTML = lines.map(
+    ([k,v,neg]) => `<div class="kv ${neg?'neg':''}"><span>${k}</span><b>${fmt(v)}</b></div>`).join('');
+  document.getElementById('net').textContent = fmt(b.net);
+  document.getElementById('src').textContent =
+    '3 assiettes distinctes (CNSS ≠ ITS ≠ VPS) · base ITS brute (CGI Art. 122-124) · calcul par le moteur vérifié.';
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
