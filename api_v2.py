@@ -36,6 +36,10 @@ from payroll_service import (
 )
 from rh_service import (create_employee as rh_create_employee, rupture as rh_rupture,
                         request_leave, validate_leave, leave_balance)
+from onboarding_service import (
+    create_establishment, list_establishments, create_department, list_departments,
+    create_position, list_positions, create_contract, list_contracts,
+)
 from notifications import notify, list_notifications, WhatsAppGateway, SmsGateway, LogGateway
 from wadocs import CONTRAT_TEMPLATE, generate_document, list_documents
 
@@ -143,6 +147,11 @@ PERMISSIONS: dict[str, set[str]] = {
     "employee.read":      {"admin", "paie", "rh", "comptable", "auditeur"},
     "employee.create":    {"admin", "rh"},
     "employee.rupture":   {"admin", "rh"},
+    "structure.read":     {"admin", "paie", "rh", "comptable", "auditeur"},
+    "establishment.create": {"admin", "rh"},
+    "department.create":  {"admin", "rh"},
+    "position.create":    {"admin", "rh"},
+    "contract.create":    {"admin", "rh"},
     "leave.request":      {"admin", "rh", "employe"},
     "leave.validate":     {"admin", "rh"},
     "leave.balance.read": {"admin", "rh", "paie", "auditeur", "employe"},
@@ -398,6 +407,93 @@ def leave_validate(leave_id: str, accord: bool = True, ctx: Ctx = Depends(requir
 def leave_bal(employee_id: str, mois_service: int = 12, anciennete_ans: int = 0,
               ctx: Ctx = Depends(require("leave.balance.read"))):
     return leave_balance(ctx.conn, employee_id, mois_service, anciennete_ans)
+
+
+# ─────────────── Structure société : établissement / département / poste / contrat ───────────────
+class EstablishmentIn(BaseModel):
+    company_id: str
+    nom: str
+    adresse: str | None = None
+    num_cnss_etab: str | None = None
+
+class DepartmentIn(BaseModel):
+    company_id: str
+    nom: str
+    centre_de_cout: str | None = None
+
+class PositionIn(BaseModel):
+    company_id: str
+    intitule: str
+    categorie: str | None = None
+    classification_conv: str | None = None
+
+class ContractIn(BaseModel):
+    company_id: str
+    employee_id: str
+    type_contrat: str = "CDI"
+    date_debut: str
+    salaire_base: float
+    mode: str = "mensuel"
+    position_id: str | None = None
+    department_id: str | None = None
+    establishment_id: str | None = None
+    date_fin: str | None = None
+    periode_essai_fin: str | None = None
+    remplacer_actif: bool = False
+
+def _onboarding_create(fn, ctx, company_id, **kw):
+    _require_company(ctx, company_id)
+    try:
+        return fn(ctx.conn, company_id, actor=ctx.user_id, **kw)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+@app.post("/v1/establishments")
+def establishment_create(body: EstablishmentIn, ctx: Ctx = Depends(require("establishment.create"))):
+    return _onboarding_create(create_establishment, ctx, body.company_id,
+                              nom=body.nom, adresse=body.adresse, num_cnss_etab=body.num_cnss_etab)
+
+@app.get("/v1/establishments")
+def establishments_list(company_id: str, ctx: Ctx = Depends(require("structure.read"))):
+    _require_company(ctx, company_id)
+    return {"company_id": company_id, "etablissements": list_establishments(ctx.conn, company_id)}
+
+@app.post("/v1/departments")
+def department_create(body: DepartmentIn, ctx: Ctx = Depends(require("department.create"))):
+    return _onboarding_create(create_department, ctx, body.company_id,
+                              nom=body.nom, centre_de_cout=body.centre_de_cout)
+
+@app.get("/v1/departments")
+def departments_list(company_id: str, ctx: Ctx = Depends(require("structure.read"))):
+    _require_company(ctx, company_id)
+    return {"company_id": company_id, "departements": list_departments(ctx.conn, company_id)}
+
+@app.post("/v1/positions")
+def position_create(body: PositionIn, ctx: Ctx = Depends(require("position.create"))):
+    return _onboarding_create(create_position, ctx, body.company_id,
+                              intitule=body.intitule, categorie=body.categorie,
+                              classification_conv=body.classification_conv)
+
+@app.get("/v1/positions")
+def positions_list(company_id: str, ctx: Ctx = Depends(require("structure.read"))):
+    _require_company(ctx, company_id)
+    return {"company_id": company_id, "postes": list_positions(ctx.conn, company_id)}
+
+@app.post("/v1/contracts")
+def contract_create(body: ContractIn, ctx: Ctx = Depends(require("contract.create"))):
+    return _onboarding_create(create_contract, ctx, body.company_id,
+                              employee_id=body.employee_id, type_contrat=body.type_contrat,
+                              date_debut=body.date_debut, salaire_base=body.salaire_base,
+                              mode=body.mode, position_id=body.position_id,
+                              department_id=body.department_id, establishment_id=body.establishment_id,
+                              date_fin=body.date_fin, periode_essai_fin=body.periode_essai_fin,
+                              remplacer_actif=body.remplacer_actif)
+
+@app.get("/v1/contracts")
+def contracts_list(company_id: str, employee_id: str | None = None,
+                   ctx: Ctx = Depends(require("structure.read"))):
+    _require_company(ctx, company_id)
+    return {"company_id": company_id, "contrats": list_contracts(ctx.conn, company_id, employee_id)}
 
 
 # ─────────────── Campagne · Reporting · Notifications · WaDocs ───────────────
