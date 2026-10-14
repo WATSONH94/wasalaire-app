@@ -45,12 +45,17 @@ const qs = (o: Record<string, string | undefined>) =>
   '?' + Object.entries(o).filter(([, v]) => v !== undefined && v !== '')
     .map(([k, v]) => `${k}=${encodeURIComponent(v as string)}`).join('&')
 
-export interface Session { token: string; user_id: string; companies: string[]; roles: string[] }
+export interface Session { token: string; user_id: string; companies: string[]; roles: string[]; email?: string | null; platform_role?: string | null; mfa_enrolled?: boolean }
+export interface Me { user_id: string; companies: string[]; roles: string[]; email?: string | null; platform_role?: string | null; mfa_enrolled?: boolean; mfa_enforced?: boolean }
 export interface Company { id: string; raison_sociale?: string; nom?: string; ifu?: string | null }
 export interface Employee { id: string; nom: string; matricule: string; methode_paiement?: string; salaire_base?: number | null }
 export interface Payslip { nom: string; brut: number; base_its: number; net: number; cout_employeur: number; verrouille: boolean }
 export interface Anomaly { nom?: string; gravite: string; message?: string; libelle?: string; code?: string }
 export interface Controls { run_id: string; bloquants: number; avertissements: number; anomalies: Anomaly[] }
+export interface PlatformUser { id: string; email: string; platform_role: string | null; statut: string; totp_enrolled: boolean; must_change_password: boolean }
+export interface PlatformSubscription { workspace_id: string; workspace: string; type: string; plan: string; statut: string; is_beta: boolean }
+export interface Plan { code: string; libelle: string; is_public: boolean; limites: Record<string, unknown> }
+export interface OrgNode { id: string; type: string; nom: string }
 
 export const api = {
   // ── Auth
@@ -59,7 +64,7 @@ export const api = {
       '/v1/auth/request-otp', { method: 'POST', body: { telephone, canal }, auth: false }),
   verifyOtp: (telephone: string, code: string) =>
     request<Session>('/v1/auth/verify-otp', { method: 'POST', body: { telephone, code }, auth: false }),
-  me: () => request<{ user_id: string; companies: string[]; roles: string[] }>('/v1/me'),
+  me: () => request<Me>('/v1/me'),
 
   // ── Auth web : email + mot de passe + MFA TOTP
   login: (email: string, password: string) =>
@@ -77,8 +82,19 @@ export const api = {
     request<{ token: string; companies: string[]; roles: string[] }>(
       '/v1/auth/mfa/verify', { method: 'POST', body: { code }, bearer }),
 
+  // ── Plateforme (admin)
+  platformUsers: () => request<{ users: PlatformUser[] }>('/v1/platform/users'),
+  platformSubscriptions: () => request<{ subscriptions: PlatformSubscription[] }>('/v1/platform/subscriptions'),
+  platformPlans: () => request<{ plans: Plan[] }>('/v1/platform/plans'),
+  setSubscription: (workspace_id: string, plan_code: string, is_beta = false) =>
+    request<{ workspace_id: string; plan: string; is_beta: boolean }>(
+      '/v1/platform/subscription', { method: 'PUT', body: { workspace_id, plan_code, is_beta } }),
+
   // ── Sociétés & salariés
   companies: () => request<{ companies: Company[] }>('/v1/companies'),
+  adminNodes: () => request<{ nodes: OrgNode[] }>('/v1/org/admin-nodes'),
+  createCompany: (parent_node_id: string, raison_sociale: string, ifu?: string | null) =>
+    request<{ company_id: string }>('/v1/companies', { method: 'POST', body: { parent_node_id, raison_sociale, ifu: ifu || null } }),
   employees: (companyId: string) =>
     request<{ company_id: string; employes: Employee[] }>('/v1/employees' + qs({ company_id: companyId })),
   createEmployee: (body: {

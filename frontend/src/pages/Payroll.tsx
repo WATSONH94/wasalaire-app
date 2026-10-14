@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { api, ApiError, fcfa, type Controls, type Employee, type Payslip } from '../api'
-import { Button, Field, Spinner } from '../ui'
+import { Badge, Button, Card, Field, Icon, Select } from '../stitch'
 
 export default function Payroll() {
   const { companyId } = useParams()
@@ -49,90 +49,143 @@ export default function Payroll() {
     setPayslips((await api.payslips(runId)).bulletins)
   })
 
-  const selectStyle = { width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid var(--line)', fontFamily: 'inherit', fontSize: '1rem' }
+  // Étapes du cycle (indicateur visuel)
+  const step = closed ? 4 : payslips ? 3 : periodId ? 2 : 1
+  const STEPS = ['Ouvrir', 'Variables', 'Calculer', 'Clôturer']
 
   return (
-    <div>
-      <h2>Paie</h2>
-      {error && <div className="error" style={{ marginBottom: 12 }}>{error}</div>}
-
-      <div className="card" style={{ marginBottom: 16 }}>
-        <div className="row" style={{ gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-          <div style={{ width: 100 }}><Field label="Mois" type="number" min={1} max={12} value={String(mois)} onChange={(e) => setMois(Number(e.target.value))} /></div>
-          <div style={{ width: 120 }}><Field label="Année" type="number" value={String(annee)} onChange={(e) => setAnnee(Number(e.target.value))} /></div>
-          <Button onClick={openPeriod} disabled={busy === 'open'}>{busy === 'open' ? '…' : 'Ouvrir la période'}</Button>
-          {periodId && <span className="badge" style={{ background: 'var(--teal-600)' }}>période ouverte</span>}
-        </div>
+    <div className="flex flex-col gap-5">
+      <div className="flex items-center justify-between">
+        <h2 className="text-subtitle-lg font-subtitle-lg text-ink">Cycle de paie</h2>
+        {periodId && !closed && <Badge tone="secondary" icon="lock_open">Période ouverte</Badge>}
+        {closed && <Badge tone="success" icon="check_circle">Clôturée</Badge>}
       </div>
 
-      {periodId && !closed && (
-        <div className="card" style={{ marginBottom: 16 }}>
-          <h3>Variables (optionnel)</h3>
-          <div className="row" style={{ gap: 10, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-            <div style={{ minWidth: 170, flex: 1 }}>
-              <div className="field"><label>Salarié</label>
-                <select value={vr.employee_id} onChange={(e) => setVr({ ...vr, employee_id: e.target.value })} style={selectStyle}>
-                  <option value="">—</option>
-                  {employees.map((e) => <option key={e.id} value={e.id}>{e.nom}</option>)}
-                </select>
+      {/* Stepper */}
+      <div className="flex items-center gap-2">
+        {STEPS.map((s, i) => {
+          const n = i + 1
+          const done = n < step
+          const active = n === step
+          return (
+            <div key={s} className="flex items-center gap-2 flex-1">
+              <div className={`flex items-center gap-2 ${active ? 'text-secondary' : done ? 'text-success' : 'text-muted'}`}>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs ${
+                  done ? 'bg-success text-white' : active ? 'bg-secondary text-white' : 'bg-surface-container text-muted'
+                }`}>
+                  {done ? <Icon name="check" className="text-[16px]" /> : n}
+                </div>
+                <span className="text-label-md font-bold hidden sm:inline">{s}</span>
               </div>
+              {i < STEPS.length - 1 && <div className={`h-0.5 flex-1 rounded ${done ? 'bg-success' : 'bg-border'}`} />}
             </div>
-            <div style={{ width: 140 }}><Field label="Type" value={vr.type} onChange={(e) => setVr({ ...vr, type: e.target.value })} /></div>
-            <div style={{ width: 130 }}><Field label="Montant" type="number" value={vr.montant} onChange={(e) => setVr({ ...vr, montant: e.target.value })} /></div>
-            <Button variant="ghost" onClick={addVariable} disabled={busy === 'var' || !vr.employee_id || !vr.montant}>Ajouter</Button>
+          )
+        })}
+      </div>
+
+      {error && <div className="p-3 rounded-xl bg-danger/10 border border-danger/20 text-danger text-label-md font-semibold">{error}</div>}
+
+      {/* 1. Période */}
+      <Card className="p-5">
+        <div className="flex flex-wrap items-end gap-4">
+          <Field label="Mois" type="number" min={1} max={12} className="w-24" value={String(mois)} onChange={(e) => setMois(Number(e.target.value))} />
+          <Field label="Année" type="number" className="w-32" value={String(annee)} onChange={(e) => setAnnee(Number(e.target.value))} />
+          <Button variant="primary" icon="event_available" onClick={openPeriod} disabled={busy === 'open'}>
+            {busy === 'open' ? 'Ouverture…' : 'Ouvrir la période'}
+          </Button>
+        </div>
+      </Card>
+
+      {/* 2. Variables */}
+      {periodId && !closed && (
+        <Card className="p-5 flex flex-col gap-3">
+          <h3 className="text-subtitle-md font-bold text-ink">Variables du mois <span className="text-muted font-normal text-label-md">(optionnel)</span></h3>
+          <div className="flex flex-wrap items-end gap-3">
+            <Select label="Salarié" className="min-w-[180px] flex-1" value={vr.employee_id} onChange={(e) => setVr({ ...vr, employee_id: e.target.value })}>
+              <option value="">—</option>
+              {employees.map((e) => <option key={e.id} value={e.id}>{e.nom}</option>)}
+            </Select>
+            <Field label="Type" className="w-36" value={vr.type} onChange={(e) => setVr({ ...vr, type: e.target.value })} />
+            <Field label="Montant" type="number" className="w-36" value={vr.montant} onChange={(e) => setVr({ ...vr, montant: e.target.value })} />
+            <Button icon="add" onClick={addVariable} disabled={busy === 'var' || !vr.employee_id || !vr.montant}>Ajouter</Button>
           </div>
-        </div>
+        </Card>
       )}
 
+      {/* 3. Calcul */}
       {periodId && (
-        <div style={{ marginBottom: 16 }}>
-          <Button onClick={calculate} disabled={busy === 'calc'}>{busy === 'calc' ? 'Calcul…' : 'Calculer la paie'}</Button>
+        <div>
+          <Button variant="primary" icon="calculate" onClick={calculate} disabled={busy === 'calc'}>
+            {busy === 'calc' ? 'Calcul en cours…' : 'Calculer la paie'}
+          </Button>
         </div>
       )}
 
+      {/* Contrôles */}
       {controls && (
-        <div className="card" style={{ marginBottom: 16 }}>
-          <h3>Contrôles</h3>
-          <p style={{ marginBottom: 10 }}>
-            <span className={controls.bloquants ? 'error' : 'muted'}>{controls.bloquants} bloquant(s)</span>
-            {' · '}<span className="muted">{controls.avertissements} avertissement(s)</span>
-          </p>
+        <Card className="p-5 flex flex-col gap-3">
+          <h3 className="text-subtitle-md font-bold text-ink">Contrôles</h3>
+          <div className="flex items-center gap-2">
+            <Badge tone={controls.bloquants ? 'danger' : 'success'} icon={controls.bloquants ? 'error' : 'check_circle'}>
+              {controls.bloquants} bloquant{controls.bloquants > 1 ? 's' : ''}
+            </Badge>
+            <Badge tone={controls.avertissements ? 'warning' : 'neutral'}>
+              {controls.avertissements} avertissement{controls.avertissements > 1 ? 's' : ''}
+            </Badge>
+          </div>
           {controls.anomalies.length > 0 && (
-            <ul style={{ paddingLeft: 18, marginBottom: 12 }}>
+            <ul className="flex flex-col gap-2">
               {controls.anomalies.map((a, i) => (
-                <li key={i} style={{ marginBottom: 6 }}>
-                  <span className="badge" style={{ background: a.gravite === 'bloquant' ? 'var(--danger)' : 'var(--alert)' }}>{a.gravite}</span>{' '}
-                  {a.nom ? a.nom + ' — ' : ''}{a.message ?? a.libelle ?? a.code ?? ''}
+                <li key={i} className="flex items-start gap-2 text-body-md">
+                  <Badge tone={a.gravite === 'bloquant' ? 'danger' : 'warning'}>{a.gravite}</Badge>
+                  <span className="text-ink">{a.nom ? a.nom + ' — ' : ''}{a.message ?? a.libelle ?? a.code ?? ''}</span>
                 </li>
               ))}
             </ul>
           )}
           {runId && !closed && (
-            <Button onClick={close} disabled={busy === 'close' || controls.bloquants > 0}>
-              {controls.bloquants > 0 ? 'Clôture bloquée (corriger les anomalies)' : busy === 'close' ? 'Clôture…' : 'Valider et clôturer'}
-            </Button>
+            <div>
+              <Button variant="primary" icon="lock" onClick={close} disabled={busy === 'close' || controls.bloquants > 0}>
+                {controls.bloquants > 0 ? 'Clôture bloquée (corriger les anomalies)' : busy === 'close' ? 'Clôture…' : 'Valider et clôturer'}
+              </Button>
+            </div>
           )}
-          {closed && <span className="badge" style={{ background: 'var(--success)' }}>Clôturée</span>}
-        </div>
+        </Card>
       )}
 
-      {busy === 'calc' && <div className="row"><Spinner /> <span className="muted">Calcul en cours…</span></div>}
-
+      {/* Bulletins */}
       {payslips && (
-        <div className="card">
-          <h3>Bulletins <span className="badge">{payslips.length}</span></h3>
-          <div className="list">
-            {payslips.map((p, i) => (
-              <div key={i} className="list-item" style={{ borderTop: i ? '1px solid var(--line)' : 'none', paddingTop: i ? 12 : 0 }}>
-                <div><h3 style={{ margin: 0, fontSize: '.98rem' }}>{p.nom}</h3><span className="muted">brut {fcfa(p.brut)}</span></div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontWeight: 800, color: 'var(--teal-600)' }}>{fcfa(p.net)}</div>
-                  {p.verrouille && <span className="muted" style={{ fontSize: '.74rem' }}>🔒 verrouillé</span>}
-                </div>
-              </div>
-            ))}
+        <Card className="overflow-hidden">
+          <div className="p-4 px-6 border-b border-border flex items-center gap-3">
+            <h3 className="text-subtitle-md font-bold text-ink">Bulletins</h3>
+            <Badge tone="neutral">{payslips.length}</Badge>
           </div>
-        </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-surface-container-low border-b border-border text-label-lg font-bold text-muted">
+                  <th className="py-3 px-6">Salarié</th>
+                  <th className="py-3 px-4 text-right">Brut</th>
+                  <th className="py-3 px-4 text-right">Coût employeur</th>
+                  <th className="py-3 px-6 text-right">Net à payer</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border text-body-md text-ink">
+                {payslips.map((p, i) => (
+                  <tr key={i} className="hover:bg-primary-fixed/20 transition-colors">
+                    <td className="py-3.5 px-6 font-bold flex items-center gap-2">
+                      {p.nom}
+                      {p.verrouille && <Icon name="lock" className="text-[14px] text-muted" />}
+                    </td>
+                    <td className="py-3.5 px-4 text-right tabular-nums text-muted">{fcfa(p.brut)}</td>
+                    <td className="py-3.5 px-4 text-right tabular-nums text-muted">{fcfa(p.cout_employeur)}</td>
+                    <td className="py-3.5 px-6 text-right tabular-nums font-extrabold text-secondary">{fcfa(p.net)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       )}
     </div>
   )

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { api, ApiError, fcfa } from '../api'
-import { Spinner } from '../ui'
+import { Card, Icon, StatCard } from '../stitch'
 
 // Libellés des agrégats renvoyés par /v1/reporting (reporting_summary).
 const LABELS: Record<string, string> = {
@@ -11,7 +11,13 @@ const LABELS: Record<string, string> = {
   net_total: 'Net à payer',
   effectif: 'Effectif',
 }
-// Clés qui sont des comptes (pas des montants) → pas de suffixe FCFA.
+const ICONS: Record<string, string> = {
+  masse_brute: 'payments',
+  charges_patronales: 'account_balance',
+  cout_employeur: 'savings',
+  net_total: 'wallet',
+  effectif: 'badge',
+}
 const COUNTS = new Set(['effectif'])
 
 export default function Reporting() {
@@ -26,26 +32,33 @@ export default function Reporting() {
       .catch((e) => setError(e instanceof ApiError ? e.message : 'Erreur réseau'))
   }, [cid])
 
-  if (error) return <div className="error">{error}</div>
-  if (!data) return <div className="row"><Spinner /> <span className="muted">Chargement…</span></div>
+  const entries = data ? Object.entries(data).filter(([, v]) => typeof v === 'number') : []
 
-  const entries = Object.entries(data).filter(([, v]) => typeof v === 'number')
   return (
-    <div>
-      <h2>Reporting</h2>
-      {entries.length === 0 ? (
-        <p className="muted">Aucune donnée (aucune paie calculée pour l'instant).</p>
+    <div className="flex flex-col gap-4">
+      <h2 className="text-subtitle-lg font-subtitle-lg text-ink">Reporting</h2>
+
+      {error && <div className="p-3 rounded-xl bg-danger/10 border border-danger/20 text-danger text-label-md font-semibold">{error}</div>}
+
+      {data == null ? (
+        <div className="flex items-center gap-2 text-muted"><span className="spinner" /> Chargement…</div>
+      ) : entries.length === 0 ? (
+        <Card className="p-10 text-center">
+          <Icon name="bar_chart" className="text-[40px] text-outline-variant" />
+          <p className="text-muted mt-2">Aucune donnée : aucune paie calculée pour l’instant.</p>
+        </Card>
       ) : (
-        <div className="list" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(160px,1fr))' }}>
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {entries.map(([k, v]) => (
-            <div key={k} className="card">
-              <div className="muted" style={{ fontSize: '.8rem' }}>{LABELS[k] ?? k}</div>
-              <div style={{ fontWeight: 800, fontSize: '1.05rem' }}>
-                {COUNTS.has(k) ? v : fcfa(v)}
-              </div>
-            </div>
+            <StatCard
+              key={k}
+              label={LABELS[k] ?? k}
+              value={COUNTS.has(k) ? v : fcfa(v).replace(' FCFA', '')}
+              unit={COUNTS.has(k) ? undefined : 'FCFA'}
+              icon={ICONS[k] ?? 'analytics'}
+            />
           ))}
-        </div>
+        </section>
       )}
     </div>
   )

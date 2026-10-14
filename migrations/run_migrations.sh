@@ -67,6 +67,13 @@ DO \$do\$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_proc WHERE proname='all_company_ids') THEN
     GRANT EXECUTE ON FUNCTION all_company_ids() TO wasalaire_app;
   END IF;
+  -- Onboarding in-app (migration 011) : création de société + liste des nœuds admin.
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname='create_company_under_node') THEN
+    GRANT EXECUTE ON FUNCTION create_company_under_node(uuid, uuid, text, text) TO wasalaire_app;
+  END IF;
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname='admin_nodes') THEN
+    GRANT EXECUTE ON FUNCTION admin_nodes(uuid) TO wasalaire_app;
+  END IF;
 END \$do\$;
 SQL
 

@@ -505,11 +505,48 @@ def _require_company(ctx: Ctx, company_id: str):
 
 @app.get("/v1/me")
 def me(ctx: Ctx = Depends(require("me.read"))):
-    return {"user_id": ctx.user_id, "companies": ctx.companies, "roles": ctx.roles}
+    email = platform_role = None
+    totp_enrolled = mfa_enforced = False
+    try:
+        row = ctx.conn.execute(
+            "SELECT email, platform_role, totp_enrolled, mfa_enforced FROM app_user WHERE id=%s",
+            (ctx.user_id,)).fetchone()
+        if row:
+            email, platform_role, totp_enrolled, mfa_enforced = row
+    except Exception:
+        pass
+    return {"user_id": ctx.user_id, "companies": ctx.companies, "roles": ctx.roles,
+            "email": email, "platform_role": platform_role,
+            "mfa_enrolled": bool(totp_enrolled), "mfa_enforced": bool(mfa_enforced)}
 
 @app.get("/v1/companies")
 def companies(ctx: Ctx = Depends(require("company.read"))):
     return {"companies": list_companies(ctx.conn)}
+
+@app.get("/v1/org/admin-nodes")
+def org_admin_nodes(ctx: Ctx = Depends(require("me.read"))):
+    """Nœuds d'organisation sous lesquels l'utilisateur peut créer une société (il y est admin)."""
+    rows = ctx.conn.execute(
+        "SELECT node_id, node_type, nom FROM admin_nodes(%s) ORDER BY nom", (ctx.user_id,)).fetchall()
+    return {"nodes": [{"id": str(r[0]), "type": r[1], "nom": r[2]} for r in rows]}
+
+class CompanyCreateIn(BaseModel):
+    parent_node_id: str
+    raison_sociale: str
+    ifu: str | None = None
+
+@app.post("/v1/companies")
+def create_company(body: CompanyCreateIn, ctx: Ctx = Depends(require("me.read"))):
+    """Crée une société sous un nœud dont l'appelant est administrateur (autorisation
+    contrôlée côté SECURITY DEFINER, pas déléguée à la RLS). Idempotent par raison sociale."""
+    try:
+        row = ctx.conn.execute(
+            "SELECT create_company_under_node(%s, %s, %s, %s)",
+            (ctx.user_id, body.parent_node_id, body.raison_sociale, body.ifu)).fetchone()
+    except Exception as e:
+        msg = str(getattr(e, "diag", None) and e.diag.message_primary or e).strip()
+        raise HTTPException(status_code=403, detail=msg or "Création refusée")
+    return {"company_id": str(row[0])}
 
 @app.get("/v1/employees")
 def employees(company_id: str, ctx: Ctx = Depends(require("employee.read"))):
