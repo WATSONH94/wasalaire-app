@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tarifs — WaSalaire</title>
+<meta name="description" content="Gratuit jusqu'à 3 salariés. Ensuite un prix par salarié et par mois, dégressif. Offre dédiée aux cabinets comptables.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-calc" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8"/><path d="M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01M16 17h.01"/></symbol>
+<symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-org" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l6-4v17"/><path d="M11 21V10l8 4v7"/><path d="M8 11h.01M8 15h.01M15 14h.01M15 18h.01"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
+<symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 4 13C4 7 11 4 19 4c0 8-4 16-8 16z"/><path d="M11 20c0-5 3-9 7-11"/></symbol>
+<symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M9 3a2 2 0 0 1 4 0c0 .6-.2 1 .5 1H16a1 1 0 0 1 1 1v2.5c0 .7.4.5 1 .5a2 2 0 0 1 0 4c-.6 0-1-.2-1 .5V19a1 1 0 0 1-1 1h-2.5c-.7 0-.5.4-.5 1a2 2 0 0 1-4 0c0-.6.2-1-.5-1H6a1 1 0 0 1-1-1v-2.5c0-.7-.4-.5-1-.5a2 2 0 0 1 0-4c.6 0 1 .2 1-.5V5a1 1 0 0 1 1-1h2.5c.7 0 .5-.4.5-1z"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.5 21a1.8 1.8 0 0 1-3 0"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+<symbol id="i-rocket" viewBox="0 0 24 24"><path d="M5 13c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z"/><path d="M12 15l-3-3a9 9 0 0 1 3-7c2.5-2.5 6-2.5 8-2 .5 2 .5 5.5-2 8a9 9 0 0 1-6 4z"/><path d="M15 9h.01"/></symbol>
+<symbol id="i-health" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+<symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M6 21h12"/><path d="M5 7h14"/><path d="M7 7l-3 6a3 3 0 0 0 6 0z"/><path d="M17 7l3 6a3 3 0 0 1-6 0z"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+<symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M16 8l-2.5 5.5L8 16l2.5-5.5z"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+<symbol id="i-badge" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></symbol>
+</defs></svg>
+<div class="progress"></div>
+<header class="header"><div class="bar container">
+  <a class="brand" href="index.html"><img src="assets/logo.png" alt="WaSalaire — La paie, simplement." class="logo-img"></a>
+  <nav class="nav"><a class="link" href="fonctionnalites.html">Fonctionnalités</a><a class="link" href="pour-qui.html">Pour qui</a><a class="link" href="tarifs.html">Tarifs</a><a class="link" href="conformite.html">Conformité</a><a class="link" href="faq.html">FAQ</a><a class="link m-cta" href="https://app.wasalaire.techbybo.fr/login">Commencer →</a></nav>
+  <div class="nav-cta"><a class="btn btn-ghost" href="https://app.wasalaire.techbybo.fr/login" style="padding:10px 16px">Se connecter</a><a class="btn btn-primary" href="https://app.wasalaire.techbybo.fr/login">Commencer <span class="ar">→</span></a></div>
+  <button class="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+</div></header>
+
+<section class="page-hero">
+  <div class="aurora"></div><div class="hero-grid"></div>
+  <div class="container">
+    <span class="eyebrow" data-reveal>Tarifs</span>
+    <h1 data-reveal data-d="1">Au prix d'un salarié,<br>pas d'un comptable.</h1>
+    <p data-reveal data-d="2">Commencez gratuitement. Payez au salarié, par mois, avec un tarif qui baisse quand vous grandissez.</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:20px">
+  <div class="container" style="text-align:center">
+    <div class="toggle" data-reveal>
+      <button class="on" data-period="mensuel">Mensuel</button>
+      <button data-period="annuel">Annuel <span class="tag-save">−2 mois</span></button>
+    </div>
+    <div class="plans" style="text-align:left">
+      <div class="plan" data-reveal>
+        <div class="pname">Découverte</div>
+        <div class="price"><span>0 F</span><span class="muted" style="font-size:1rem">/mois</span></div>
+        <p class="muted">Pour démarrer et tester sur de vrais bulletins.</p>
+        <ul>
+          <li><span class="ck">✓</span> Jusqu'à 3 salariés</li>
+          <li><span class="ck">✓</span> Calcul, bulletins, contrôles</li>
+          <li><span class="ck">✓</span> App mobile + envoi WhatsApp</li>
+          <li><span class="ck">✓</span> 1 société</li>
+        </ul>
+        <a class="btn btn-ghost" href="https://app.wasalaire.techbybo.fr/login">Commencer</a>
+      </div>
+      <div class="plan feat" data-reveal data-d="1">
+        <div class="ribbon">Le plus choisi</div>
+        <div class="pname">Entreprise</div>
+        <div class="price"><span data-m="900 F" data-a="750 F">900 F</span><span class="muted" style="font-size:1rem">/salarié/mois</span></div>
+        <p class="muted">Pour les TPE/PME qui veulent tout automatiser.</p>
+        <ul>
+          <li><span class="ck">✓</span> Salariés illimités</li>
+          <li><span class="ck">✓</span> Déclarations DGI &amp; CNSS + AMO</li>
+          <li><span class="ck">✓</span> Paiement mobile money &amp; virement</li>
+          <li><span class="ck">✓</span> Comptabilité SYSCOHADA + export</li>
+          <li><span class="ck">✓</span> Congés, soldes de tout compte, WaDocs</li>
+          <li><span class="ck">✓</span> Support prioritaire</li>
+        </ul>
+        <a class="btn btn-primary" href="https://app.wasalaire.techbybo.fr/login">Commencer gratuitement <span class="ar">→</span></a>
+      </div>
+      <div class="plan" data-reveal data-d="2">
+        <div class="pname">Cabinet</div>
+        <div class="price"><span data-m="700 F" data-a="580 F">700 F</span><span class="muted" style="font-size:1rem">/salarié/mois</span></div>
+        <p class="muted">Pour les cabinets gérant plusieurs dossiers.</p>
+        <ul>
+          <li><span class="ck">✓</span> Tout « Entreprise »</li>
+          <li><span class="ck">✓</span> Portefeuille multi-sociétés illimité</li>
+          <li><span class="ck">✓</span> Campagnes de paie de masse</li>
+          <li><span class="ck">✓</span> Rôles &amp; accès par dossier (RBAC)</li>
+          <li><span class="ck">✓</span> Tarif dégressif par volume</li>
+        </ul>
+        <a class="btn btn-ghost" href="contact.html">Parler à l'équipe</a>
+      </div>
+    </div>
+    <p class="muted" data-reveal style="margin-top:22px;font-size:.9rem">Prix indicatifs en FCFA, HT. Paiement par mobile money ou virement. Remise annuelle = 2 mois offerts.</p>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container">
+    <div class="section-head" data-reveal><span class="eyebrow">Sans mauvaise surprise</span><h2>Ce qui est toujours inclus</h2></div>
+    <div class="grid3">
+      <div class="card" data-reveal><div class="fic"><svg class="icon"><use href="#i-refresh"/></svg></div><h3>Mises à jour réglementaires</h3><p>Barèmes, taux et textes suivis et appliqués — sans surcoût.</p></div>
+      <div class="card" data-reveal data-d="1"><div class="fic"><svg class="icon"><use href="#i-lock"/></svg></div><h3>Sécurité &amp; sauvegardes</h3><p>Isolation des données, audit, sauvegardes. Inclus dans tous les plans.</p></div>
+      <div class="card" data-reveal data-d="2"><div class="fic"><svg class="icon"><use href="#i-rocket"/></svg></div><h3>Prise en main</h3><p>Onboarding guidé en moins de 30 minutes, en français.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section"><div class="container"><div class="cta-band" data-reveal>
+  <h2>Essayez sur votre vraie paie</h2><p>Gratuit jusqu'à 3 salariés. Aucune carte requise.</p>
+  <div class="hero-cta"><a class="btn btn-primary btn-lg" href="https://app.wasalaire.techbybo.fr/login">Démarrer <span class="ar">→</span></a></div>
+</div></div></section>
+
+<footer class="footer"><div class="container">
+  <div class="f-grid">
+    <div><div class="f-brand"><img src="assets/logo-blanc.png" alt="WaSalaire" class="logo-img-foot"></div><p style="max-width:34ch;color:#94a3b8">La paie, simplement. Le logiciel de paie pensé pour les entreprises et cabinets du Bénin.</p></div>
+    <div><h4>Produit</h4><a href="fonctionnalites.html">Fonctionnalités</a><a href="tarifs.html">Tarifs</a><a href="pour-qui.html">Pour qui</a><a href="conformite.html">Conformité</a></div>
+    <div><h4>Entreprise</h4><a href="a-propos.html">À propos</a><a href="contact.html">Contact</a><a href="faq.html">FAQ</a></div>
+    <div><h4>Légal</h4><a href="mentions-legales.html">Mentions légales</a><a href="mentions-legales.html#confidentialite">Confidentialité</a><a href="mentions-legales.html#cgu">CGU</a></div>
+  </div>
+  <div class="f-bottom"><span>© <span data-year>2026</span> WaSalaire — Cotonou, Bénin.</span><span>La paie, simplement.</span></div>
+</div></footer>
+<script src="assets/motion.js"></script>
+</body></html>

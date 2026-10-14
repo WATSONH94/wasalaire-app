@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fonctionnalités — WaSalaire</title>
+<meta name="description" content="Calcul de paie conforme, bulletins, déclarations DGI/CNSS, paiement mobile money, comptabilité SYSCOHADA, congés, multi-société. Tout le cycle de la paie béninoise.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-calc" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8"/><path d="M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01M16 17h.01"/></symbol>
+<symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-org" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l6-4v17"/><path d="M11 21V10l8 4v7"/><path d="M8 11h.01M8 15h.01M15 14h.01M15 18h.01"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
+<symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 4 13C4 7 11 4 19 4c0 8-4 16-8 16z"/><path d="M11 20c0-5 3-9 7-11"/></symbol>
+<symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M9 3a2 2 0 0 1 4 0c0 .6-.2 1 .5 1H16a1 1 0 0 1 1 1v2.5c0 .7.4.5 1 .5a2 2 0 0 1 0 4c-.6 0-1-.2-1 .5V19a1 1 0 0 1-1 1h-2.5c-.7 0-.5.4-.5 1a2 2 0 0 1-4 0c0-.6.2-1-.5-1H6a1 1 0 0 1-1-1v-2.5c0-.7-.4-.5-1-.5a2 2 0 0 1 0-4c.6 0 1 .2 1-.5V5a1 1 0 0 1 1-1h2.5c.7 0 .5-.4.5-1z"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.5 21a1.8 1.8 0 0 1-3 0"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+<symbol id="i-rocket" viewBox="0 0 24 24"><path d="M5 13c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z"/><path d="M12 15l-3-3a9 9 0 0 1 3-7c2.5-2.5 6-2.5 8-2 .5 2 .5 5.5-2 8a9 9 0 0 1-6 4z"/><path d="M15 9h.01"/></symbol>
+<symbol id="i-health" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+<symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M6 21h12"/><path d="M5 7h14"/><path d="M7 7l-3 6a3 3 0 0 0 6 0z"/><path d="M17 7l3 6a3 3 0 0 1-6 0z"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+<symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M16 8l-2.5 5.5L8 16l2.5-5.5z"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+<symbol id="i-badge" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></symbol>
+</defs></svg>
+<div class="progress"></div>
+<header class="header"><div class="bar container">
+  <a class="brand" href="index.html"><img src="assets/logo.png" alt="WaSalaire — La paie, simplement." class="logo-img"></a>
+  <nav class="nav"><a class="link" href="fonctionnalites.html">Fonctionnalités</a><a class="link" href="pour-qui.html">Pour qui</a><a class="link" href="tarifs.html">Tarifs</a><a class="link" href="conformite.html">Conformité</a><a class="link" href="faq.html">FAQ</a><a class="link m-cta" href="https://app.wasalaire.techbybo.fr/login">Commencer →</a></nav>
+  <div class="nav-cta"><a class="btn btn-ghost" href="https://app.wasalaire.techbybo.fr/login" style="padding:10px 16px">Se connecter</a><a class="btn btn-primary" href="https://app.wasalaire.techbybo.fr/login">Commencer <span class="ar">→</span></a></div>
+  <button class="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+</div></header>
+
+<section class="page-hero">
+  <div class="aurora"></div><div class="hero-grid"></div>
+  <div class="container">
+    <span class="eyebrow" data-reveal>Fonctionnalités</span>
+    <h1 data-reveal data-d="1">Tout le cycle de la paie,<br>d'un seul endroit.</h1>
+    <p data-reveal data-d="2">Du contrat au virement, en passant par les déclarations : WaSalaire remplace le tableur, la calculette et les allers-retours avec l'administration.</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:20px">
+  <div class="container">
+    <div class="grid3">
+      <div class="card" data-reveal><div class="fic"><svg class="icon"><use href="#i-calc"/></svg></div><h3>Moteur de calcul</h3><p>Brut, 3 assiettes indépendantes (CNSS, ITS, VPS), avantages en nature, heures supplémentaires, prorata. Barème CGI à jour.</p></div>
+      <div class="card" data-reveal data-d="1"><div class="fic"><svg class="icon"><use href="#i-doc"/></svg></div><h3>Bulletins</h3><p>Bulletins lisibles, cumuls, compteur de congés, format A4 imprimable ou PDF — avec la base légale derrière chaque ligne.</p></div>
+      <div class="card" data-reveal data-d="2"><div class="fic"><svg class="icon"><use href="#i-send"/></svg></div><h3>Déclarations</h3><p>ITS/VPS, liste nominative CNSS, AMO. Fichiers au format e-services, échéancier et rappels automatiques.</p></div>
+      <div class="card" data-reveal><div class="fic"><svg class="icon"><use href="#i-phone"/></svg></div><h3>Décaissement</h3><p>Mobile money (MTN/Moov via FedaPay), virement, espèces, chèque — au choix par salarié, avec suivi des statuts.</p></div>
+      <div class="card" data-reveal data-d="1"><div class="fic"><svg class="icon"><use href="#i-book"/></svg></div><h3>Comptabilité</h3><p>Écritures de paie SYSCOHADA équilibrées, provisions congés &amp; IFC, export CSV/FEC, rapprochement paie ↔ compta.</p></div>
+      <div class="card" data-reveal data-d="2"><div class="fic"><svg class="icon"><use href="#i-leaf"/></svg></div><h3>RH &amp; congés</h3><p>Entrées/sorties, soldes de tout compte, demandes de congés, ayants droit, registre de paiement légal.</p></div>
+      <div class="card" data-reveal><div class="fic"><svg class="icon"><use href="#i-puzzle"/></svg></div><h3>WaDocs</h3><p>Contrats, avenants, attestations, certificats — par fusion de modèles, avec envoi pour signature.</p></div>
+      <div class="card" data-reveal data-d="1"><div class="fic"><svg class="icon"><use href="#i-org"/></svg></div><h3>Multi-société</h3><p>Cabinet → client → groupe → société → établissement → service. Campagnes de paie de masse pour les cabinets.</p></div>
+      <div class="card" data-reveal data-d="2"><div class="fic"><svg class="icon"><use href="#i-bell"/></svg></div><h3>Notifications</h3><p>Bulletin prêt, salaire envoyé, échéance qui approche — par push, WhatsApp ou SMS.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt"><div class="container split">
+  <div class="txt" data-reveal>
+    <span class="eyebrow">Anomalie = action</span>
+    <h2>Des contrôles qui parlent clair</h2>
+    <p class="muted">Avant toute clôture, WaSalaire recalcule et vérifie : SMIG, net négatif, écart inhabituel, assiettes incohérentes. Jamais un code d'erreur brut — toujours ce qui s'est passé et le lien pour corriger.</p>
+    <ul>
+      <li><span class="ck">✓</span> Clôture bloquée tant qu'une anomalie critique subsiste</li>
+      <li><span class="ck">✓</span> Dérogation possible, motivée et tracée</li>
+      <li><span class="ck">✓</span> Bulletin verrouillé après clôture (rectificatif = nouvelle version)</li>
+    </ul>
+  </div>
+  <div class="visual" data-reveal data-d="1">
+    <div class="p-card"><div class="p-row"><span>⛔ SMIG non atteint — M003</span><span class="chip" style="background:#fee2e2;color:#b91c1c">Bloquant</span></div></div>
+    <div class="p-card"><div class="p-row"><span>⚠️ Écart &gt; 30 % vs M-1 — M001</span><span class="chip" style="background:#fef3c7;color:#92400e">À vérifier</span></div></div>
+    <div class="p-card" style="margin-bottom:0"><div class="p-row"><span>✓ Assiettes cohérentes</span><span class="chip" style="background:#dcfce7;color:#166534">OK</span></div></div>
+  </div>
+</div></section>
+
+<section class="section"><div class="container"><div class="cta-band" data-reveal>
+  <h2>Voyez-le sur votre paie</h2><p>Une démo de 15 minutes vaut mieux qu'un long discours.</p>
+  <div class="hero-cta"><a class="btn btn-primary btn-lg" href="https://app.wasalaire.techbybo.fr/login">Commencer gratuitement <span class="ar">→</span></a></div>
+</div></div></section>
+
+<footer class="footer"><div class="container">
+  <div class="f-grid">
+    <div><div class="f-brand"><img src="assets/logo-blanc.png" alt="WaSalaire" class="logo-img-foot"></div><p style="max-width:34ch;color:#94a3b8">La paie, simplement. Le logiciel de paie pensé pour les entreprises et cabinets du Bénin.</p></div>
+    <div><h4>Produit</h4><a href="fonctionnalites.html">Fonctionnalités</a><a href="tarifs.html">Tarifs</a><a href="pour-qui.html">Pour qui</a><a href="conformite.html">Conformité</a></div>
+    <div><h4>Entreprise</h4><a href="a-propos.html">À propos</a><a href="contact.html">Contact</a><a href="faq.html">FAQ</a></div>
+    <div><h4>Légal</h4><a href="mentions-legales.html">Mentions légales</a><a href="mentions-legales.html#confidentialite">Confidentialité</a><a href="mentions-legales.html#cgu">CGU</a></div>
+  </div>
+  <div class="f-bottom"><span>© <span data-year>2026</span> WaSalaire — Cotonou, Bénin.</span><span>La paie, simplement.</span></div>
+</div></footer>
+<script src="assets/motion.js"></script>
+</body></html>

@@ -945,24 +945,39 @@ def health():
     except Exception:
         return JSONResponse(status_code=503, content={"status": "degraded", "db": "down"})
 
-# Service du front : SPA React (build dans ./webdist) servi par l'API (même origine), sinon démos HTML (dev).
+# Service du front selon le HOST :
+#   app.<domaine>  → SPA React (./webdist)         [la console/app]
+#   <domaine>      → site vitrine statique (./vitrine)  [la façade publique]
+# Deux surfaces, un seul déploiement. Domaines configurés sur l'app Coolify (Traefik route les deux).
 _WEBDIST = Path(__file__).parent / "webdist"
-if _WEBDIST.exists() and (_WEBDIST / "index.html").exists():
-    if (_WEBDIST / "assets").exists():
-        app.mount("/assets", StaticFiles(directory=str(_WEBDIST / "assets")), name="spa-assets")
+_VITRINE = Path(__file__).parent / "vitrine"
+_API_PREFIXES = ("v1/", "v1", "health", "docs", "openapi.json", "redoc")
 
-    _API_PREFIXES = ("v1/", "v1", "health", "docs", "openapi.json", "redoc")
+def _serve_dir(base: Path, full_path: str, spa: bool):
+    f = base / full_path if full_path else base / "index.html"
+    if f.is_dir():
+        f = f / "index.html"
+    if f.is_file():
+        return FileResponse(f)
+    if not spa:   # vitrine : URL propre « /tarifs » → « tarifs.html »
+        html = base / ((full_path or "index") + ".html")
+        if html.is_file():
+            return FileResponse(html)
+    return FileResponse(base / "index.html")   # repli : SPA (routing client) ou accueil vitrine
 
+if _WEBDIST.exists() or _VITRINE.exists():
     @app.get("/{full_path:path}", include_in_schema=False)
-    def spa(full_path: str):
-        # Les routes API réelles (déclarées plus haut) restent prioritaires. Ici : un fichier
-        # du build (logos, manifest, sw) sinon index.html (routing client React).
+    def serve_front(full_path: str, request: Request):
         if full_path.startswith(_API_PREFIXES):
             raise HTTPException(status_code=404, detail="Not found")
-        f = _WEBDIST / full_path
-        if full_path and f.is_file():
-            return FileResponse(f)
-        return FileResponse(_WEBDIST / "index.html")
+        host = request.headers.get("host", "").lower()
+        if host.startswith("app.") and _WEBDIST.exists():
+            return _serve_dir(_WEBDIST, full_path, spa=True)
+        if _VITRINE.exists():
+            return _serve_dir(_VITRINE, full_path, spa=False)
+        if _WEBDIST.exists():
+            return _serve_dir(_WEBDIST, full_path, spa=True)
+        return {"api": "WaSalaire v2", "docs": "/docs"}
 else:
     @app.get("/", include_in_schema=False)
     def home():

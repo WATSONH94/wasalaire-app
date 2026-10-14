@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WaSalaire — La paie, simplement. Logiciel de paie pour le Bénin</title>
+<meta name="description" content="WaSalaire calcule la paie, les déclarations DGI/CNSS et paie vos salariés par mobile money — depuis votre téléphone. Conforme au Code général des impôts du Bénin.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-calc" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8"/><path d="M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01M16 17h.01"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-org" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l6-4v17"/><path d="M11 21V10l8 4v7"/><path d="M8 11h.01M8 15h.01M15 14h.01M15 18h.01"/></symbol>
+</defs></svg>
+<div class="progress"></div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="bar container">
+    <a class="brand" href="index.html"><img src="assets/logo.png" alt="WaSalaire — La paie, simplement." class="logo-img"></a>
+    <nav class="nav">
+      <a class="link" href="fonctionnalites.html">Fonctionnalités</a>
+      <a class="link" href="pour-qui.html">Pour qui</a>
+      <a class="link" href="tarifs.html">Tarifs</a>
+      <a class="link" href="conformite.html">Conformité</a>
+      <a class="link" href="faq.html">FAQ</a>
+      <a class="link m-cta" href="https://app.wasalaire.techbybo.fr/login">Commencer →</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-ghost" href="https://app.wasalaire.techbybo.fr/login" style="padding:10px 16px">Se connecter</a>
+      <a class="btn btn-primary" href="https://app.wasalaire.techbybo.fr/login">Commencer <span class="ar">→</span></a>
+    </div>
+    <button class="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="aurora"></div>
+  <div class="hero-grid"></div>
+  <div class="container hero-wrap">
+    <div class="hero-txt">
+      <span class="pill" data-reveal><span class="ping"><i></i><b></b></span> Conçu pour le Bénin · CGI · CNSS · AMO</span>
+      <h1 data-reveal data-d="1" style="margin-top:20px">La paie du mois,<br><span class="grad">en 3 minutes.</span></h1>
+      <p class="lead" data-reveal data-d="2">Calcul, bulletins, déclarations DGI &amp; CNSS, paiement mobile money. Depuis votre téléphone. Sans expert à côté.</p>
+      <div class="hero-cta" data-reveal data-d="3">
+        <a class="btn btn-primary btn-lg" href="https://app.wasalaire.techbybo.fr/login">Démarrer gratuitement <span class="ar">→</span></a>
+        <a class="btn btn-ghost btn-lg" href="fonctionnalites.html">Voir les fonctionnalités</a>
+      </div>
+      <div class="hero-proof" data-reveal data-d="4">
+        <div class="avatars"><span>KA</span><span>AM</span><span>HD</span><span>+</span></div>
+        <span>Pensé avec des patrons de TPE et des cabinets comptables béninois.</span>
+      </div>
+    </div>
+
+    <!-- DEVICE MOCK -->
+    <div class="device" data-reveal data-d="2">
+      <div class="float-card float-a"><span class="ic" style="background:var(--success)">✓</span> Salaires envoyés</div>
+      <div class="float-card float-b"><span class="ic" style="background:var(--indigo)">↑</span> ITS déclaré · le 10</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="topbar"><small>Paie de septembre 2026</small><div class="t">WaSalaire</div></div>
+          <div class="p-body">
+            <div class="seq">
+              <!-- 0 · Calcul -->
+              <div class="frame active">
+                <div class="spinner"></div>
+                <p style="text-align:center;font-weight:700;color:var(--indigo)">Calcul de la paie…</p>
+                <p style="text-align:center" class="muted">3 salariés · règles CGI &amp; CNSS</p>
+              </div>
+              <!-- 1 · Bulletins -->
+              <div class="frame">
+                <div class="p-card" style="margin-top:4px">
+                  <div class="p-row"><span>KOFFI Alain</span><strong class="tabnum">176 300 F</strong></div>
+                  <div class="p-row"><span>ADJOVI Mireille</span><strong class="tabnum">160 020 F</strong></div>
+                  <div class="p-row"><span>HOUNKPATIN David</span><strong class="tabnum">255 700 F</strong></div>
+                </div>
+                <p class="muted" style="text-align:center;font-size:.8rem;margin-top:8px">✓ Aucune anomalie bloquante</p>
+              </div>
+              <!-- 2 · Net -->
+              <div class="frame">
+                <div class="net">
+                  <div class="p-row"><span class="muted" style="font-weight:600">Net total à payer</span><span class="chip">3 salariés</span></div>
+                  <div class="big tabnum" style="margin-top:6px">592 020 F</div>
+                  <div class="bar-fill"><b style="--pct:100%"></b></div>
+                  <span class="muted" style="font-size:.78rem">Prêt pour le décaissement</span>
+                </div>
+              </div>
+              <!-- 3 · Payé -->
+              <div class="frame">
+                <div class="paid"><div class="circle">✓</div></div>
+                <p style="text-align:center;font-weight:800;color:var(--indigo)">Salaires envoyés</p>
+                <div class="p-card" style="margin-top:10px">
+                  <div class="p-row"><span>📱 Mobile money</span><span class="chip" style="background:#dcfce7;color:#166534">2 ✓</span></div>
+                  <div class="p-row"><span>🏦 Virement</span><span class="chip" style="background:#dcfce7;color:#166534">1 ✓</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="seqdots"><i class="on"></i><i></i><i></i><i></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST / MARQUEE -->
+<div class="trust">
+  <div class="container">
+    <p>Branché sur les outils que vous utilisez déjà</p>
+    <div class="marquee"><div class="track">
+      <span>MTN MoMo</span><span>Moov Money</span><span>FedaPay</span><span>DGI e-services</span><span>CNSS</span><span>WhatsApp</span><span>SYSCOHADA</span><span>Virement UEMOA</span>
+    </div></div>
+  </div>
+</div>
+
+<!-- STATS -->
+<section class="section">
+  <div class="container stats">
+    <div class="stat" data-reveal><div class="num"><span data-count="3" data-suffix=" min">0</span></div><div class="lbl">pour boucler une paie</div></div>
+    <div class="stat" data-reveal data-d="1"><div class="num"><span data-count="100" data-suffix=" %">0</span></div><div class="lbl">conforme au CGI en vigueur</div></div>
+    <div class="stat" data-reveal data-d="2"><div class="num"><span data-count="4">0</span></div><div class="lbl">moyens de paiement salariés</div></div>
+    <div class="stat" data-reveal data-d="3"><div class="num"><span data-count="0" data-suffix=" €">0</span></div><div class="lbl">pour commencer (≤ 3 salariés)</div></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section alt">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow">Tout-en-un</span>
+      <h2>De l'embauche au virement, un seul outil</h2>
+      <p>WaSalaire couvre le cycle complet de la paie béninoise — sans tableur, sans calcul à la main.</p>
+    </div>
+    <div class="grid3">
+      <div class="card" data-reveal><div class="fic"><svg class="icon"><use href="#i-calc"/></svg></div><h3>Calcul conforme</h3><p>CNSS, ITS, VPS, avantages en nature, heures sup. Trois assiettes indépendantes, barème CGI à jour. Chaque montant renvoie à sa base légale.</p></div>
+      <div class="card" data-reveal data-d="1"><div class="fic"><svg class="icon"><use href="#i-doc"/></svg></div><h3>Bulletins &amp; WaDocs</h3><p>Bulletins clairs, contrats, attestations, solde de tout compte. Générés, envoyés par WhatsApp, archivés.</p></div>
+      <div class="card" data-reveal data-d="2"><div class="fic"><svg class="icon"><use href="#i-send"/></svg></div><h3>Déclarations DGI &amp; CNSS</h3><p>ITS/VPS le 10, liste nominative CNSS, AMO. Fichiers au bon format e-services, échéances rappelées à l'avance.</p></div>
+      <div class="card" data-reveal><div class="fic"><svg class="icon"><use href="#i-phone"/></svg></div><h3>Paiement mobile money</h3><p>MTN, Moov, virement ou espèces — au choix par salarié. Ordres idempotents, suivi de statut, zéro double paiement.</p></div>
+      <div class="card" data-reveal data-d="1"><div class="fic"><svg class="icon"><use href="#i-shield"/></svg></div><h3>Conformité &amp; sécurité</h3><p>Isolation par société, journal d'audit, séparation des tâches (4 yeux) activable. Données hébergées, accès tracés.</p></div>
+      <div class="card" data-reveal data-d="2"><div class="fic"><svg class="icon"><use href="#i-org"/></svg></div><h3>Multi-société</h3><p>Cabinet → client → groupe → société → établissement. Un cabinet gère tout son portefeuille, chaque dossier reste isolé.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-reveal><span class="eyebrow">Le mois en 4 gestes</span><h2>Simple, du début à la fin</h2></div>
+    <div class="steps">
+      <div class="step" data-reveal><div class="n">1</div><h3>Ouvrez la période</h3><p>Un mois, une société. Les salariés et contrats sont déjà là.</p></div>
+      <div class="step" data-reveal data-d="1"><div class="n">2</div><h3>Saisissez les variables</h3><p>Primes, absences, heures sup — à la main ou par import de fichier.</p></div>
+      <div class="step" data-reveal data-d="2"><div class="n">3</div><h3>Calculez &amp; vérifiez</h3><p>Les contrôles signalent toute anomalie avant la clôture.</p></div>
+      <div class="step" data-reveal data-d="3"><div class="n">4</div><h3>Payez &amp; déclarez</h3><p>Virement mobile money, bulletins envoyés, déclarations prêtes.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- AVANT / APRÈS -->
+<section class="section alt">
+  <div class="container">
+    <div class="section-head" data-reveal><span class="eyebrow">Le changement</span><h2>Le cahier et le tableur, c'est fini</h2><p>Ce que vivent la plupart des TPE aujourd'hui, et ce que WaSalaire change.</p></div>
+    <div class="ba">
+      <div class="col bad" data-reveal>
+        <h4>Sans WaSalaire</h4>
+        <div class="row"><span class="x">✕</span> Calculs à la main, erreurs de barème</div>
+        <div class="row"><span class="x">✕</span> Un comptable à relancer chaque mois</div>
+        <div class="row"><span class="x">✕</span> Échéances DGI/CNSS oubliées, pénalités</div>
+        <div class="row"><span class="x">✕</span> Bulletins en retard, salariés qui doutent</div>
+        <div class="row"><span class="x">✕</span> Aucune trace, impossible à auditer</div>
+      </div>
+      <div class="vs" data-reveal data-d="1">VS</div>
+      <div class="col good" data-reveal data-d="2">
+        <h4>Avec WaSalaire</h4>
+        <div class="row"><span class="c">✓</span> Calcul juste, conforme au CGI, en 3 min</div>
+        <div class="row"><span class="c">✓</span> Autonome, depuis votre téléphone</div>
+        <div class="row"><span class="c">✓</span> Échéances rappelées, fichiers prêts</div>
+        <div class="row"><span class="c">✓</span> Bulletins envoyés sur WhatsApp le jour J</div>
+        <div class="row"><span class="c">✓</span> Chaque montant tracé et reproductible</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT 1 -->
+<section class="section alt">
+  <div class="container split">
+    <div class="txt" data-reveal>
+      <span class="eyebrow">Mobile-first</span>
+      <h2>Fait pour le téléphone, pas pour le bureau</h2>
+      <p class="muted">La plupart des patrons de TPE au Bénin n'ont pas d'ordinateur. WaSalaire tient dans la main : lancer la paie, valider, payer, envoyer les bulletins — tout depuis le mobile.</p>
+      <ul>
+        <li><span class="ck">✓</span> Connexion par numéro + code (SMS / WhatsApp)</li>
+        <li><span class="ck">✓</span> Gros boutons, zéro jargon, mode hors-ligne</li>
+        <li><span class="ck">✓</span> Le salarié reçoit son bulletin sur WhatsApp</li>
+      </ul>
+    </div>
+    <div class="visual" data-reveal data-d="1">
+      <div class="p-card"><div class="p-row"><span>💬 Bulletin envoyé</span><span class="chip">WhatsApp</span></div><div class="p-row"><span>Septembre 2026 · KOFFI Alain</span><strong class="tabnum">176 300 F</strong></div></div>
+      <div class="p-card"><div class="p-row"><span>📱 MTN MoMo</span><span class="chip" style="background:#dcfce7;color:#166534">Confirmé</span></div><div class="p-row"><span>Ordre #A1C9 · idempotent</span><strong class="tabnum">176 300 F</strong></div></div>
+      <div class="p-card" style="margin-bottom:0"><div class="p-row"><span>⏰ Déclaration ITS/VPS</span><span class="chip">le 10</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT 2 -->
+<section class="section">
+  <div class="container split rev">
+    <div class="txt" data-reveal>
+      <span class="eyebrow">Conformité tracée</span>
+      <h2>Chaque chiffre a sa source</h2>
+      <p class="muted">La paie béninoise ne s'improvise pas. WaSalaire n'invente aucune règle : base ITS, taux CNSS, barème, AMO — tout est daté, versionné et rattaché au texte officiel.</p>
+      <ul>
+        <li><span class="ck">✓</span> Base ITS = brut, conforme au CGI (Art. 122 &amp; 124)</li>
+        <li><span class="ck">✓</span> CNSS 3,6 % / 6,4 % + prestations familiales, AT/MP par entreprise</li>
+        <li><span class="ck">✓</span> AMO prête (Décret 2025-672), activable à l'échéance</li>
+        <li><span class="ck">✓</span> Règles versionnées : un recalcul passé reste reproductible</li>
+      </ul>
+      <a class="btn btn-ghost" style="margin-top:22px" href="conformite.html">Voir notre conformité <span class="ar">→</span></a>
+    </div>
+    <div class="visual" data-reveal data-d="1">
+      <div class="p-row" style="font-weight:700;color:var(--indigo)"><span>Bulletin — base 200 000 F</span></div>
+      <div class="p-card" style="margin-top:12px">
+        <div class="p-row"><span class="muted">Brut</span><strong class="tabnum">200 000 F</strong></div>
+        <div class="p-row"><span class="muted">CNSS salarié (3,6 %)</span><span class="tabnum">− 7 200 F</span></div>
+        <div class="p-row"><span class="muted">ITS (barème CGI)</span><span class="tabnum">− 16 500 F</span></div>
+      </div>
+      <div class="net" style="margin-top:12px"><div class="p-row"><span style="font-weight:700">Net à payer</span><span class="big tabnum">176 300 F</span></div></div>
+      <p class="muted" style="font-size:.8rem;margin-top:10px">Tooltip « base légale » derrière chaque ligne.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROMESSE (dark) + CONFORMITÉ -->
+<section class="section section-dark">
+  <div class="container" style="position:relative">
+    <div class="section-head" data-reveal style="margin-bottom:34px">
+      <span class="eyebrow">Notre promesse</span>
+      <h2 data-words>On ne vous fera jamais calculer une paie à l'aveugle.</h2>
+      <p>Chaque règle est datée, versionnée et rattachée à son texte officiel. Aucune valeur inventée.</p>
+    </div>
+    <div class="confband" data-reveal data-d="1">
+      <span class="cbadge"><span class="d"></span> CGI — Code général des impôts</span>
+      <span class="cbadge"><span class="d"></span> Loi 98-019 — CNSS</span>
+      <span class="cbadge"><span class="d"></span> Décret 2025-672 — AMO</span>
+      <span class="cbadge"><span class="d"></span> CCGT 2005</span>
+      <span class="cbadge"><span class="d"></span> SYSCOHADA</span>
+      <span class="cbadge"><span class="d"></span> OHADA — AUPSRVE</span>
+    </div>
+  </div>
+</section>
+
+<!-- PERSONA TEASER -->
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-reveal><span class="eyebrow">Pour qui</span><h2>Deux façons de l'utiliser</h2></div>
+    <div class="persona">
+      <a class="pcard tpe" href="pour-qui.html" data-reveal>
+        <svg class="icon" style="position:absolute;top:18px;right:22px;width:50px;height:50px;opacity:.4;stroke-width:1.4"><use href="#i-phone"/></svg>
+        <h3>Je dirige une TPE</h3>
+        <p>Toute la paie depuis mon téléphone, sans comptable à côté.</p>
+        <span class="go">Découvrir <span class="ar">→</span></span>
+      </a>
+      <a class="pcard cab" href="pour-qui.html" data-reveal data-d="1">
+        <svg class="icon" style="position:absolute;top:18px;right:22px;width:50px;height:50px;opacity:.4;stroke-width:1.4"><use href="#i-org"/></svg>
+        <h3>Je gère un cabinet</h3>
+        <p>Tout mon portefeuille multi-sociétés, chaque dossier isolé.</p>
+        <span class="go">Découvrir <span class="ar">→</span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING TEASER -->
+<section class="section alt">
+  <div class="container">
+    <div class="section-head" data-reveal><span class="eyebrow">Tarifs</span><h2>Au prix d'un salarié, pas d'un comptable</h2><p>Gratuit jusqu'à 3 salariés. Ensuite, un prix par salarié et par mois, dégressif.</p></div>
+    <div style="text-align:center" data-reveal>
+      <a class="btn btn-dark btn-lg" href="tarifs.html">Voir les tarifs <span class="ar">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-reveal><span class="eyebrow">Questions</span><h2>Ce qu'on nous demande souvent</h2></div>
+    <div class="faq">
+      <details class="qa" data-reveal open><summary>Est-ce vraiment conforme à la réglementation béninoise ? <span class="plus">+</span></summary><div class="ans">Oui. Le moteur s'appuie sur le Code général des impôts, le Code de sécurité sociale (Loi 98-019), la CCGT 2005 et les décrets en vigueur. Aucune règle n'est inventée : chaque calcul est rattaché à sa source et à sa date d'effet.</div></details>
+      <details class="qa" data-reveal><summary>Je n'ai pas d'ordinateur, juste un téléphone. Ça marche ? <span class="plus">+</span></summary><div class="ans">C'est exactement pour ça que WaSalaire est pensé mobile-first. Vous lancez la paie, validez, payez et envoyez les bulletins depuis votre téléphone, même avec une connexion limitée.</div></details>
+      <details class="qa" data-reveal><summary>Comment mes salariés sont-ils payés ? <span class="plus">+</span></summary><div class="ans">Au choix, salarié par salarié : mobile money (MTN, Moov via FedaPay), virement bancaire, espèces ou chèque. Les ordres mobile money sont suivis et sécurisés contre le double paiement.</div></details>
+      <details class="qa" data-reveal><summary>Je suis cabinet comptable, je gère plusieurs sociétés. <span class="plus">+</span></summary><div class="ans">WaSalaire gère toute la hiérarchie cabinet → client → groupe → société → établissement. Chaque dossier est isolé, et vous pilotez des campagnes de paie multi-sociétés d'un coup d'œil.</div></details>
+      <details class="qa" data-reveal><summary>Mes données sont-elles en sécurité ? <span class="plus">+</span></summary><div class="ans">Isolation stricte entre sociétés, journal d'audit, gestion fine des droits et séparation des tâches (4 yeux) activable par l'administrateur. Vos données restent les vôtres.</div></details>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section">
+  <div class="container">
+    <div class="cta-band" data-reveal>
+      <h2>La prochaine paie, vous la faites avec WaSalaire ?</h2>
+      <p>Commencez gratuitement jusqu'à 3 salariés. Mise en route en moins de 30 minutes.</p>
+      <div class="hero-cta"><a class="btn btn-primary btn-lg" href="https://app.wasalaire.techbybo.fr/login">Commencer gratuitement <span class="ar">→</span></a><a class="btn btn-ghost btn-lg" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.3)" href="tarifs.html">Voir les tarifs</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="f-grid">
+      <div>
+        <div class="f-brand"><img src="assets/logo-blanc.png" alt="WaSalaire" class="logo-img-foot"></div>
+        <p style="max-width:34ch;color:#94a3b8">La paie, simplement. Le logiciel de paie pensé pour les entreprises et cabinets du Bénin.</p>
+      </div>
+      <div><h4>Produit</h4><a href="fonctionnalites.html">Fonctionnalités</a><a href="tarifs.html">Tarifs</a><a href="pour-qui.html">Pour qui</a><a href="conformite.html">Conformité</a></div>
+      <div><h4>Entreprise</h4><a href="a-propos.html">À propos</a><a href="contact.html">Contact</a><a href="faq.html">FAQ</a></div>
+      <div><h4>Légal</h4><a href="mentions-legales.html">Mentions légales</a><a href="mentions-legales.html#confidentialite">Confidentialité</a><a href="mentions-legales.html#cgu">CGU</a></div>
+    </div>
+    <div class="f-bottom"><span>© <span data-year>2026</span> WaSalaire — Cotonou, Bénin.</span><span>La paie, simplement.</span></div>
+  </div>
+</footer>
+
+<script src="assets/motion.js"></script>
+</body>
+</html>

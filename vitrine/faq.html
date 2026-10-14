@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FAQ — WaSalaire</title>
+<meta name="description" content="Questions fréquentes sur WaSalaire : conformité, mobile money, cabinets, sécurité, mise en route.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="progress"></div>
+<header class="header"><div class="bar container">
+  <a class="brand" href="index.html"><img src="assets/logo.png" alt="WaSalaire — La paie, simplement." class="logo-img"></a>
+  <nav class="nav"><a class="link" href="fonctionnalites.html">Fonctionnalités</a><a class="link" href="pour-qui.html">Pour qui</a><a class="link" href="tarifs.html">Tarifs</a><a class="link" href="conformite.html">Conformité</a><a class="link" href="faq.html">FAQ</a><a class="link m-cta" href="https://app.wasalaire.techbybo.fr/login">Commencer →</a></nav>
+  <div class="nav-cta"><a class="btn btn-ghost" href="https://app.wasalaire.techbybo.fr/login" style="padding:10px 16px">Se connecter</a><a class="btn btn-primary" href="https://app.wasalaire.techbybo.fr/login">Commencer <span class="ar">→</span></a></div>
+  <button class="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+</div></header>
+
+<section class="page-hero" style="padding-bottom:20px">
+  <div class="aurora"></div><div class="hero-grid"></div>
+  <div class="container">
+    <span class="eyebrow" data-reveal>FAQ</span>
+    <h1 data-reveal data-d="1">Vos questions,<br>nos réponses.</h1>
+  </div>
+</section>
+
+<section class="section" style="padding-top:20px"><div class="container">
+  <div class="faq">
+    <details class="qa" data-reveal open><summary>WaSalaire est-il conforme à la réglementation béninoise ? <span class="plus">+</span></summary><div class="ans">Oui. Le moteur s'appuie sur le Code général des impôts, le Code de sécurité sociale (Loi 98-019), la CCGT 2005, la Loi 2017-05 et les décrets en vigueur. Chaque règle est datée, versionnée et rattachée à sa source. Nos calculs sont destinés à être contresignés par des professionnels inscrits avant usage en production.</div></details>
+    <details class="qa" data-reveal><summary>La base de l'ITS, c'est le brut ou le brut moins CNSS ? <span class="plus">+</span></summary><div class="ans">Le Code général des impôts (Art. 122 et 124) retient le brut, sans déduction de la cotisation CNSS salariale. WaSalaire applique cette base par défaut, conformément au texte en vigueur.</div></details>
+    <details class="qa" data-reveal><summary>Je n'ai qu'un téléphone. Puis-je tout faire ? <span class="plus">+</span></summary><div class="ans">Oui — c'est le cœur de WaSalaire. Lancer la paie, vérifier, payer, envoyer les bulletins : tout depuis le mobile, y compris avec une connexion limitée (mode hors-ligne pour la saisie).</div></details>
+    <details class="qa" data-reveal><summary>Comment mes salariés sont-ils payés ? <span class="plus">+</span></summary><div class="ans">Au choix, salarié par salarié : mobile money (MTN, Moov via FedaPay), virement bancaire (UEMOA), espèces ou chèque. Les ordres mobile money sont idempotents et suivis — pas de double paiement.</div></details>
+    <details class="qa" data-reveal><summary>Et les déclarations DGI et CNSS ? <span class="plus">+</span></summary><div class="ans">WaSalaire prépare les déclarations ITS/VPS, la liste nominative CNSS et l'AMO, au format attendu par e-services, avec un échéancier (ITS le 10, CNSS J+15) et des rappels avant chaque date.</div></details>
+    <details class="qa" data-reveal><summary>Je suis cabinet comptable : puis-je gérer plusieurs sociétés ? <span class="plus">+</span></summary><div class="ans">Oui. Toute la hiérarchie cabinet → client → groupe → société → établissement est gérée, chaque dossier isolé. Vous pilotez des campagnes de paie multi-sociétés et déléguez par rôle.</div></details>
+    <details class="qa" data-reveal><summary>Mes données sont-elles en sécurité ? <span class="plus">+</span></summary><div class="ans">Isolation stricte entre sociétés (au niveau base de données), journal d'audit, droits par rôle × périmètre configurables, séparation des tâches (4 yeux) activable, connexion par code OTP. Démarche APDP en place.</div></details>
+    <details class="qa" data-reveal><summary>Combien de temps pour démarrer ? <span class="plus">+</span></summary><div class="ans">Moins de 30 minutes avec l'onboarding guidé : société, paramètres, salariés, accès. Vous pouvez importer vos salariés par fichier.</div></details>
+    <details class="qa" data-reveal><summary>Que coûte WaSalaire ? <span class="plus">+</span></summary><div class="ans">Gratuit jusqu'à 3 salariés. Au-delà, un prix par salarié et par mois, dégressif, avec une offre dédiée aux cabinets. Voir la page <a href="tarifs.html" style="color:var(--teal-600);font-weight:700">Tarifs</a>.</div></details>
+    <details class="qa" data-reveal><summary>Gérez-vous l'AMO (assurance maladie obligatoire) ? <span class="plus">+</span></summary><div class="ans">Oui, le module AMO est prêt (Décret 2025-672 : 80/20, collecte via CNSS) et paramétrable. Il reste inactif tant que la date d'effet officielle n'est pas renseignée, pour ne rien appliquer prématurément.</div></details>
+  </div>
+  <div style="text-align:center;margin-top:36px" data-reveal><a class="btn btn-primary btn-lg" href="contact.html">Une autre question ? Écrivez-nous <span class="ar">→</span></a></div>
+</div></section>
+
+<footer class="footer"><div class="container">
+  <div class="f-grid">
+    <div><div class="f-brand"><img src="assets/logo-blanc.png" alt="WaSalaire" class="logo-img-foot"></div><p style="max-width:34ch;color:#94a3b8">La paie, simplement. Le logiciel de paie pensé pour les entreprises et cabinets du Bénin.</p></div>
+    <div><h4>Produit</h4><a href="fonctionnalites.html">Fonctionnalités</a><a href="tarifs.html">Tarifs</a><a href="pour-qui.html">Pour qui</a><a href="conformite.html">Conformité</a></div>
+    <div><h4>Entreprise</h4><a href="a-propos.html">À propos</a><a href="contact.html">Contact</a><a href="faq.html">FAQ</a></div>
+    <div><h4>Légal</h4><a href="mentions-legales.html">Mentions légales</a><a href="mentions-legales.html#confidentialite">Confidentialité</a><a href="mentions-legales.html#cgu">CGU</a></div>
+  </div>
+  <div class="f-bottom"><span>© <span data-year>2026</span> WaSalaire — Cotonou, Bénin.</span><span>La paie, simplement.</span></div>
+</div></footer>
+<script src="assets/motion.js"></script>
+</body></html>
