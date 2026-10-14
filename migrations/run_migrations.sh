@@ -62,6 +62,12 @@ REVOKE INSERT, UPDATE ON rate_table, tax_bracket, regulatory_rule, role FROM was
 REVOKE SELECT, UPDATE ON audit_log FROM wasalaire_app;
 -- Table de suivi des migrations : hors de portée du runtime.
 REVOKE ALL ON schema_migrations FROM wasalaire_app;
+-- Accès transverse super-admin (migration 010) : exécuter la fonction SECURITY DEFINER.
+DO \$do\$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname='all_company_ids') THEN
+    GRANT EXECUTE ON FUNCTION all_company_ids() TO wasalaire_app;
+  END IF;
+END \$do\$;
 SQL
 
 echo ">> Migrations appliquées. L'application se connecte avec le rôle wasalaire_app (RLS active)."

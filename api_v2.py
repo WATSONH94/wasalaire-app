@@ -40,6 +40,11 @@ from onboarding_service import (
     create_establishment, list_establishments, create_department, list_departments,
     create_position, list_positions, create_contract, list_contracts,
 )
+from auth_service import (
+    authenticate, AuthError, start_totp_enrollment, confirm_totp_enrollment,
+    verify_mfa, change_password, verify_password, log_event,
+)
+from entitlements import check_can_add_employee, QuotaError
 from notifications import notify, list_notifications, WhatsAppGateway, SmsGateway, LogGateway
 from wadocs import CONTRAT_TEMPLATE, generate_document, list_documents
 
@@ -115,8 +120,31 @@ def _release(conn):
 def _b64(b: bytes) -> str: return base64.urlsafe_b64encode(b).decode().rstrip("=")
 def _unb64(s: str) -> bytes: return base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
 
-def make_token(user_id: str, companies: list[str], roles: list[str] | None = None) -> str:
+def _log_breakglass_if_superadmin(conn, user_id: str) -> None:
+    """Trace l'octroi d'un accès transverse à un super-admin plateforme (audit break-glass)."""
+    row = conn.execute("SELECT platform_role FROM app_user WHERE id=%s", (user_id,)).fetchone()
+    if row and row[0] == "super_admin":
+        log_event(conn, "breakglass_grant", user_id=user_id,
+                  detail={"note": "acces transverse tous tenants accorde a la connexion"})
+
+
+def _scope_and_roles(conn, user_id: str) -> tuple[list[str], list[str]]:
+    """Périmètre (sociétés autorisées) + rôles tenant, re-dérivés de la base (révocation immédiate)."""
+    companies = [str(x) for x in (conn.execute(
+        "SELECT authorized_companies(%s)", (user_id,)).fetchone()[0] or [])]
+    roles = [r[0] for r in conn.execute(
+        "SELECT DISTINCT r.code FROM access_grant g JOIN role r ON r.id=g.role_id "
+        "WHERE g.user_id=%s AND (g.date_fin IS NULL OR g.date_fin >= current_date)",
+        (user_id,)).fetchall()]
+    return companies, roles
+
+
+def make_token(user_id: str, companies: list[str], roles: list[str] | None = None,
+               mfa: bool = True, must_change: bool = False) -> str:
+    # `mfa` : l'authentification forte est satisfaite (OTP ou TOTP) → accès métier autorisé.
+    # `pwd` : un changement de mot de passe est requis avant tout accès.
     payload = {"sub": user_id, "companies": companies, "roles": roles or [],
+               "mfa": bool(mfa), "pwd": bool(must_change),
                "exp": int(time.time()) + TOKEN_TTL_S}
     body = _b64(json.dumps(payload, separators=(",", ":")).encode())
     sig = _b64(hmac.new(SECRET, body.encode(), hashlib.sha256).digest())
@@ -181,9 +209,12 @@ PERMISSIONS: dict[str, set[str]] = {
 
 class Ctx:
     def __init__(self, user_id: str, companies: list[str], roles: list[str], conn,
-                 workspaces: list[str] | None = None):
+                 workspaces: list[str] | None = None, mfa: bool = True, must_change: bool = False,
+                 platform_role: str = "none"):
         self.user_id, self.companies, self.roles, self.conn = user_id, companies, roles, conn
         self.workspaces = workspaces or []
+        self.mfa, self.must_change = mfa, must_change
+        self.platform_role = platform_role
 
 def current_ctx(authorization: str | None = Header(default=None)):
     if not authorization or not authorization.startswith("Bearer "):
@@ -195,12 +226,19 @@ def current_ctx(authorization: str | None = Header(default=None)):
         # Révocation immédiate (P1-10) : le périmètre et les rôles sont RE-DÉRIVÉS depuis
         # la base à chaque requête (le jeton n'est qu'un cache). Un grant retiré ou un
         # rôle modifié prend effet aussitôt, sans attendre l'expiration du jeton.
-        companies = [str(x) for x in (conn.execute(
-            "SELECT authorized_companies(%s)", (user_id,)).fetchone()[0] or [])]
-        roles = [r[0] for r in conn.execute(
-            "SELECT DISTINCT r.code FROM access_grant g JOIN role r ON r.id=g.role_id "
-            "WHERE g.user_id=%s AND (g.date_fin IS NULL OR g.date_fin >= current_date)",
-            (user_id,)).fetchall()]
+        companies, roles = _scope_and_roles(conn, user_id)
+        prow = conn.execute("SELECT platform_role FROM app_user WHERE id=%s", (user_id,)).fetchone()
+        prole = prow[0] if prow else "none"
+        # Super-admin plateforme = accès TRANSVERSE (break-glass) : périmètre = toutes les
+        # sociétés + rôles tenant complets. L'octroi est tracé au moment de la connexion
+        # (security_event 'breakglass_grant'), cf. mint du jeton complet.
+        # ⚠️ À l'échelle, remplacer par un rôle BYPASSRLS dédié (ici : liste explicite).
+        if prole == "super_admin":
+            # `all_company_ids()` est SECURITY DEFINER → contourne la RLS pour LISTER les ids
+            # (sinon la liste serait elle-même filtrée par un périmètre encore vide).
+            companies = [str(x) for x in (conn.execute(
+                "SELECT all_company_ids()").fetchone()[0] or [])]
+            roles = sorted(set(roles) | {"admin", "paie", "rh", "comptable", "auditeur"})
         set_scope(conn, companies)
         # Workspaces de l'utilisateur (abonnés) = workspaces de ses sociétés en périmètre.
         # Sert à résoudre la matrice de droits CONFIGURABLE par abonné (permission_override).
@@ -209,7 +247,9 @@ def current_ctx(authorization: str | None = Header(default=None)):
             workspaces = [str(r[0]) for r in conn.execute(
                 "SELECT DISTINCT workspace_id FROM company "
                 "WHERE id = ANY(%s) AND workspace_id IS NOT NULL", (companies,)).fetchall()]
-        yield Ctx(user_id, companies, roles, conn, workspaces)
+        yield Ctx(user_id, companies, roles, conn, workspaces,
+                  mfa=bool(payload.get("mfa", True)), must_change=bool(payload.get("pwd", False)),
+                  platform_role=prole)
     finally:
         _release(conn)
 
@@ -218,11 +258,32 @@ def require(action: str):
     La matrice par défaut (PERMISSIONS) est surchargée par les choix de l'abonné
     (permission_override, par workspace) — cf. effective_allowed_roles."""
     def _dep(ctx: Ctx = Depends(current_ctx)) -> Ctx:
+        # Barrières d'authentification forte : aucun accès métier tant que la MFA n'est pas
+        # satisfaite, ni tant qu'un changement de mot de passe obligatoire n'est pas effectué.
+        if ctx.must_change:
+            raise HTTPException(status_code=409,
+                                detail="Changement de mot de passe requis avant tout accès.")
+        if not ctx.mfa:
+            raise HTTPException(status_code=403,
+                                detail="Authentification à deux facteurs requise.")
         allowed = effective_allowed_roles(ctx.conn, action, ctx.workspaces,
                                           PERMISSIONS.get(action, set()))
         if not (set(ctx.roles) & allowed):
             raise HTTPException(status_code=403,
                                 detail=f"Action '{action}' non autorisée pour votre rôle.")
+        return ctx
+    return _dep
+
+
+def require_platform(roles: set[str]):
+    """Dépendance pour l'administration de la PLATEFORME (SaaS), distincte des rôles tenant."""
+    def _dep(ctx: Ctx = Depends(current_ctx)) -> Ctx:
+        if ctx.must_change:
+            raise HTTPException(status_code=409, detail="Changement de mot de passe requis.")
+        if not ctx.mfa:
+            raise HTTPException(status_code=403, detail="Authentification à deux facteurs requise.")
+        if ctx.platform_role not in roles:
+            raise HTTPException(status_code=403, detail="Réservé à l'administration de la plateforme.")
         return ctx
     return _dep
 
@@ -313,6 +374,120 @@ def verify_otp(body: OtpVerify):
         _release(conn)
 
 
+# ─────────────── Auth web : email + mot de passe + MFA TOTP (obligatoire) ───────────────
+# Flux : /login (email+mdp) → pré-jeton (SANS accès métier) + étape à franchir
+#   ('change_password' | 'mfa_setup' | 'mfa') → puis /password/change, /mfa/setup+confirm
+#   ou /mfa/verify → jeton complet (mfa=true) donnant l'accès métier.
+def current_prectx(authorization: str | None = Header(default=None)):
+    """Dépendance pour les endpoints d'authentification : valide un (pré-)jeton et fournit
+    (payload, conn). N'exige PAS que la MFA soit satisfaite."""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="En-tête Authorization: Bearer requis.")
+    payload = read_token(authorization[7:])
+    conn = _conn()
+    try:
+        yield (payload, conn)
+    finally:
+        _release(conn)
+
+class PwdLogin(BaseModel):
+    email: str
+    password: str
+
+class MfaCode(BaseModel):
+    code: str
+
+class PwdChange(BaseModel):
+    new_password: str
+    current_password: str | None = None
+
+def _client_ip(request: Request):
+    import ipaddress
+    h = request.client.host if request.client else None
+    try:
+        ipaddress.ip_address(h)   # n'accepte que des IP valides (le type colonne est inet)
+        return h
+    except (ValueError, TypeError):
+        return None
+
+@app.post("/v1/auth/login")
+def password_login(body: PwdLogin, request: Request):
+    """Étape 1 : email + mot de passe. Renvoie un PRÉ-jeton (sans accès métier) + l'étape suivante."""
+    conn = _conn()
+    try:
+        try:
+            res = authenticate(conn, body.email, body.password, ip=_client_ip(request))
+        except AuthError as e:
+            raise HTTPException(status_code=429 if e.code == "locked" else 401, detail=str(e))
+        uid = res["user_id"]
+        stage = ("change_password" if res["must_change_password"]
+                 else "mfa_setup" if not res["totp_enrolled"] else "mfa")
+        pre = make_token(uid, [], [], mfa=False, must_change=res["must_change_password"])
+        return {"token": pre, "stage": stage, "user_id": uid}
+    finally:
+        _release(conn)
+
+@app.post("/v1/auth/password/change")
+def password_change(body: PwdChange, request: Request, ctx=Depends(current_prectx)):
+    """Changement de mot de passe (forcé à la 1re connexion, ou volontaire avec ré-auth)."""
+    payload, conn = ctx
+    uid = payload["sub"]
+    forced = bool(payload.get("pwd"))
+    if not forced:
+        row = conn.execute("SELECT password_hash FROM app_user WHERE id=%s", (uid,)).fetchone()
+        if not body.current_password or not verify_password(body.current_password, row[0] if row else None):
+            raise HTTPException(status_code=401, detail="Mot de passe actuel incorrect.")
+    try:
+        change_password(conn, uid, body.new_password, ip=_client_ip(request))
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    row = conn.execute("SELECT totp_enrolled FROM app_user WHERE id=%s", (uid,)).fetchone()
+    stage = "mfa" if (row and row[0]) else "mfa_setup"
+    return {"token": make_token(uid, [], [], mfa=False, must_change=False), "stage": stage}
+
+@app.post("/v1/auth/mfa/setup")
+def mfa_setup(ctx=Depends(current_prectx)):
+    """Génère le secret TOTP + l'URI otpauth (QR). À scanner dans l'app Authenticator."""
+    payload, conn = ctx
+    if payload.get("pwd"):
+        raise HTTPException(status_code=409, detail="Changez d'abord votre mot de passe.")
+    uid = payload["sub"]
+    row = conn.execute("SELECT email FROM app_user WHERE id=%s", (uid,)).fetchone()
+    if not row or not row[0]:
+        raise HTTPException(status_code=400, detail="Email requis pour l'enrôlement TOTP.")
+    return start_totp_enrollment(conn, uid, row[0])
+
+@app.post("/v1/auth/mfa/confirm")
+def mfa_confirm(body: MfaCode, request: Request, ctx=Depends(current_prectx)):
+    """Vérifie le 1er code TOTP → active la MFA, renvoie les codes de récupération + jeton complet."""
+    payload, conn = ctx
+    if payload.get("pwd"):
+        raise HTTPException(status_code=409, detail="Changez d'abord votre mot de passe.")
+    uid = payload["sub"]
+    try:
+        codes = confirm_totp_enrollment(conn, uid, body.code, ip=_client_ip(request))
+    except AuthError as e:
+        raise HTTPException(status_code=401, detail=str(e))
+    companies, roles = _scope_and_roles(conn, uid)
+    _log_breakglass_if_superadmin(conn, uid)
+    return {"token": make_token(uid, companies, roles, mfa=True), "recovery_codes": codes,
+            "companies": companies, "roles": roles}
+
+@app.post("/v1/auth/mfa/verify")
+def mfa_verify(body: MfaCode, request: Request, ctx=Depends(current_prectx)):
+    """Étape 2 (connexions suivantes) : code TOTP ou code de récupération → jeton complet."""
+    payload, conn = ctx
+    if payload.get("pwd"):
+        raise HTTPException(status_code=409, detail="Changez d'abord votre mot de passe.")
+    uid = payload["sub"]
+    if not verify_mfa(conn, uid, body.code, ip=_client_ip(request)):
+        raise HTTPException(status_code=401, detail="Code incorrect.")
+    companies, roles = _scope_and_roles(conn, uid)
+    _log_breakglass_if_superadmin(conn, uid)
+    return {"token": make_token(uid, companies, roles, mfa=True),
+            "companies": companies, "roles": roles}
+
+
 # ─────────────── Cycle de paie (persisté, scope-isolé) ───────────────
 class PeriodIn(BaseModel):
     company_id: str
@@ -372,6 +547,10 @@ class LeaveIn(BaseModel):
 @app.post("/v1/employees")
 def create_emp(body: EmployeeIn, ctx: Ctx = Depends(require("employee.create"))):
     _require_company(ctx, body.company_id)
+    try:
+        check_can_add_employee(ctx.conn, body.company_id)   # quota du plan d'abonnement
+    except QuotaError as e:
+        raise HTTPException(status_code=402, detail=str(e))  # 402 : limite du plan atteinte
     try:
         return rh_create_employee(ctx.conn, body.company_id, body.matricule, body.nom,
                                   body.salaire_base, body.type_contrat,
@@ -703,6 +882,55 @@ def payout_list(run_id: str, ctx: Ctx = Depends(require("payout.read"))):
     return {"run_id": run_id, "items": list_payout(ctx.conn, run_id)}
 
 
+# ─────────────── Administration PLATEFORME (SaaS : comptes, abonnements) ───────────────
+_PLATFORM_ROLES = {"admin_plateforme", "super_admin"}
+
+@app.get("/v1/platform/users")
+def platform_users(ctx: Ctx = Depends(require_platform(_PLATFORM_ROLES))):
+    rows = ctx.conn.execute(
+        "SELECT id, email, platform_role, statut, totp_enrolled, must_change_password "
+        "FROM app_user ORDER BY email").fetchall()
+    return {"users": [{"id": str(r[0]), "email": r[1], "platform_role": r[2], "statut": r[3],
+                       "totp_enrolled": r[4], "must_change_password": r[5]} for r in rows]}
+
+@app.get("/v1/platform/subscriptions")
+def platform_subscriptions(ctx: Ctx = Depends(require_platform(_PLATFORM_ROLES))):
+    rows = ctx.conn.execute(
+        "SELECT w.id, w.nom, w.type, p.code, s.statut, s.is_beta "
+        "FROM subscription s JOIN workspace w ON w.id=s.workspace_id "
+        "JOIN plan p ON p.id=s.plan_id ORDER BY w.nom").fetchall()
+    return {"subscriptions": [{"workspace_id": str(r[0]), "workspace": r[1], "type": r[2],
+                               "plan": r[3], "statut": r[4], "is_beta": r[5]} for r in rows]}
+
+@app.get("/v1/platform/plans")
+def platform_plans(ctx: Ctx = Depends(require_platform(_PLATFORM_ROLES))):
+    rows = ctx.conn.execute("SELECT code, libelle, is_public, limites FROM plan ORDER BY code").fetchall()
+    return {"plans": [{"code": r[0], "libelle": r[1], "is_public": r[2], "limites": r[3]} for r in rows]}
+
+class SetPlanIn(BaseModel):
+    workspace_id: str
+    plan_code: str
+    is_beta: bool = False
+
+@app.put("/v1/platform/subscription")
+def platform_set_plan(body: SetPlanIn, ctx: Ctx = Depends(require_platform(_PLATFORM_ROLES))):
+    plan = ctx.conn.execute("SELECT id FROM plan WHERE code=%s", (body.plan_code,)).fetchone()
+    if not plan:
+        raise HTTPException(status_code=400, detail=f"Plan inconnu : {body.plan_code}")
+    statut = "beta" if body.is_beta else "active"
+    existing = ctx.conn.execute("SELECT id FROM subscription WHERE workspace_id=%s",
+                                (body.workspace_id,)).fetchone()
+    if existing:
+        ctx.conn.execute("UPDATE subscription SET plan_id=%s, is_beta=%s, statut=%s WHERE workspace_id=%s",
+                         (plan[0], body.is_beta, statut, body.workspace_id))
+    else:
+        ctx.conn.execute("INSERT INTO subscription(workspace_id,plan_id,statut,is_beta) VALUES (%s,%s,%s,%s)",
+                         (body.workspace_id, plan[0], statut, body.is_beta))
+    log_event(ctx.conn, "subscription_changed", user_id=ctx.user_id,
+              detail={"workspace": body.workspace_id, "plan": body.plan_code, "is_beta": body.is_beta})
+    return {"workspace_id": body.workspace_id, "plan": body.plan_code, "is_beta": body.is_beta}
+
+
 # ─────────────── Frontend mobile-first (même origine) ───────────────
 @app.get("/health", include_in_schema=False)
 def health():
@@ -717,21 +945,30 @@ def health():
     except Exception:
         return JSONResponse(status_code=503, content={"status": "degraded", "db": "down"})
 
-@app.get("/", include_in_schema=False)
-def home():
-    f = Path(__file__).parent / "frontend_v2.html"
-    return FileResponse(f) if f.exists() else {"api": "WaSalaire v2", "docs": "/docs"}
+# Service du front : SPA React (build dans ./webdist) servi par l'API (même origine), sinon démos HTML (dev).
+_WEBDIST = Path(__file__).parent / "webdist"
+if _WEBDIST.exists() and (_WEBDIST / "index.html").exists():
+    if (_WEBDIST / "assets").exists():
+        app.mount("/assets", StaticFiles(directory=str(_WEBDIST / "assets")), name="spa-assets")
 
-@app.get("/console", include_in_schema=False)
-def console():
-    f = Path(__file__).parent / "console_web.html"
-    return FileResponse(f) if f.exists() else {"error": "console_web.html introuvable"}
+    _API_PREFIXES = ("v1/", "v1", "health", "docs", "openapi.json", "redoc")
 
-@app.get("/onboarding", include_in_schema=False)
-def onboarding():
-    f = Path(__file__).parent / "onboarding.html"
-    return FileResponse(f) if f.exists() else {"error": "onboarding.html introuvable"}
+    @app.get("/{full_path:path}", include_in_schema=False)
+    def spa(full_path: str):
+        # Les routes API réelles (déclarées plus haut) restent prioritaires. Ici : un fichier
+        # du build (logos, manifest, sw) sinon index.html (routing client React).
+        if full_path.startswith(_API_PREFIXES):
+            raise HTTPException(status_code=404, detail="Not found")
+        f = _WEBDIST / full_path
+        if full_path and f.is_file():
+            return FileResponse(f)
+        return FileResponse(_WEBDIST / "index.html")
+else:
+    @app.get("/", include_in_schema=False)
+    def home():
+        f = Path(__file__).parent / "frontend_v2.html"
+        return FileResponse(f) if f.exists() else {"api": "WaSalaire v2", "docs": "/docs"}
 
-_assets = Path(__file__).parent / "assets"
-if _assets.exists():
-    app.mount("/assets", StaticFiles(directory=str(_assets)), name="assets")
+    _assets = Path(__file__).parent / "assets"
+    if _assets.exists():
+        app.mount("/assets", StaticFiles(directory=str(_assets)), name="assets")
