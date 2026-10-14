@@ -1,87 +1,506 @@
-<!doctype html>
-<html lang="fr">
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
 <head>
-  <script>if("serviceWorker"in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})}).catch(function(){});if(self.caches){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k)})}).catch(function(){})}}</script>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Contact &amp; aide — WaSalaire</title>
-<meta name="description" content="Une question sur WaSalaire ? Écrivez-nous. Pour commencer, l'inscription est gratuite et directe, en ligne.">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WaSalaire — Contact & Aide | La paie, simplement.</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              indigo: '#1E2A78',
+              'indigo-dark': '#131C55',
+              'indigo-light': '#2B3B99',
+              teal: '#2EC4B6',
+              'teal-hover': '#26AC9F',
+              'teal-subtle': '#EAF9F7',
+              sand: '#F4D7B0',
+              bg: '#F8FAFC',
+              ink: '#0F172A',
+              muted: '#64748B',
+              border: '#E2E8F0',
+              success: '#16A34A',
+              warning: '#D97706',
+              danger: '#B91C1C'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+      -webkit-font-smoothing: antialiased;
+    }
+    .num-tabular {
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
 </head>
-<body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-<symbol id="i-calc" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8"/><path d="M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01M16 17h.01"/></symbol>
-<symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></symbol>
-<symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></symbol>
-<symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
-<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
-<symbol id="i-org" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l6-4v17"/><path d="M11 21V10l8 4v7"/><path d="M8 11h.01M8 15h.01M15 14h.01M15 18h.01"/></symbol>
-<symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
-<symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 4 13C4 7 11 4 19 4c0 8-4 16-8 16z"/><path d="M11 20c0-5 3-9 7-11"/></symbol>
-<symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M9 3a2 2 0 0 1 4 0c0 .6-.2 1 .5 1H16a1 1 0 0 1 1 1v2.5c0 .7.4.5 1 .5a2 2 0 0 1 0 4c-.6 0-1-.2-1 .5V19a1 1 0 0 1-1 1h-2.5c-.7 0-.5.4-.5 1a2 2 0 0 1-4 0c0-.6.2-1-.5-1H6a1 1 0 0 1-1-1v-2.5c0-.7-.4-.5-1-.5a2 2 0 0 1 0-4c.6 0 1 .2 1-.5V5a1 1 0 0 1 1-1h2.5c.7 0 .5-.4.5-1z"/></symbol>
-<symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.5 21a1.8 1.8 0 0 1-3 0"/></symbol>
-<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></symbol>
-<symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
-<symbol id="i-rocket" viewBox="0 0 24 24"><path d="M5 13c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z"/><path d="M12 15l-3-3a9 9 0 0 1 3-7c2.5-2.5 6-2.5 8-2 .5 2 .5 5.5-2 8a9 9 0 0 1-6 4z"/><path d="M15 9h.01"/></symbol>
-<symbol id="i-health" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
-<symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M6 21h12"/><path d="M5 7h14"/><path d="M7 7l-3 6a3 3 0 0 0 6 0z"/><path d="M17 7l3 6a3 3 0 0 1-6 0z"/></symbol>
-<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
-<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
-<symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M16 8l-2.5 5.5L8 16l2.5-5.5z"/></symbol>
-<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></symbol>
-<symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
-<symbol id="i-badge" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></symbol>
-</defs></svg>
-<div class="progress"></div>
-<header class="header"><div class="bar container">
-  <a class="brand" href="index.html"><img src="assets/logo.png" alt="WaSalaire — La paie, simplement." class="logo-img"></a>
-  <nav class="nav"><a class="link" href="fonctionnalites.html">Fonctionnalités</a><a class="link" href="pour-qui.html">Pour qui</a><a class="link" href="tarifs.html">Tarifs</a><a class="link" href="conformite.html">Conformité</a><a class="link" href="faq.html">FAQ</a><a class="link m-cta" href="https://app.wasalaire.techbybo.fr/login">Commencer →</a></nav>
-  <div class="nav-cta"><a class="btn btn-ghost" href="https://app.wasalaire.techbybo.fr/login" style="padding:10px 16px">Se connecter</a><a class="btn btn-primary" href="https://app.wasalaire.techbybo.fr/login">Commencer <span class="ar">→</span></a></div>
-  <button class="burger" aria-label="Menu"><span></span><span></span><span></span></button>
-</div></header>
+<body class="min-h-full flex flex-col bg-brand-bg text-brand-ink antialiased">
 
-<section class="page-hero" style="padding-bottom:30px">
-  <div class="aurora"></div><div class="hero-grid"></div>
-  <div class="container">
-    <span class="eyebrow" data-reveal>Contact &amp; aide</span>
-    <h1 data-reveal data-d="1">Une question ?<br>On vous répond.</h1>
-    <p data-reveal data-d="2">Pas besoin de rendez-vous pour commencer : l'inscription est directe et gratuite. Écrivez-nous pour le reste — secteur, convention, migration, facturation.</p>
-    <div class="hero-cta" data-reveal data-d="3" style="margin-top:22px"><a class="btn btn-primary btn-lg" href="https://app.wasalaire.techbybo.fr/login">Créer mon compte gratuit <span class="ar">→</span></a></div>
-  </div>
-</section>
+  <!-- TOP HEADER / NAVIGATION INSTITUTIONNELLE -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-brand-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <!-- Logo & Signature -->
+        <div class="flex items-center space-x-8">
+          <a href="index.html" class="flex items-center gap-3 group">
+            <div class="w-10 h-10 rounded-xl bg-brand-indigo flex items-center justify-center shadow-sm group-hover:bg-brand-indigo-light transition-colors">
+              <span class="text-white font-extrabold text-xl tracking-tight">W</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-extrabold text-xl tracking-tight text-brand-indigo">WaSalaire</span>
+              <span class="text-[11px] font-semibold tracking-wider text-brand-muted uppercase">Bénin · La paie, simplement.</span>
+            </div>
+          </a>
 
-<section class="section" style="padding-top:20px"><div class="container">
-  <div class="split" style="align-items:start">
-    <div data-reveal>
-      <form class="form" data-demo style="margin:0">
-        <div class="field"><label>Votre nom</label><input required placeholder="Ex. Alain KOFFI"></div>
-        <div class="field"><label>Entreprise / cabinet</label><input required placeholder="Ex. Alpha SARL"></div>
-        <div class="field"><label>Téléphone (WhatsApp)</label><input required type="tel" placeholder="+229 ..."></div>
-        <div class="field"><label>Vous êtes…</label><select><option>Une TPE / PME</option><option>Un cabinet comptable</option><option>Autre</option></select></div>
-        <div class="field"><label>Nombre de salariés</label><select><option>1 à 3</option><option>4 à 10</option><option>11 à 50</option><option>50+</option></select></div>
-        <div class="field"><label>Message (optionnel)</label><textarea rows="3" placeholder="Votre secteur, votre convention..."></textarea></div>
-        <button class="btn btn-primary" style="width:100%;justify-content:center" type="submit">Envoyer le message <span class="ar">→</span></button>
-        <p class="form-ok" style="display:none;margin-top:16px;color:var(--success);font-weight:700;text-align:center">✓ Message reçu. On vous répond par WhatsApp sous 24 h.</p>
-      </form>
+          <!-- Liens de navigation desktop -->
+          <nav class="hidden md:flex items-center space-x-1 lg:space-x-2 pl-4">
+            <a href="https://app.wasalaire.techbybo.fr/login" class="px-3 py-2 rounded-lg text-sm font-semibold text-brand-muted hover:text-brand-indigo hover:bg-slate-50 transition-colors">Fonctionnalités</a>
+            <a href="https://app.wasalaire.techbybo.fr/login" class="px-3 py-2 rounded-lg text-sm font-semibold text-brand-muted hover:text-brand-indigo hover:bg-slate-50 transition-colors">Pour qui</a>
+            <a href="https://app.wasalaire.techbybo.fr/login" class="px-3 py-2 rounded-lg text-sm font-semibold text-brand-muted hover:text-brand-indigo hover:bg-slate-50 transition-colors">Tarifs</a>
+            <a href="https://app.wasalaire.techbybo.fr/login" class="px-3 py-2 rounded-lg text-sm font-semibold text-brand-muted hover:text-brand-indigo hover:bg-slate-50 transition-colors">Conformité</a>
+            <a href="https://app.wasalaire.techbybo.fr/login" class="px-3 py-2 rounded-lg text-sm font-semibold text-brand-muted hover:text-brand-indigo hover:bg-slate-50 transition-colors">FAQ</a>
+            <a href="https://app.wasalaire.techbybo.fr/login" class="px-3 py-2 rounded-lg text-sm font-bold text-brand-indigo bg-indigo-50/70 border border-indigo-100">Contact & Aide</a>
+          </nav>
+        </div>
+
+        <!-- Actions droites -->
+        <div class="flex items-center space-x-3">
+          <a href="https://app.wasalaire.techbybo.fr/login" class="hidden sm:inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-sm font-bold text-brand-indigo hover:bg-slate-100 transition-colors">
+            Se connecter
+          </a>
+          <a href="https://app.wasalaire.techbybo.fr/login" class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-extrabold bg-brand-teal text-brand-ink hover:bg-brand-teal-hover shadow-sm transition-all active:scale-98">
+            Créer un compte gratuit
+          </a>
+        </div>
+      </div>
     </div>
-    <div data-reveal data-d="1">
-      <div class="card" style="margin-bottom:18px"><div class="fic"><svg class="icon"><use href="#i-bolt"/></svg></div><h3>Réponse rapide</h3><p>Nous revenons vers vous sous 24 h, par WhatsApp ou par téléphone.</p></div>
-      <div class="card" style="margin-bottom:18px"><div class="fic"><svg class="icon"><use href="#i-rocket"/></svg></div><h3>Prise en main guidée</h3><p>Création de société, salariés, paramètres : en ligne, en moins de 30 minutes.</p></div>
-      <div class="card"><div class="fic"><svg class="icon"><use href="#i-chat"/></svg></div><h3>Nous écrire</h3><p>contact@wasalaire.com<br>WhatsApp : +229 00 00 00 00<br>Cotonou, Bénin</p></div>
-    </div>
-  </div>
-</div></section>
+  </header>
 
-<footer class="footer"><div class="container">
-  <div class="f-grid">
-    <div><div class="f-brand"><img src="assets/logo-blanc.png" alt="WaSalaire" class="logo-img-foot"></div><p style="max-width:34ch;color:#94a3b8">La paie, simplement. Le logiciel de paie pensé pour les entreprises et cabinets du Bénin.</p></div>
-    <div><h4>Produit</h4><a href="fonctionnalites.html">Fonctionnalités</a><a href="tarifs.html">Tarifs</a><a href="pour-qui.html">Pour qui</a><a href="conformite.html">Conformité</a></div>
-    <div><h4>Entreprise</h4><a href="a-propos.html">À propos</a><a href="contact.html">Contact</a><a href="faq.html">FAQ</a></div>
-    <div><h4>Légal</h4><a href="mentions-legales.html">Mentions légales</a><a href="mentions-legales.html#confidentialite">Confidentialité</a><a href="mentions-legales.html#cgu">CGU</a></div>
-  </div>
-  <div class="f-bottom"><span>© <span data-year>2026</span> WaSalaire — Cotonou, Bénin.</span><span>La paie, simplement.</span></div>
-</div></footer>
-<script src="assets/motion.js"></script>
-</body></html>
+  <!-- MAIN CONTENT -->
+  <main class="flex-grow">
+    <!-- EN-TÊTE DE PAGE AVEC HALO ET CONTENU PRINCIPAL -->
+    <section class="relative pt-12 pb-16 md:pt-16 md:pb-20 overflow-hidden bg-gradient-to-b from-white via-indigo-50/30 to-brand-bg border-b border-brand-border/60">
+      <!-- Halo décoratif subtil -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-tr from-brand-indigo/5 via-brand-teal/5 to-transparent blur-3xl pointer-events-none -z-10"></div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto">
+          <!-- Eyebrow -->
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-brand-indigo/15 text-brand-indigo shadow-sm mb-5">
+            <span class="w-2 h-2 rounded-full bg-brand-teal"></span>
+            <span class="text-xs font-extrabold tracking-wider uppercase">Contact & Aide</span>
+          </div>
+
+          <!-- Titre principal -->
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-brand-indigo tracking-tight leading-tight mb-5">
+            Une question ? On vous répond.
+          </h1>
+
+          <!-- Sous-titre rassurant et explicite -->
+          <p class="text-base sm:text-lg text-brand-muted leading-relaxed font-normal mb-8">
+            Pas besoin de rendez-vous pour commencer : l'inscription est directe et gratuite. Écrivez-nous pour le reste — secteur, convention, migration, facturation.
+          </p>
+
+          <!-- Bouton d'action directe -->
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="https://app.wasalaire.techbybo.fr/login" class="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-extrabold text-base bg-brand-teal text-brand-ink hover:bg-brand-teal-hover shadow-sm transition-all">
+              Créer un compte gratuit
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"></path>
+              </svg>
+            </a>
+            <span class="text-xs font-semibold text-brand-muted">
+              Démarrage autonome en moins de 3 minutes · Sans engagement
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION PRINCIPALE : 2 COLONNES (FORMULAIRE & CARTES D'AIDE) -->
+    <section class="py-12 md:py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          
+          <!-- COLONNE GAUCHE (7 COLONNES) : FORMULAIRE DE CONTACT -->
+          <div class="lg:col-span-7 bg-white rounded-2xl border border-brand-border p-6 sm:p-8 md:p-10 shadow-sm relative">
+            <div class="mb-8">
+              <div class="flex items-center justify-between pb-4 border-b border-brand-border/70">
+                <div>
+                  <h2 class="text-xl sm:text-2xl font-bold text-brand-indigo tracking-tight">Envoyez-nous un message</h2>
+                  <p class="text-xs sm:text-sm text-brand-muted mt-1 font-medium">Réponse personnalisée de notre équipe technique & juridique à Cotonou.</p>
+                </div>
+                <div class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Équipe disponible
+                </div>
+              </div>
+            </div>
+
+            <form class="space-y-6" onsubmit="event.preventDefault(); document.getElementById('success-message').classList.remove('hidden');">
+              <!-- Ligne 1 : Nom complet & Entreprise -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <label for="name" class="block text-xs font-bold text-brand-ink uppercase tracking-wider mb-2">
+                    Nom & Prénom <span class="text-brand-danger">*</span>
+                  </label>
+                  <input type="text" id="name" required placeholder="Ex. Mireille Agbossou" class="w-full h-12 px-4 rounded-xl border border-brand-border bg-white text-sm text-brand-ink placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-brand-teal transition-all">
+                </div>
+                <div>
+                  <label for="company" class="block text-xs font-bold text-brand-ink uppercase tracking-wider mb-2">
+                    Entreprise / Cabinet <span class="text-brand-danger">*</span>
+                  </label>
+                  <input type="text" id="company" required placeholder="Ex. Société Alpha SARL" class="w-full h-12 px-4 rounded-xl border border-brand-border bg-white text-sm text-brand-ink placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-brand-teal transition-all">
+                </div>
+              </div>
+
+              <!-- Ligne 2 : Téléphone WhatsApp & Profil -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <label for="whatsapp" class="block text-xs font-bold text-brand-ink uppercase tracking-wider mb-2">
+                    Téléphone WhatsApp <span class="text-brand-danger">*</span>
+                  </label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-xs font-extrabold text-brand-muted border-r border-slate-200 pr-2.5 my-2">
+                      +229
+                    </div>
+                    <input type="tel" id="whatsapp" required placeholder="97 00 00 00" class="w-full h-12 pl-20 pr-4 rounded-xl border border-brand-border bg-white text-sm text-brand-ink placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-brand-teal transition-all num-tabular">
+                  </div>
+                  <span class="text-[11px] text-brand-muted mt-1 block">Pour un échange direct et réactif.</span>
+                </div>
+
+                <div>
+                  <label for="profile" class="block text-xs font-bold text-brand-ink uppercase tracking-wider mb-2">
+                    Vous êtes… <span class="text-brand-danger">*</span>
+                  </label>
+                  <div class="relative">
+                    <select id="profile" required class="w-full h-12 px-4 pr-10 rounded-xl border border-brand-border bg-white text-sm text-brand-ink appearance-none focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-brand-teal transition-all font-medium">
+                      <option value="" disabled selected>Sélectionnez votre profil</option>
+                      <option value="tpe">TPE / PME (Patron, RH, Gérant)</option>
+                      <option value="cabinet">Cabinet d'expertise comptable / Fiduciaire</option>
+                      <option value="autre">Autre structure (ONG, Association, Conseil)</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-brand-muted">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ligne 3 : Nombre de salariés -->
+              <div>
+                <label for="headcount" class="block text-xs font-bold text-brand-ink uppercase tracking-wider mb-2">
+                  Nombre de salariés estimés <span class="text-brand-danger">*</span>
+                </label>
+                <div class="relative">
+                  <select id="headcount" required class="w-full h-12 px-4 pr-10 rounded-xl border border-brand-border bg-white text-sm text-brand-ink appearance-none focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-brand-teal transition-all font-medium">
+                    <option value="1-3">1 à 3 salariés (Formule gratuite Découverte)</option>
+                    <option value="4-10">4 à 10 salariés</option>
+                    <option value="11-50">11 à 50 salariés</option>
+                    <option value="51-200">51 à 200 salariés</option>
+                    <option value="200+">Plus de 200 salariés / Multi-sociétés</option>
+                  </select>
+                  <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-brand-muted">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ligne 4 : Message -->
+              <div>
+                <label for="message" class="block text-xs font-bold text-brand-ink uppercase tracking-wider mb-2">
+                  Votre message ou besoin précis <span class="text-brand-danger">*</span>
+                </label>
+                <textarea id="message" rows="4" required placeholder="Ex. Nous utilisons actuellement Excel et souhaitons importer notre historique de 12 salariés sous convention CCGT 2005..." class="w-full p-4 rounded-xl border border-brand-border bg-white text-sm text-brand-ink placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-brand-teal transition-all"></textarea>
+              </div>
+
+              <!-- Bouton d'envoi pleine largeur -->
+              <div>
+                <button type="submit" class="w-full h-14 rounded-xl font-extrabold text-base bg-brand-teal text-brand-ink hover:bg-brand-teal-hover shadow-sm transition-all flex items-center justify-center gap-2">
+                  <span>Envoyer le message</span>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Message de confirmation simulé -->
+              <div id="success-message" class="hidden p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-semibold flex items-center gap-3">
+                <svg class="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Message bien reçu ! Notre équipe à Cotonou vous recontactera sous 24h par WhatsApp ou téléphone.</span>
+              </div>
+
+              <!-- Mention de confidentialité -->
+              <p class="text-[12px] text-center text-brand-muted">
+                Vos informations restent strictement confidentielles selon la Loi n° 2017-20 (Code du numérique / APDP Bénin). Pas de prospection abusive.
+              </p>
+            </form>
+          </div>
+
+          <!-- COLONNE DROITE (5 COLONNES) : 3 CARTES À ICÔNE AU TRAIT -->
+          <div class="lg:col-span-5 space-y-6">
+            
+            <!-- CARTE 1 : Réponse rapide -->
+            <div class="bg-white rounded-2xl border border-brand-border p-6 sm:p-7 shadow-sm transition-all hover:border-brand-teal/40">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-brand-indigo flex-shrink-0">
+                  <!-- Line icon : horloge / éclair -->
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center justify-between mb-1">
+                    <h3 class="font-bold text-lg text-brand-indigo">Réponse rapide</h3>
+                    <span class="text-[11px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">Garanti</span>
+                  </div>
+                  <p class="text-sm text-brand-muted leading-relaxed mb-3">
+                    Réponse en moins de <strong class="text-brand-ink">24 heures ouvrées</strong>. Pour les urgences de clôture de paie ou déclarations DGI, contact direct par WhatsApp ou appel téléphonique.
+                  </p>
+                  <div class="flex items-center gap-2 text-xs font-bold text-brand-indigo bg-slate-50 px-3 py-2 rounded-lg border border-slate-200/80">
+                    <svg class="w-4 h-4 text-brand-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path>
+                    </svg>
+                    <span>Du lundi au vendredi · 08h00 - 18h30 (Heure de Cotonou)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARTE 2 : Prise en main guidée -->
+            <div class="bg-white rounded-2xl border border-brand-border p-6 sm:p-7 shadow-sm transition-all hover:border-brand-teal/40">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-brand-teal flex-shrink-0">
+                  <!-- Line icon : fusée / démarrage guidé -->
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m0 0l2.699 2.7z"></path>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-bold text-lg text-brand-indigo mb-1">Prise en main guidée</h3>
+                  <p class="text-sm text-brand-muted leading-relaxed mb-3">
+                    L'application est conçue pour être configurée en toute autonomie :
+                  </p>
+                  <ul class="space-y-2 text-xs text-brand-ink font-semibold">
+                    <li class="flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 rounded-full bg-brand-teal"></span>
+                      <span>Création de votre société & IFU béninois validé en 2 min</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 rounded-full bg-brand-teal"></span>
+                      <span>Import Excel ou saisie directe des premiers salariés</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 rounded-full bg-brand-teal"></span>
+                      <span>Paramètres fiscaux béninois intégrés & vérifiés (&lt; 30 min)</span>
+                    </li>
+                  </ul>
+                  <div class="mt-4 pt-3 border-t border-brand-border/70 flex items-center justify-between">
+                    <span class="text-xs text-brand-muted font-medium">Besoin d'aide pour migrer un fichier ?</span>
+                    <a href="https://app.wasalaire.techbybo.fr/login" class="text-xs font-bold text-brand-indigo hover:text-brand-teal transition-colors">Consulter les guides →</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARTE 3 : Nous écrire & Coordonnées officielles -->
+            <div class="bg-gradient-to-br from-brand-indigo to-brand-indigo-dark text-white rounded-2xl p-6 sm:p-7 shadow-sm">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-brand-teal flex-shrink-0">
+                  <!-- Line icon : localisation / contact -->
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"></path>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-bold text-lg text-white mb-1">Nous écrire directement</h3>
+                  <p class="text-xs text-indigo-200 leading-relaxed mb-4">
+                    Notre équipe est basée à Cotonou pour un accompagnement ancré dans les réalités locales.
+                  </p>
+
+                  <div class="space-y-3 text-xs">
+                    <!-- Courriel -->
+                    <div class="flex items-center gap-3">
+                      <div class="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-brand-teal">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <span class="text-indigo-300 block text-[10px] uppercase font-bold tracking-wider">Email</span>
+                        <a href="mailto:contact@wasalaire.com" class="font-semibold text-white hover:text-brand-teal transition-colors">contact@wasalaire.com</a>
+                      </div>
+                    </div>
+
+                    <!-- WhatsApp -->
+                    <div class="flex items-center gap-3">
+                      <div class="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-brand-teal">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <span class="text-indigo-300 block text-[10px] uppercase font-bold tracking-wider">WhatsApp & Support</span>
+                        <span class="font-semibold text-white num-tabular">+229 21 00 00 00</span>
+                      </div>
+                    </div>
+
+                    <!-- Siège Cotonou -->
+                    <div class="flex items-center gap-3">
+                      <div class="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-brand-teal">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <span class="text-indigo-300 block text-[10px] uppercase font-bold tracking-wider">Bureaux</span>
+                        <span class="font-semibold text-white">Boulevard de la Marina, Cotonou, Bénin</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ENCADRÉ RASSURANT « ANOMALIE = ACTION » -->
+            <div class="p-5 rounded-2xl bg-amber-50/80 border border-amber-200/80 text-amber-900 text-xs">
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-brand-warning flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"></path>
+                </svg>
+                <div>
+                  <span class="font-extrabold block text-sm mb-1 text-brand-ink">Un doute sur un barème ou une retenue ?</span>
+                  <p class="text-slate-600 leading-relaxed font-normal">
+                    Notre moteur déterministe certifié renvoie toujours à l'article exact du Code Général des Impôts (CGI) ou de la Loi CNSS 98-019. Nous ne modifions aucun calcul sans texte légal à l'appui.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- BANDEAU CTA RASSURANT FIN DE PAGE -->
+    <section class="py-12 bg-white border-t border-brand-border">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="rounded-2xl bg-brand-indigo p-8 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+          <div>
+            <span class="text-xs font-bold text-brand-teal tracking-widest uppercase mb-1 block">Pas d'attente</span>
+            <h3 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Testez WaSalaire sur votre vraie paie dès aujourd'hui</h3>
+            <p class="text-sm text-indigo-200 mt-2 font-normal max-w-xl">
+              Les 3 premiers salariés sont gratuits, sans carte bancaire, avec calcul complet et bulletins certifiés conformes.
+            </p>
+          </div>
+          <div class="flex-shrink-0 flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <a href="https://app.wasalaire.techbybo.fr/login" class="inline-flex items-center justify-center px-6 py-3.5 rounded-xl font-extrabold text-sm bg-brand-teal text-brand-ink hover:bg-brand-teal-hover shadow-sm transition-all text-center">
+              Démarrer gratuitement
+            </a>
+            <a href="https://app.wasalaire.techbybo.fr/login" class="inline-flex items-center justify-center px-6 py-3.5 rounded-xl font-bold text-sm bg-white/10 text-white hover:bg-white/20 transition-all text-center border border-white/20">
+              Voir la démonstration
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER OFFICIEL DU SITE -->
+  <footer class="bg-white border-t border-brand-border text-brand-muted text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
+        <!-- Col 1 : Marque -->
+        <div class="col-span-2">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded-lg bg-brand-indigo flex items-center justify-center">
+              <span class="text-white font-extrabold text-base">W</span>
+            </div>
+            <span class="font-extrabold text-lg text-brand-indigo tracking-tight">WaSalaire</span>
+          </div>
+          <p class="text-xs text-brand-muted leading-relaxed max-w-sm mb-4">
+            La solution de paie et de conformité sociale conçue au Bénin pour les entreprises, TPE et cabinets comptables. « La paie, simplement. »
+          </p>
+          <div class="text-[11px] text-slate-500 font-medium">
+            Conforme Code Général des Impôts (CGI 2026), Loi CNSS 98-019 et Code du travail béninois.
+          </div>
+        </div>
+
+        <!-- Col 2 : Produit -->
+        <div>
+          <h4 class="font-bold text-brand-indigo uppercase tracking-wider text-[11px] mb-3">Produit</h4>
+          <ul class="space-y-2">
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Fonctionnalités</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Pour qui</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Tarifs dégressifs</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Application mobile</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Console cabinet</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3 : Légal & Normes -->
+        <div>
+          <h4 class="font-bold text-brand-indigo uppercase tracking-wider text-[11px] mb-3">Conformité</h4>
+          <ul class="space-y-2">
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Barème ITS & VPS DGI</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Cotisations CNSS Cotonou</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Assurance Maladie AMO</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Plan comptable SYSCOHADA</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Protection données APDP</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4 : Support & Contact -->
+        <div>
+          <h4 class="font-bold text-brand-indigo uppercase tracking-wider text-[11px] mb-3">Assistance</h4>
+          <ul class="space-y-2">
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="font-semibold text-brand-indigo">Contact & Aide</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Foire aux questions (FAQ)</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Documentation fiscale</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Assistance WhatsApp</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Statut du service</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bas de footer -->
+      <div class="pt-8 border-t border-brand-border flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]">
+        <div>
+          © 2026 WaSalaire Technologies Bénin. Tous droits réservés.
+        </div>
+        <div class="flex items-center space-x-6">
+          <a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Mentions légales</a>
+          <a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Confidentialité APDP</a>
+          <a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-indigo transition-colors">Conditions Générales (CGU)</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

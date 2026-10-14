@@ -1,335 +1,1305 @@
-<!doctype html>
-<html lang="fr">
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
 <head>
-  <script>if("serviceWorker"in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})}).catch(function(){});if(self.caches){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k)})}).catch(function(){})}}</script>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>WaSalaire — La paie, simplement. Logiciel de paie pour le Bénin</title>
-<meta name="description" content="WaSalaire calcule la paie, les déclarations DGI/CNSS et paie vos salariés par mobile money — depuis votre téléphone. Conforme au Code général des impôts du Bénin.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WaSalaire — La paie du mois, en 3 minutes | Bénin</title>
+  
+  <!-- Polices Google Font : Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              indigo: '#1E2A78',
+              'indigo-dark': '#131B52',
+              'indigo-light': '#2A3A9E',
+              teal: '#2EC4B6',
+              'teal-dark': '#239B90',
+              'teal-light': '#E8FAF8',
+              sand: '#F4D7B0',
+              bg: '#F8FAFC',
+              ink: '#0F172A',
+              muted: '#64748B',
+              border: '#E2E8F0',
+              danger: '#B91C1C',
+              success: '#16A34A',
+              warning: '#D97706',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+          },
+          boxShadow: {
+            'glow-teal': '0 0 35px -5px rgba(46, 196, 182, 0.35)',
+            'glow-indigo': '0 20px 45px -10px rgba(30, 42, 120, 0.25)',
+            'subtle': '0 4px 20px -2px rgba(15, 23, 42, 0.05)',
+            'card-lift': '0 20px 30px -10px rgba(15, 23, 42, 0.08)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Chiffres tabulaires stricts pour tous les montants et dates */
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Grille d'arrière-plan technique subtile */
+    .bg-grid-pattern {
+      background-size: 36px 36px;
+      background-image: 
+        linear-gradient(to right, rgba(30, 42, 120, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30, 42, 120, 0.04) 1px, transparent 1px);
+    }
+
+    /* Glassmorphism Navigation */
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    /* Marquee défilant en boucle continue */
+    @keyframes marquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-marquee {
+      display: flex;
+      width: 200%;
+      animation: marquee 26s linear infinite;
+    }
+    .animate-marquee:hover {
+      animation-play-state: paused;
+    }
+
+    /* Flottement carte téléphone */
+    @keyframes float-gentle {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+    .animate-float {
+      animation: float-gentle 6s ease-in-out infinite;
+    }
+    @keyframes float-delay {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-float-delay {
+      animation: float-delay 5s ease-in-out infinite 1.5s;
+    }
+
+    /* Halo flou dégradé */
+    .hero-glow-teal {
+      background: radial-gradient(circle, rgba(46, 196, 182, 0.22) 0%, rgba(46, 196, 182, 0) 65%);
+    }
+    .hero-glow-indigo {
+      background: radial-gradient(circle, rgba(30, 42, 120, 0.18) 0%, rgba(30, 42, 120, 0) 70%);
+    }
+
+    /* Dégradé texte officiel */
+    .text-gradient-teal-indigo {
+      background: linear-gradient(135deg, #2EC4B6 0%, #1E2A78 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Accordéon stylé */
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+  </style>
 </head>
-<body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <symbol id="i-calc" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8"/><path d="M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01M16 17h.01"/></symbol>
-  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></symbol>
-  <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></symbol>
-  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
-  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
-  <symbol id="i-org" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l6-4v17"/><path d="M11 21V10l8 4v7"/><path d="M8 11h.01M8 15h.01M15 14h.01M15 18h.01"/></symbol>
-</defs></svg>
-<div class="progress"></div>
+<body class="bg-brand-bg text-brand-ink font-sans antialiased overflow-x-hidden selection:bg-brand-teal selection:text-brand-ink">
 
-<!-- HEADER -->
-<header class="header">
-  <div class="bar container">
-    <a class="brand" href="index.html"><img src="assets/logo.png" alt="WaSalaire — La paie, simplement." class="logo-img"></a>
-    <nav class="nav">
-      <a class="link" href="fonctionnalites.html">Fonctionnalités</a>
-      <a class="link" href="pour-qui.html">Pour qui</a>
-      <a class="link" href="tarifs.html">Tarifs</a>
-      <a class="link" href="conformite.html">Conformité</a>
-      <a class="link" href="faq.html">FAQ</a>
-      <a class="link m-cta" href="https://app.wasalaire.techbybo.fr/login">Commencer →</a>
-    </nav>
-    <div class="nav-cta">
-      <a class="btn btn-ghost" href="https://app.wasalaire.techbybo.fr/login" style="padding:10px 16px">Se connecter</a>
-      <a class="btn btn-primary" href="https://app.wasalaire.techbybo.fr/login">Commencer <span class="ar">→</span></a>
-    </div>
-    <button class="burger" aria-label="Menu"><span></span><span></span><span></span></button>
-  </div>
-</header>
+  <!-- =========================================================================
+       1. EN-TÊTE TRANSPARENT "GLASSMORPHISM" STICKY
+       ========================================================================= -->
+  <header class="sticky top-0 z-50 w-full border-b border-brand-border/80 glass-nav transition-all duration-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Logo WaSalaire à gauche -->
+      <a href="index.html" class="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-brand-teal rounded-lg p-1">
+        <div class="w-11 h-11 rounded-xl bg-brand-teal flex items-center justify-center font-extrabold text-brand-ink text-xl shadow-sm tracking-tight group-hover:scale-105 transition-transform duration-200">
+          WS
+        </div>
+        <div class="flex flex-col">
+          <span class="text-2xl font-extrabold tracking-tight text-brand-indigo leading-none">
+            WaSalaire
+          </span>
+          <span class="text-[11px] font-semibold text-brand-muted tracking-wider uppercase mt-1">
+            Bénin · SaaS Paie
+          </span>
+        </div>
+      </a>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="aurora"></div>
-  <div class="hero-grid"></div>
-  <div class="container hero-wrap">
-    <div class="hero-txt">
-      <span class="pill" data-reveal><span class="ping"><i></i><b></b></span> Conçu pour le Bénin · CGI · CNSS · AMO</span>
-      <h1 data-reveal data-d="1" style="margin-top:20px">La paie du mois,<br><span class="grad">en 3 minutes.</span></h1>
-      <p class="lead" data-reveal data-d="2">Calcul, bulletins, déclarations DGI &amp; CNSS, paiement mobile money. Depuis votre téléphone. Sans expert à côté.</p>
-      <div class="hero-cta" data-reveal data-d="3">
-        <a class="btn btn-primary btn-lg" href="https://app.wasalaire.techbybo.fr/login">Démarrer gratuitement <span class="ar">→</span></a>
-        <a class="btn btn-ghost btn-lg" href="fonctionnalites.html">Voir les fonctionnalités</a>
+      <!-- Menu Navigation Centre (Desktop) -->
+      <nav class="hidden md:flex items-center gap-8">
+        <a href="#fonctionnalites" class="text-sm font-semibold text-brand-muted hover:text-brand-indigo transition-colors py-1">
+          Fonctionnalités
+        </a>
+        <a href="#etapes" class="text-sm font-semibold text-brand-muted hover:text-brand-indigo transition-colors py-1">
+          Comment ça marche
+        </a>
+        <a href="#pour-qui" class="text-sm font-semibold text-brand-muted hover:text-brand-indigo transition-colors py-1">
+          Pour qui
+        </a>
+        <a href="#tarifs" class="text-sm font-semibold text-brand-muted hover:text-brand-indigo transition-colors py-1">
+          Tarifs
+        </a>
+        <a href="#conformite" class="text-sm font-semibold text-brand-muted hover:text-brand-indigo transition-colors py-1">
+          Conformité
+        </a>
+        <a href="#faq" class="text-sm font-semibold text-brand-muted hover:text-brand-indigo transition-colors py-1">
+          FAQ
+        </a>
+      </nav>
+
+      <!-- Actions à droite -->
+      <div class="flex items-center gap-3">
+        <a href="https://app.wasalaire.techbybo.fr/login" class="hidden sm:inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-sm font-bold text-brand-indigo hover:bg-brand-indigo/5 border border-transparent transition-all duration-150">
+          Se connecter
+        </a>
+        <a href="#tarifs" class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-extrabold text-brand-ink bg-brand-teal hover:bg-brand-teal-dark hover:shadow-glow-teal transition-all duration-150 active:scale-95 shadow-sm">
+          Commencer gratuitement
+          <svg class="w-4 h-4 ml-1.5 stroke-2 stroke-current" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+          </svg>
+        </a>
       </div>
-      <div class="hero-proof" data-reveal data-d="4">
-        <div class="avatars"><span>KA</span><span>AM</span><span>HD</span><span>+</span></div>
-        <span>Pensé avec des patrons de TPE et des cabinets comptables béninois.</span>
-      </div>
-    </div>
 
-    <!-- DEVICE MOCK -->
-    <div class="device" data-reveal data-d="2">
-      <div class="float-card float-a"><span class="ic" style="background:var(--success)">✓</span> Salaires envoyés</div>
-      <div class="float-card float-b"><span class="ic" style="background:var(--indigo)">↑</span> ITS déclaré · le 10</div>
-      <div class="phone">
-        <div class="screen">
-          <div class="topbar"><small>Paie de septembre 2026</small><div class="t">WaSalaire</div></div>
-          <div class="p-body">
-            <div class="seq">
-              <!-- 0 · Calcul -->
-              <div class="frame active">
-                <div class="spinner"></div>
-                <p style="text-align:center;font-weight:700;color:var(--indigo)">Calcul de la paie…</p>
-                <p style="text-align:center" class="muted">3 salariés · règles CGI &amp; CNSS</p>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       2. SECTION HERO (Halo flou + Grille subtile + Maquette smartphone réaliste)
+       ========================================================================= -->
+  <section class="relative pt-12 pb-24 md:pt-20 md:pb-32 overflow-hidden bg-brand-bg bg-grid-pattern">
+    
+    <!-- Halos lumineux en arrière-plan -->
+    <div class="pointer-events-none absolute -top-24 -left-20 w-[600px] h-[600px] hero-glow-teal rounded-full blur-3xl opacity-80"></div>
+    <div class="pointer-events-none absolute top-12 -right-32 w-[650px] h-[650px] hero-glow-indigo rounded-full blur-3xl opacity-70"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        
+        <!-- Colonne Gauche : Pitch, Titre impactant, Call-To-Action -->
+        <div class="lg:col-span-7 flex flex-col items-start text-left">
+          
+          <!-- Badge pilule réassurance légale Bénin -->
+          <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white border border-brand-border shadow-sm mb-6">
+            <span class="w-2.5 h-2.5 rounded-full bg-brand-success ring-4 ring-brand-success/20 animate-pulse"></span>
+            <span class="text-xs font-bold uppercase tracking-wider text-brand-indigo">
+              Conçu pour le Bénin · CGI · CNSS · AMO
+            </span>
+          </div>
+
+          <!-- Grand Titre -->
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-brand-indigo tracking-tight leading-[1.12] mb-6">
+            La paie du mois,<br>
+            <span class="text-gradient-teal-indigo">en 3 minutes.</span>
+          </h1>
+
+          <!-- Sous-titre -->
+          <p class="text-lg sm:text-xl text-brand-muted font-normal leading-relaxed max-w-2xl mb-8">
+            Calcul, bulletins, déclarations DGI & CNSS, paiement mobile money. Depuis votre téléphone. Sans expert à côté.
+          </p>
+
+          <!-- Boutons d'action -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto mb-8">
+            <a href="#tarifs" class="inline-flex items-center justify-center px-7 py-4 rounded-xl text-base font-extrabold text-brand-ink bg-brand-teal hover:bg-brand-teal-dark hover:shadow-glow-teal transition-all duration-150 shadow-md text-center active:scale-95">
+              Commencer gratuitement
+              <svg class="w-5 h-5 ml-2 stroke-2 stroke-current" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"/>
+              </svg>
+            </a>
+            <a href="#fonctionnalites" class="inline-flex items-center justify-center px-6 py-4 rounded-xl text-base font-bold text-brand-indigo bg-white hover:bg-brand-indigo/5 border border-brand-border transition-all duration-150 text-center">
+              Voir les fonctionnalités
+            </a>
+          </div>
+
+          <!-- Petite ligne de co-création de confiance -->
+          <div class="flex items-center gap-3 pt-2 text-xs font-semibold text-brand-muted">
+            <svg class="w-4 h-4 text-brand-teal shrink-0 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Pensé avec des patrons de TPE et des cabinets comptables béninois.</span>
+          </div>
+
+        </div>
+
+        <!-- Colonne Droite : Maquette smartphone interactive et cartes flottantes -->
+        <div class="lg:col-span-5 relative flex justify-center items-center py-6">
+          
+          <!-- Carte Flottante 1 : Statut Mobile Money (En haut à gauche) -->
+          <div class="absolute -left-4 sm:left-2 top-8 z-20 bg-white/95 backdrop-blur-md border border-brand-border p-3.5 rounded-2xl shadow-glow-indigo animate-float max-w-[210px]">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-brand-teal-light flex items-center justify-center text-brand-teal shrink-0">
+                <!-- Icône au trait : coche de succès -->
+                <svg class="w-5 h-5 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                </svg>
               </div>
-              <!-- 1 · Bulletins -->
-              <div class="frame">
-                <div class="p-card" style="margin-top:4px">
-                  <div class="p-row"><span>KOFFI Alain</span><strong class="tabnum">176 300 F</strong></div>
-                  <div class="p-row"><span>ADJOVI Mireille</span><strong class="tabnum">160 020 F</strong></div>
-                  <div class="p-row"><span>HOUNKPATIN David</span><strong class="tabnum">255 700 F</strong></div>
-                </div>
-                <p class="muted" style="text-align:center;font-size:.8rem;margin-top:8px">✓ Aucune anomalie bloquante</p>
-              </div>
-              <!-- 2 · Net -->
-              <div class="frame">
-                <div class="net">
-                  <div class="p-row"><span class="muted" style="font-weight:600">Net total à payer</span><span class="chip">3 salariés</span></div>
-                  <div class="big tabnum" style="margin-top:6px">592 020 F</div>
-                  <div class="bar-fill"><b style="--pct:100%"></b></div>
-                  <span class="muted" style="font-size:.78rem">Prêt pour le décaissement</span>
-                </div>
-              </div>
-              <!-- 3 · Payé -->
-              <div class="frame">
-                <div class="paid"><div class="circle">✓</div></div>
-                <p style="text-align:center;font-weight:800;color:var(--indigo)">Salaires envoyés</p>
-                <div class="p-card" style="margin-top:10px">
-                  <div class="p-row"><span>📱 Mobile money</span><span class="chip" style="background:#dcfce7;color:#166534">2 ✓</span></div>
-                  <div class="p-row"><span>🏦 Virement</span><span class="chip" style="background:#dcfce7;color:#166534">1 ✓</span></div>
-                </div>
+              <div>
+                <p class="text-[11px] font-bold text-brand-muted leading-tight">Salaires envoyés</p>
+                <p class="text-xs font-extrabold text-brand-indigo">MoMo & Virements ✓</p>
               </div>
             </div>
-            <div class="seqdots"><i class="on"></i><i></i><i></i><i></i></div>
+          </div>
+
+          <!-- Carte Flottante 2 : Échéance DGI (En bas à droite) -->
+          <div class="absolute -right-2 sm:right-4 bottom-10 z-20 bg-white/95 backdrop-blur-md border border-brand-border p-3.5 rounded-2xl shadow-glow-indigo animate-float-delay max-w-[200px]">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-amber-50 flex items-center justify-center text-brand-warning shrink-0">
+                <!-- Icône calendrier au trait -->
+                <svg class="w-5 h-5 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-[11px] font-bold text-brand-muted leading-tight">DGI e-Services</p>
+                <p class="text-xs font-extrabold text-brand-indigo">ITS déclaré · le 10</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Smartphone Mockup Cadre Ultra Pro -->
+          <div class="w-[310px] sm:w-[330px] rounded-[42px] p-3 bg-brand-ink shadow-2xl ring-1 ring-white/20 relative z-10 border-4 border-slate-700">
+            <!-- Haut-parleur & encoche écran -->
+            <div class="w-28 h-4 bg-slate-800 rounded-full mx-auto mb-2"></div>
+            
+            <!-- Écran interne -->
+            <div class="bg-white rounded-[32px] overflow-hidden p-4 text-left border border-slate-100 flex flex-col justify-between min-h-[520px]">
+              
+              <!-- Mini Header App Mobile -->
+              <div>
+                <div class="flex items-center justify-between pb-3 border-b border-brand-border">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-brand-teal flex items-center justify-center font-bold text-xs text-brand-ink">
+                      WS
+                    </div>
+                    <div>
+                      <p class="text-xs font-extrabold text-brand-indigo leading-none">WaSalaire</p>
+                      <p class="text-[9px] font-semibold text-brand-muted">Société Alpha SARL</p>
+                    </div>
+                  </div>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-brand-success border border-emerald-200">
+                    Bénin 2026
+                  </span>
+                </div>
+
+                <!-- Titre Paie du mois -->
+                <div class="mt-4 mb-3">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-brand-muted">Cycle en cours</span>
+                  <h3 class="text-lg font-extrabold text-brand-indigo">Paie de Septembre</h3>
+                </div>
+
+                <!-- Encart Teal Clair Principal : Total Net -->
+                <div class="bg-brand-teal-light border border-brand-teal/30 rounded-2xl p-4 mb-4">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs font-semibold text-brand-muted">Net total à payer</span>
+                    <span class="text-[11px] font-bold text-brand-teal-dark bg-white px-2 py-0.5 rounded-full border border-brand-teal/20">
+                      3 salariés
+                    </span>
+                  </div>
+                  <div class="text-2xl font-extrabold text-brand-indigo tracking-tight tabular-nums">
+                    592 020 <span class="text-sm font-bold text-brand-muted">FCFA</span>
+                  </div>
+                  <div class="mt-2 pt-2 border-t border-brand-teal/20 flex justify-between text-[11px] text-brand-muted font-semibold">
+                    <span>Retenues ITS & CNSS</span>
+                    <span class="tabular-nums font-bold text-brand-indigo">87 200 F</span>
+                  </div>
+                </div>
+
+                <!-- Mini Liste des 3 salariés -->
+                <div class="space-y-2 mb-4">
+                  <div class="p-2.5 rounded-xl bg-brand-bg border border-brand-border flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-full bg-indigo-100 text-brand-indigo font-bold text-[10px] flex items-center justify-center">KA</div>
+                      <div>
+                        <p class="font-bold text-brand-indigo leading-tight">Alain KOFFI</p>
+                        <p class="text-[10px] text-brand-muted">Chauffeur · MoMo</p>
+                      </div>
+                    </div>
+                    <span class="font-extrabold text-brand-indigo tabular-nums">176 300 F</span>
+                  </div>
+
+                  <div class="p-2.5 rounded-xl bg-brand-bg border border-brand-border flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-full bg-emerald-100 text-brand-teal-dark font-bold text-[10px] flex items-center justify-center">MA</div>
+                      <div>
+                        <p class="font-bold text-brand-indigo leading-tight">Mireille ADJOVI</p>
+                        <p class="text-[10px] text-brand-muted">Comptable · Virement</p>
+                      </div>
+                    </div>
+                    <span class="font-extrabold text-brand-indigo tabular-nums">183 800 F</span>
+                  </div>
+
+                  <div class="p-2.5 rounded-xl bg-brand-bg border border-brand-border flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px] flex items-center justify-center">DH</div>
+                      <div>
+                        <p class="font-bold text-brand-indigo leading-tight">David H.</p>
+                        <p class="text-[10px] text-brand-muted">Commercial · Moov</p>
+                      </div>
+                    </div>
+                    <span class="font-extrabold text-brand-indigo tabular-nums">231 920 F</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bouton d'action dans l'app mobile -->
+              <div class="pt-2">
+                <div class="w-full py-2.5 bg-brand-teal rounded-xl text-center font-extrabold text-xs text-brand-ink flex items-center justify-center gap-1.5 shadow-sm">
+                  <span>Valider et décaisser</span>
+                  <svg class="w-3.5 h-3.5 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+                  </svg>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       3. BANDEAU DE CONFIANCE (Mots défilants continus)
+       ========================================================================= -->
+  <section class="border-y border-brand-border bg-white py-6 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 mb-3 text-center">
+      <p class="text-xs font-extrabold tracking-widest text-brand-muted uppercase">
+        Intégré avec l'écosystème financier, bancaire et administratif du Bénin
+      </p>
+    </div>
+    
+    <div class="relative w-full overflow-hidden flex items-center">
+      <div class="animate-marquee flex items-center gap-12 sm:gap-16 whitespace-nowrap text-brand-muted font-bold text-sm tracking-wide">
+        <!-- Répétition 1 -->
+        <span class="flex items-center gap-2 hover:text-brand-indigo transition-colors">
+          <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.75 5.1a3 3 0 012.4-1.35h7.7a3 3 0 012.4 1.35l2.6 3.45c.6.8.9 1.7.9 2.7"/></svg>
+          MTN MoMo Bénin
+        </span>
+        <span class="flex items-center gap-2 hover:text-brand-indigo transition-colors">
+          <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
+          Moov Money
+        </span>
+        <span class="flex items-center gap-2 hover:text-brand-indigo transition-colors">
+          <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
+          FedaPay Agrégateur
+        </span>
+        <span class="flex items-center gap-2 hover:text-brand-indigo transition-colors">
+          <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"/></svg>
+          DGI e-Services Bénin
+        </span>
+        <span class="flex items-center gap-2 hover:text-brand-indigo transition-colors">
+          <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+          CNSS Cotonou
+        </span>
+        <span class="flex items-center gap-2 hover:text-brand-indigo transition-colors">
+          <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"/></svg>
+          WhatsApp Bulletins
+        </span>
+        <span class="flex items-center gap-2 hover:text-brand-indigo transition-colors">
+          <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+          SYSCOHADA Révisé
+        </span>
+        <span class="flex items-center gap-2 hover:text-brand-indigo transition-colors">
+          <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.5m-15 10.5V10.5"/></svg>
+          Virement Bancaire UEMOA
+        </span>
+
+        <!-- Duplication pour effet infini parfait -->
+        <span class="flex items-center gap-2 hover:text-brand-indigo transition-colors">
+          <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.75 5.1a3 3 0 012.4-1.35h7.7a3 3 0 012.4 1.35l2.6 3.45c.6.8.9 1.7.9 2.7"/></svg>
+          MTN MoMo Bénin
+        </span>
+        <span class="flex items-center gap-2 hover:text-brand-indigo transition-colors">
+          <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
+          Moov Money
+        </span>
+        <span class="flex items-center gap-2 hover:text-brand-indigo transition-colors">
+          <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
+          FedaPay Agrégateur
+        </span>
+        <span class="flex items-center gap-2 hover:text-brand-indigo transition-colors">
+          <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"/></svg>
+          DGI e-Services Bénin
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4. SECTION STATISTIQUES (4 Chiffres Gros Indigo)
+       ========================================================================= -->
+  <section class="py-16 bg-white border-b border-brand-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
+        
+        <!-- Stat 1 -->
+        <div class="p-6 rounded-2xl bg-brand-bg border border-brand-border flex flex-col justify-between hover:border-brand-teal/50 transition-colors">
+          <div class="text-4xl lg:text-5xl font-extrabold text-brand-indigo tracking-tight tabular-nums mb-2">
+            3 min
+          </div>
+          <div>
+            <div class="h-1 w-10 bg-brand-teal rounded-full mb-2"></div>
+            <p class="text-sm font-bold text-brand-indigo">pour boucler une paie</p>
+            <p class="text-xs text-brand-muted mt-0.5">du brut au fichier d'export bancaire</p>
           </div>
         </div>
+
+        <!-- Stat 2 -->
+        <div class="p-6 rounded-2xl bg-brand-bg border border-brand-border flex flex-col justify-between hover:border-brand-teal/50 transition-colors">
+          <div class="text-4xl lg:text-5xl font-extrabold text-brand-indigo tracking-tight tabular-nums mb-2">
+            100 %
+          </div>
+          <div>
+            <div class="h-1 w-10 bg-brand-teal rounded-full mb-2"></div>
+            <p class="text-sm font-bold text-brand-indigo">conforme au CGI en vigueur</p>
+            <p class="text-xs text-brand-muted mt-0.5">barèmes ITS & taux VPS (4%) intégrés</p>
+          </div>
+        </div>
+
+        <!-- Stat 3 -->
+        <div class="p-6 rounded-2xl bg-brand-bg border border-brand-border flex flex-col justify-between hover:border-brand-teal/50 transition-colors">
+          <div class="text-4xl lg:text-5xl font-extrabold text-brand-indigo tracking-tight tabular-nums mb-2">
+            4
+          </div>
+          <div>
+            <div class="h-1 w-10 bg-brand-teal rounded-full mb-2"></div>
+            <p class="text-sm font-bold text-brand-indigo">moyens de paiement salariés</p>
+            <p class="text-xs text-brand-muted mt-0.5">MTN MoMo, Moov, Virement & Espèces</p>
+          </div>
+        </div>
+
+        <!-- Stat 4 -->
+        <div class="p-6 rounded-2xl bg-brand-bg border border-brand-border flex flex-col justify-between hover:border-brand-teal/50 transition-colors">
+          <div class="text-4xl lg:text-5xl font-extrabold text-brand-indigo tracking-tight tabular-nums mb-2">
+            0 F
+          </div>
+          <div>
+            <div class="h-1 w-10 bg-brand-teal rounded-full mb-2"></div>
+            <p class="text-sm font-bold text-brand-indigo">pour commencer (≤ 3 salariés)</p>
+            <p class="text-xs text-brand-muted mt-0.5">gratuit à vie, sans carte bancaire</p>
+          </div>
+        </div>
+
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- TRUST / MARQUEE -->
-<div class="trust">
-  <div class="container">
-    <p>Branché sur les outils que vous utilisez déjà</p>
-    <div class="marquee"><div class="track">
-      <span>MTN MoMo</span><span>Moov Money</span><span>FedaPay</span><span>DGI e-services</span><span>CNSS</span><span>WhatsApp</span><span>SYSCOHADA</span><span>Virement UEMOA</span>
-    </div></div>
-  </div>
-</div>
-
-<!-- STATS -->
-<section class="section">
-  <div class="container stats">
-    <div class="stat" data-reveal><div class="num"><span data-count="3" data-suffix=" min">0</span></div><div class="lbl">pour boucler une paie</div></div>
-    <div class="stat" data-reveal data-d="1"><div class="num"><span data-count="100" data-suffix=" %">0</span></div><div class="lbl">conforme au CGI en vigueur</div></div>
-    <div class="stat" data-reveal data-d="2"><div class="num"><span data-count="4">0</span></div><div class="lbl">moyens de paiement salariés</div></div>
-    <div class="stat" data-reveal data-d="3"><div class="num"><span data-count="0" data-suffix=" €">0</span></div><div class="lbl">pour commencer (≤ 3 salariés)</div></div>
-  </div>
-</section>
-
-<!-- FEATURES -->
-<section class="section alt">
-  <div class="container">
-    <div class="section-head" data-reveal>
-      <span class="eyebrow">Tout-en-un</span>
-      <h2>De l'embauche au virement, un seul outil</h2>
-      <p>WaSalaire couvre le cycle complet de la paie béninoise — sans tableur, sans calcul à la main.</p>
-    </div>
-    <div class="grid3">
-      <div class="card" data-reveal><div class="fic"><svg class="icon"><use href="#i-calc"/></svg></div><h3>Calcul conforme</h3><p>CNSS, ITS, VPS, avantages en nature, heures sup. Trois assiettes indépendantes, barème CGI à jour. Chaque montant renvoie à sa base légale.</p></div>
-      <div class="card" data-reveal data-d="1"><div class="fic"><svg class="icon"><use href="#i-doc"/></svg></div><h3>Bulletins &amp; WaDocs</h3><p>Bulletins clairs, contrats, attestations, solde de tout compte. Générés, envoyés par WhatsApp, archivés.</p></div>
-      <div class="card" data-reveal data-d="2"><div class="fic"><svg class="icon"><use href="#i-send"/></svg></div><h3>Déclarations DGI &amp; CNSS</h3><p>ITS/VPS le 10, liste nominative CNSS, AMO. Fichiers au bon format e-services, échéances rappelées à l'avance.</p></div>
-      <div class="card" data-reveal><div class="fic"><svg class="icon"><use href="#i-phone"/></svg></div><h3>Paiement mobile money</h3><p>MTN, Moov, virement ou espèces — au choix par salarié. Ordres idempotents, suivi de statut, zéro double paiement.</p></div>
-      <div class="card" data-reveal data-d="1"><div class="fic"><svg class="icon"><use href="#i-shield"/></svg></div><h3>Conformité &amp; sécurité</h3><p>Isolation par société, journal d'audit, séparation des tâches (4 yeux) activable. Données hébergées, accès tracés.</p></div>
-      <div class="card" data-reveal data-d="2"><div class="fic"><svg class="icon"><use href="#i-org"/></svg></div><h3>Multi-société</h3><p>Cabinet → client → groupe → société → établissement. Un cabinet gère tout son portefeuille, chaque dossier reste isolé.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section class="section">
-  <div class="container">
-    <div class="section-head" data-reveal><span class="eyebrow">Le mois en 4 gestes</span><h2>Simple, du début à la fin</h2></div>
-    <div class="steps">
-      <div class="step" data-reveal><div class="n">1</div><h3>Ouvrez la période</h3><p>Un mois, une société. Les salariés et contrats sont déjà là.</p></div>
-      <div class="step" data-reveal data-d="1"><div class="n">2</div><h3>Saisissez les variables</h3><p>Primes, absences, heures sup — à la main ou par import de fichier.</p></div>
-      <div class="step" data-reveal data-d="2"><div class="n">3</div><h3>Calculez &amp; vérifiez</h3><p>Les contrôles signalent toute anomalie avant la clôture.</p></div>
-      <div class="step" data-reveal data-d="3"><div class="n">4</div><h3>Payez &amp; déclarez</h3><p>Virement mobile money, bulletins envoyés, déclarations prêtes.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- AVANT / APRÈS -->
-<section class="section alt">
-  <div class="container">
-    <div class="section-head" data-reveal><span class="eyebrow">Le changement</span><h2>Le cahier et le tableur, c'est fini</h2><p>Ce que vivent la plupart des TPE aujourd'hui, et ce que WaSalaire change.</p></div>
-    <div class="ba">
-      <div class="col bad" data-reveal>
-        <h4>Sans WaSalaire</h4>
-        <div class="row"><span class="x">✕</span> Calculs à la main, erreurs de barème</div>
-        <div class="row"><span class="x">✕</span> Un comptable à relancer chaque mois</div>
-        <div class="row"><span class="x">✕</span> Échéances DGI/CNSS oubliées, pénalités</div>
-        <div class="row"><span class="x">✕</span> Bulletins en retard, salariés qui doutent</div>
-        <div class="row"><span class="x">✕</span> Aucune trace, impossible à auditer</div>
+  <!-- =========================================================================
+       5. SECTION FONCTIONNALITÉS (Grille de 6 cartes blanches à icône teal au trait)
+       ========================================================================= -->
+  <section id="fonctionnalites" class="py-24 bg-brand-bg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- En-tête de section -->
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-extrabold text-brand-teal-dark bg-brand-teal-light px-3.5 py-1.5 rounded-full uppercase tracking-wider border border-brand-teal/20">
+          Couverture Intégrale
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-brand-indigo mt-4 mb-4 tracking-tight">
+          De l'embauche au virement, un seul outil
+        </h2>
+        <p class="text-base sm:text-lg text-brand-muted">
+          Conçu pour absorber toute la complexité administrative et fiscale béninoise sans alourdir votre quotidien.
+        </p>
       </div>
-      <div class="vs" data-reveal data-d="1">VS</div>
-      <div class="col good" data-reveal data-d="2">
-        <h4>Avec WaSalaire</h4>
-        <div class="row"><span class="c">✓</span> Calcul juste, conforme au CGI, en 3 min</div>
-        <div class="row"><span class="c">✓</span> Autonome, depuis votre téléphone</div>
-        <div class="row"><span class="c">✓</span> Échéances rappelées, fichiers prêts</div>
-        <div class="row"><span class="c">✓</span> Bulletins envoyés sur WhatsApp le jour J</div>
-        <div class="row"><span class="c">✓</span> Chaque montant tracé et reproductible</div>
+
+      <!-- Grille des 6 cartes avec hover qui soulève -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- Carte 1 : Calcul conforme -->
+        <div class="p-8 bg-white rounded-2xl border border-brand-border hover:shadow-card-lift hover:-translate-y-1.5 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-brand-teal-light flex items-center justify-center text-brand-teal mb-6">
+              <!-- Icône au trait : Calculatrice fiscale -->
+              <svg class="w-6 h-6 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75V18m-7.5-6.75h.008v.008H8.25v-.008zm0 3h.008v.008H8.25v-.008zm0 3h.008v.008H8.25v-.008zm3-6h.008v.008H11.25v-.008zm0 3h.008v.008H11.25v-.008zm0 3h.008v.008H11.25v-.008zm3-6h.008v.008H14.25v-.008zm0 3h.008v.008H14.25v-.008zM4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zM6.75 7.5h10.5"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-brand-indigo mb-2">Calcul conforme</h3>
+            <p class="text-sm text-brand-muted leading-relaxed">
+              Moteur déterministe certifié : barème progressif ITS 2026, cotisations CNSS plafonnées, VPS patronale (4 %) et respect strict du SMIG à 52 000 FCFA.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-brand-border/60 flex items-center text-xs font-bold text-brand-teal-dark">
+            <span>Règles versionnées DGI & CNSS</span>
+          </div>
+        </div>
+
+        <!-- Carte 2 : Bulletins & documents -->
+        <div class="p-8 bg-white rounded-2xl border border-brand-border hover:shadow-card-lift hover:-translate-y-1.5 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-brand-teal-light flex items-center justify-center text-brand-teal mb-6">
+              <!-- Icône au trait : Document & Certificat -->
+              <svg class="w-6 h-6 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-brand-indigo mb-2">Bulletins & documents</h3>
+            <p class="text-sm text-brand-muted leading-relaxed">
+              Fiches de paie PDF conformes au Code du travail béninois (Art. 224), envoyées directement sur le WhatsApp des salariés avec mot de passe IFU sécurisé.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-brand-border/60 flex items-center text-xs font-bold text-brand-teal-dark">
+            <span>Distribution automatique WhatsApp</span>
+          </div>
+        </div>
+
+        <!-- Carte 3 : Déclarations DGI & CNSS -->
+        <div class="p-8 bg-white rounded-2xl border border-brand-border hover:shadow-card-lift hover:-translate-y-1.5 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-brand-teal-light flex items-center justify-center text-brand-teal mb-6">
+              <!-- Icône au trait : Télétransmission DGI -->
+              <svg class="w-6 h-6 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-brand-indigo mb-2">Déclarations DGI & CNSS</h3>
+            <p class="text-sm text-brand-muted leading-relaxed">
+              Génération en un clic des bordereaux fiscaux au format e-Services DGI et listes nominatives CNSS. Rappels automatiques avant l'échéance du 10 du mois.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-brand-border/60 flex items-center text-xs font-bold text-brand-teal-dark">
+            <span>Export CSV certifié e-Bilan & e-DGI</span>
+          </div>
+        </div>
+
+        <!-- Carte 4 : Paiement mobile money -->
+        <div class="p-8 bg-white rounded-2xl border border-brand-border hover:shadow-card-lift hover:-translate-y-1.5 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-brand-teal-light flex items-center justify-center text-brand-teal mb-6">
+              <!-- Icône au trait : Transfert Mobile Money -->
+              <svg class="w-6 h-6 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-brand-indigo mb-2">Paiement mobile money</h3>
+            <p class="text-sm text-brand-muted leading-relaxed">
+              Règlement groupé instantané des salaires via MTN MoMo, Moov Money ou ordres de virement BOA/BIIC/Ecobank. Rapprochement bancaire sans friction.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-brand-border/60 flex items-center text-xs font-bold text-brand-teal-dark">
+            <span>Partenaire agréé FedaPay Bénin</span>
+          </div>
+        </div>
+
+        <!-- Carte 5 : Conformité & sécurité -->
+        <div class="p-8 bg-white rounded-2xl border border-brand-border hover:shadow-card-lift hover:-translate-y-1.5 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-brand-teal-light flex items-center justify-center text-brand-teal mb-6">
+              <!-- Icône au trait : Bouclier & Cadenas APDP -->
+              <svg class="w-6 h-6 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-brand-indigo mb-2">Conformité & sécurité</h3>
+            <p class="text-sm text-brand-muted leading-relaxed">
+              Données hébergées selon la Loi n° 2017-20 portant Code du numérique et certifiées APDP Bénin. Journal d'audit scellé immuable pour chaque modification.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-brand-border/60 flex items-center text-xs font-bold text-brand-teal-dark">
+            <span>Conformité Code du Numérique Bénin</span>
+          </div>
+        </div>
+
+        <!-- Carte 6 : Multi-société -->
+        <div class="p-8 bg-white rounded-2xl border border-brand-border hover:shadow-card-lift hover:-translate-y-1.5 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-brand-teal-light flex items-center justify-center text-brand-teal mb-6">
+              <!-- Icône au trait : Arborescence Multi-société -->
+              <svg class="w-6 h-6 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-brand-indigo mb-2">Multi-société</h3>
+            <p class="text-sm text-brand-muted leading-relaxed">
+              Basculez instantanément entre filiales ou clients de cabinet fiduciaire. Traitement en lot de campagnes de paie et consolidation de reporting RH.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-brand-border/60 flex items-center text-xs font-bold text-brand-teal-dark">
+            <span>Dédié experts-comptables & groupes</span>
+          </div>
+        </div>
+
       </div>
-    </div>
-  </div>
-</section>
 
-<!-- SPLIT 1 -->
-<section class="section alt">
-  <div class="container split">
-    <div class="txt" data-reveal>
-      <span class="eyebrow">Mobile-first</span>
-      <h2>Fait pour le téléphone, pas pour le bureau</h2>
-      <p class="muted">La plupart des patrons de TPE au Bénin n'ont pas d'ordinateur. WaSalaire tient dans la main : lancer la paie, valider, payer, envoyer les bulletins — tout depuis le mobile.</p>
-      <ul>
-        <li><span class="ck">✓</span> Connexion par numéro + code (SMS / WhatsApp)</li>
-        <li><span class="ck">✓</span> Gros boutons, zéro jargon, mode hors-ligne</li>
-        <li><span class="ck">✓</span> Le salarié reçoit son bulletin sur WhatsApp</li>
-      </ul>
     </div>
-    <div class="visual" data-reveal data-d="1">
-      <div class="p-card"><div class="p-row"><span>💬 Bulletin envoyé</span><span class="chip">WhatsApp</span></div><div class="p-row"><span>Septembre 2026 · KOFFI Alain</span><strong class="tabnum">176 300 F</strong></div></div>
-      <div class="p-card"><div class="p-row"><span>📱 MTN MoMo</span><span class="chip" style="background:#dcfce7;color:#166534">Confirmé</span></div><div class="p-row"><span>Ordre #A1C9 · idempotent</span><strong class="tabnum">176 300 F</strong></div></div>
-      <div class="p-card" style="margin-bottom:0"><div class="p-row"><span>⏰ Déclaration ITS/VPS</span><span class="chip">le 10</span></div></div>
-    </div>
-  </div>
-</section>
+  </section>
 
-<!-- SPLIT 2 -->
-<section class="section">
-  <div class="container split rev">
-    <div class="txt" data-reveal>
-      <span class="eyebrow">Conformité tracée</span>
-      <h2>Chaque chiffre a sa source</h2>
-      <p class="muted">La paie béninoise ne s'improvise pas. WaSalaire n'invente aucune règle : base ITS, taux CNSS, barème, AMO — tout est daté, versionné et rattaché au texte officiel.</p>
-      <ul>
-        <li><span class="ck">✓</span> Base ITS = brut, conforme au CGI (Art. 122 &amp; 124)</li>
-        <li><span class="ck">✓</span> CNSS 3,6 % / 6,4 % + prestations familiales, AT/MP par entreprise</li>
-        <li><span class="ck">✓</span> AMO prête (Décret 2025-672), activable à l'échéance</li>
-        <li><span class="ck">✓</span> Règles versionnées : un recalcul passé reste reproductible</li>
-      </ul>
-      <a class="btn btn-ghost" style="margin-top:22px" href="conformite.html">Voir notre conformité <span class="ar">→</span></a>
-    </div>
-    <div class="visual" data-reveal data-d="1">
-      <div class="p-row" style="font-weight:700;color:var(--indigo)"><span>Bulletin — base 200 000 F</span></div>
-      <div class="p-card" style="margin-top:12px">
-        <div class="p-row"><span class="muted">Brut</span><strong class="tabnum">200 000 F</strong></div>
-        <div class="p-row"><span class="muted">CNSS salarié (3,6 %)</span><span class="tabnum">− 7 200 F</span></div>
-        <div class="p-row"><span class="muted">ITS (barème CGI)</span><span class="tabnum">− 16 500 F</span></div>
+  <!-- =========================================================================
+       6. SECTION "LE MOIS EN 4 GESTES" (Étapes numérotées reliées)
+       ========================================================================= -->
+  <section id="etapes" class="py-24 bg-white border-y border-brand-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-xs font-extrabold text-brand-indigo bg-brand-indigo/5 px-3.5 py-1.5 rounded-full uppercase tracking-wider">
+          Simplicité Radicale
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-brand-indigo mt-4 mb-4 tracking-tight">
+          Le mois en 4 gestes
+        </h2>
+        <p class="text-base text-brand-muted">
+          Une interface guidée étape par étape qui prévient les erreurs avant de calculer.
+        </p>
       </div>
-      <div class="net" style="margin-top:12px"><div class="p-row"><span style="font-weight:700">Net à payer</span><span class="big tabnum">176 300 F</span></div></div>
-      <p class="muted" style="font-size:.8rem;margin-top:10px">Tooltip « base légale » derrière chaque ligne.</p>
-    </div>
-  </div>
-</section>
 
-<!-- PROMESSE (dark) + CONFORMITÉ -->
-<section class="section section-dark">
-  <div class="container" style="position:relative">
-    <div class="section-head" data-reveal style="margin-bottom:34px">
-      <span class="eyebrow">Notre promesse</span>
-      <h2 data-words>On ne vous fera jamais calculer une paie à l'aveugle.</h2>
-      <p>Chaque règle est datée, versionnée et rattachée à son texte officiel. Aucune valeur inventée.</p>
-    </div>
-    <div class="confband" data-reveal data-d="1">
-      <span class="cbadge"><span class="d"></span> CGI — Code général des impôts</span>
-      <span class="cbadge"><span class="d"></span> Loi 98-019 — CNSS</span>
-      <span class="cbadge"><span class="d"></span> Décret 2025-672 — AMO</span>
-      <span class="cbadge"><span class="d"></span> CCGT 2005</span>
-      <span class="cbadge"><span class="d"></span> SYSCOHADA</span>
-      <span class="cbadge"><span class="d"></span> OHADA — AUPSRVE</span>
-    </div>
-  </div>
-</section>
+      <div class="relative">
+        
+        <!-- Ligne connectrice continue (Desktop) -->
+        <div class="hidden lg:block absolute top-1/2 left-8 right-8 -translate-y-6 h-0.5 bg-brand-border -z-0"></div>
 
-<!-- PERSONA TEASER -->
-<section class="section">
-  <div class="container">
-    <div class="section-head" data-reveal><span class="eyebrow">Pour qui</span><h2>Deux façons de l'utiliser</h2></div>
-    <div class="persona">
-      <a class="pcard tpe" href="pour-qui.html" data-reveal>
-        <svg class="icon" style="position:absolute;top:18px;right:22px;width:50px;height:50px;opacity:.4;stroke-width:1.4"><use href="#i-phone"/></svg>
-        <h3>Je dirige une TPE</h3>
-        <p>Toute la paie depuis mon téléphone, sans comptable à côté.</p>
-        <span class="go">Découvrir <span class="ar">→</span></span>
-      </a>
-      <a class="pcard cab" href="pour-qui.html" data-reveal data-d="1">
-        <svg class="icon" style="position:absolute;top:18px;right:22px;width:50px;height:50px;opacity:.4;stroke-width:1.4"><use href="#i-org"/></svg>
-        <h3>Je gère un cabinet</h3>
-        <p>Tout mon portefeuille multi-sociétés, chaque dossier isolé.</p>
-        <span class="go">Découvrir <span class="ar">→</span></span>
-      </a>
-    </div>
-  </div>
-</section>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
+          
+          <!-- Étape 1 -->
+          <div class="bg-white p-6 rounded-2xl border border-brand-border flex flex-col items-start relative hover:border-brand-teal transition-all">
+            <div class="w-12 h-12 rounded-xl bg-brand-indigo text-white font-extrabold text-lg flex items-center justify-center mb-6 shadow-md ring-4 ring-white">
+              01
+            </div>
+            <h3 class="text-lg font-bold text-brand-indigo mb-2">Ouvrez la période</h3>
+            <p class="text-xs text-brand-muted leading-relaxed">
+              En un clic, le cycle du mois est initialisé avec l'ensemble des contrats actifs et les salaires de base habituels.
+            </p>
+          </div>
 
-<!-- PRICING TEASER -->
-<section class="section alt">
-  <div class="container">
-    <div class="section-head" data-reveal><span class="eyebrow">Tarifs</span><h2>Au prix d'un salarié, pas d'un comptable</h2><p>Gratuit jusqu'à 3 salariés. Ensuite, un prix par salarié et par mois, dégressif.</p></div>
-    <div style="text-align:center" data-reveal>
-      <a class="btn btn-dark btn-lg" href="tarifs.html">Voir les tarifs <span class="ar">→</span></a>
-    </div>
-  </div>
-</section>
+          <!-- Étape 2 -->
+          <div class="bg-white p-6 rounded-2xl border border-brand-border flex flex-col items-start relative hover:border-brand-teal transition-all">
+            <div class="w-12 h-12 rounded-xl bg-brand-indigo text-white font-extrabold text-lg flex items-center justify-center mb-6 shadow-md ring-4 ring-white">
+              02
+            </div>
+            <h3 class="text-lg font-bold text-brand-indigo mb-2">Saisissez les variables</h3>
+            <p class="text-xs text-brand-muted leading-relaxed">
+              Heures supplémentaires, primes exceptionnelles, avances déduites ou absences. Les anomalies sont surlignées en direct.
+            </p>
+          </div>
 
-<!-- FAQ -->
-<section class="section">
-  <div class="container">
-    <div class="section-head" data-reveal><span class="eyebrow">Questions</span><h2>Ce qu'on nous demande souvent</h2></div>
-    <div class="faq">
-      <details class="qa" data-reveal open><summary>Est-ce vraiment conforme à la réglementation béninoise ? <span class="plus">+</span></summary><div class="ans">Oui. Le moteur s'appuie sur le Code général des impôts, le Code de sécurité sociale (Loi 98-019), la CCGT 2005 et les décrets en vigueur. Aucune règle n'est inventée : chaque calcul est rattaché à sa source et à sa date d'effet.</div></details>
-      <details class="qa" data-reveal><summary>Je n'ai pas d'ordinateur, juste un téléphone. Ça marche ? <span class="plus">+</span></summary><div class="ans">C'est exactement pour ça que WaSalaire est pensé mobile-first. Vous lancez la paie, validez, payez et envoyez les bulletins depuis votre téléphone, même avec une connexion limitée.</div></details>
-      <details class="qa" data-reveal><summary>Comment mes salariés sont-ils payés ? <span class="plus">+</span></summary><div class="ans">Au choix, salarié par salarié : mobile money (MTN, Moov via FedaPay), virement bancaire, espèces ou chèque. Les ordres mobile money sont suivis et sécurisés contre le double paiement.</div></details>
-      <details class="qa" data-reveal><summary>Je suis cabinet comptable, je gère plusieurs sociétés. <span class="plus">+</span></summary><div class="ans">WaSalaire gère toute la hiérarchie cabinet → client → groupe → société → établissement. Chaque dossier est isolé, et vous pilotez des campagnes de paie multi-sociétés d'un coup d'œil.</div></details>
-      <details class="qa" data-reveal><summary>Mes données sont-elles en sécurité ? <span class="plus">+</span></summary><div class="ans">Isolation stricte entre sociétés, journal d'audit, gestion fine des droits et séparation des tâches (4 yeux) activable par l'administrateur. Vos données restent les vôtres.</div></details>
-    </div>
-  </div>
-</section>
+          <!-- Étape 3 -->
+          <div class="bg-white p-6 rounded-2xl border border-brand-border flex flex-col items-start relative hover:border-brand-teal transition-all">
+            <div class="w-12 h-12 rounded-xl bg-brand-teal text-brand-ink font-extrabold text-lg flex items-center justify-center mb-6 shadow-md ring-4 ring-white">
+              03
+            </div>
+            <h3 class="text-lg font-bold text-brand-indigo mb-2">Calculez & vérifiez</h3>
+            <p class="text-xs text-brand-muted leading-relaxed">
+              Le moteur applique le barème CGI et les plafonds CNSS. Vérification automatique de la conformité au SMIG.
+            </p>
+          </div>
 
-<!-- CTA -->
-<section class="section">
-  <div class="container">
-    <div class="cta-band" data-reveal>
-      <h2>La prochaine paie, vous la faites avec WaSalaire ?</h2>
-      <p>Commencez gratuitement jusqu'à 3 salariés. Mise en route en moins de 30 minutes.</p>
-      <div class="hero-cta"><a class="btn btn-primary btn-lg" href="https://app.wasalaire.techbybo.fr/login">Commencer gratuitement <span class="ar">→</span></a><a class="btn btn-ghost btn-lg" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.3)" href="tarifs.html">Voir les tarifs</a></div>
-    </div>
-  </div>
-</section>
+          <!-- Étape 4 -->
+          <div class="bg-white p-6 rounded-2xl border border-brand-border flex flex-col items-start relative hover:border-brand-teal transition-all">
+            <div class="w-12 h-12 rounded-xl bg-brand-indigo text-white font-extrabold text-lg flex items-center justify-center mb-6 shadow-md ring-4 ring-white">
+              04
+            </div>
+            <h3 class="text-lg font-bold text-brand-indigo mb-2">Payez & déclarez</h3>
+            <p class="text-xs text-brand-muted leading-relaxed">
+              Ordre de décaissement mobile money instantané, bordereau e-Services DGI généré et bulletins envoyés par WhatsApp.
+            </p>
+          </div>
 
-<!-- FOOTER -->
-<footer class="footer">
-  <div class="container">
-    <div class="f-grid">
-      <div>
-        <div class="f-brand"><img src="assets/logo-blanc.png" alt="WaSalaire" class="logo-img-foot"></div>
-        <p style="max-width:34ch;color:#94a3b8">La paie, simplement. Le logiciel de paie pensé pour les entreprises et cabinets du Bénin.</p>
+        </div>
+
       </div>
-      <div><h4>Produit</h4><a href="fonctionnalites.html">Fonctionnalités</a><a href="tarifs.html">Tarifs</a><a href="pour-qui.html">Pour qui</a><a href="conformite.html">Conformité</a></div>
-      <div><h4>Entreprise</h4><a href="a-propos.html">À propos</a><a href="contact.html">Contact</a><a href="faq.html">FAQ</a></div>
-      <div><h4>Légal</h4><a href="mentions-legales.html">Mentions légales</a><a href="mentions-legales.html#confidentialite">Confidentialité</a><a href="mentions-legales.html#cgu">CGU</a></div>
-    </div>
-    <div class="f-bottom"><span>© <span data-year>2026</span> WaSalaire — Cotonou, Bénin.</span><span>La paie, simplement.</span></div>
-  </div>
-</footer>
 
-<script src="assets/motion.js"></script>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       7. SECTION "AVANT / APRÈS" (Face à face avec pastille VS)
+       ========================================================================= -->
+  <section class="py-24 bg-brand-bg overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-brand-indigo tracking-tight">
+          Pourquoi changer votre routine de paie ?
+        </h2>
+        <p class="text-base text-brand-muted mt-3">
+          Comparez votre fin de mois actuelle avec la méthode WaSalaire.
+        </p>
+      </div>
+
+      <div class="relative grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch max-w-5xl mx-auto">
+        
+        <!-- Pastille centrale VS (Desktop & Mobile) -->
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 hidden lg:flex w-14 h-14 rounded-full bg-white border-2 border-brand-border shadow-lg items-center justify-center font-extrabold text-sm text-brand-indigo">
+          VS
+        </div>
+
+        <!-- Colonne SANS WaSalaire (Fond blanc, croix rouges) -->
+        <div class="bg-white rounded-3xl p-8 sm:p-10 border border-brand-border flex flex-col justify-between shadow-sm">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 text-brand-danger text-xs font-extrabold mb-6">
+              <span class="w-2 h-2 rounded-full bg-brand-danger"></span>
+              Sans WaSalaire (Fichiers Excel & Pression)
+            </div>
+            <h3 class="text-2xl font-bold text-brand-indigo mb-6">La corvée mensuelle imprécise</h3>
+            
+            <ul class="space-y-4 text-sm text-brand-muted">
+              <li class="flex items-start gap-3">
+                <div class="w-5 h-5 rounded-full bg-rose-100 text-brand-danger flex items-center justify-center shrink-0 mt-0.5">
+                  <svg class="w-3.5 h-3.5 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </div>
+                <span><strong>Calculs manuels sur Excel :</strong> risque permanent d'erreur de tranche d'ITS ou de dépassement de plafond CNSS.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <div class="w-5 h-5 rounded-full bg-rose-100 text-brand-danger flex items-center justify-center shrink-0 mt-0.5">
+                  <svg class="w-3.5 h-3.5 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </div>
+                <span><strong>Comptable à relancer :</strong> attente de plusieurs jours pour recevoir les fiches de paie imprimées au format papier.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <div class="w-5 h-5 rounded-full bg-rose-100 text-brand-danger flex items-center justify-center shrink-0 mt-0.5">
+                  <svg class="w-3.5 h-3.5 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </div>
+                <span><strong>Échéances fiscales oubliées :</strong> pénalités de retard DGI après le 10 du mois et amendes de déclaration CNSS.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <div class="w-5 h-5 rounded-full bg-rose-100 text-brand-danger flex items-center justify-center shrink-0 mt-0.5">
+                  <svg class="w-3.5 h-3.5 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </div>
+                <span><strong>Paiement individuel fastidieux :</strong> taper les numéros MoMo un par un au guichet avec risque d'erreur de saisie.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="mt-8 pt-4 border-t border-brand-border text-xs text-brand-muted">
+            Temps moyen constaté : <strong>3 à 5 jours</strong> par mois
+          </div>
+        </div>
+
+        <!-- Colonne AVEC WaSalaire (Carte Indigo Nuit, Coches Teal) -->
+        <div class="bg-brand-indigo rounded-3xl p-8 sm:p-10 text-white flex flex-col justify-between shadow-glow-indigo border border-brand-indigo-light relative">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-teal/20 text-brand-teal text-xs font-extrabold mb-6 border border-brand-teal/30">
+              <span class="w-2 h-2 rounded-full bg-brand-teal"></span>
+              Avec WaSalaire (Sérénité & Clarté)
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-6">Le contrôle total en quelques clics</h3>
+            
+            <ul class="space-y-4 text-sm text-slate-200">
+              <li class="flex items-start gap-3">
+                <div class="w-5 h-5 rounded-full bg-brand-teal text-brand-ink flex items-center justify-center shrink-0 mt-0.5">
+                  <svg class="w-3.5 h-3.5 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                  </svg>
+                </div>
+                <span><strong>Calcul juste en 3 minutes :</strong> moteur automatisé garanti conforme aux arrêtés du Ministère des Finances.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <div class="w-5 h-5 rounded-full bg-brand-teal text-brand-ink flex items-center justify-center shrink-0 mt-0.5">
+                  <svg class="w-3.5 h-3.5 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                  </svg>
+                </div>
+                <span><strong>Autonomie depuis le smartphone :</strong> validez la paie où que vous soyez (bureau, chantier ou déplacement).</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <div class="w-5 h-5 rounded-full bg-brand-teal text-brand-ink flex items-center justify-center shrink-0 mt-0.5">
+                  <svg class="w-3.5 h-3.5 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                  </svg>
+                </div>
+                <span><strong>Échéances rappelées à l'avance :</strong> alertes préventives J-3 par SMS et export direct du fichier e-Services.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <div class="w-5 h-5 rounded-full bg-brand-teal text-brand-ink flex items-center justify-center shrink-0 mt-0.5">
+                  <svg class="w-3.5 h-3.5 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                  </svg>
+                </div>
+                <span><strong>Décaissement instantané FedaPay :</strong> virement groupé sécurisé vers MTN et Moov en une seule validation.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="mt-8 pt-4 border-t border-brand-indigo-light text-xs text-brand-teal font-semibold">
+            Temps moyen avec WaSalaire : <strong>3 minutes chrono</strong>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       8. SECTION SOMBRE (Indigo nuit dégradé) "NOTRE PROMESSE"
+       ========================================================================= -->
+  <section id="conformite" class="py-24 bg-gradient-to-b from-brand-indigo-dark to-brand-indigo text-white relative overflow-hidden">
+    
+    <!-- Lueur subtile en arrière-plan -->
+    <div class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-brand-teal/10 rounded-full blur-3xl"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+      
+      <span class="text-xs font-extrabold text-brand-teal uppercase tracking-widest bg-white/10 px-4 py-1.5 rounded-full border border-white/10">
+        Engagement & Transparence
+      </span>
+
+      <!-- Grand titre blanc -->
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mt-6 mb-6 max-w-4xl mx-auto tracking-tight leading-tight">
+        « On ne vous fera jamais calculer une paie à l'aveugle. »
+      </h2>
+
+      <p class="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto mb-12">
+        Chaque retenue, chaque tranche et chaque exonération est adossée au texte légal officiel de la République du Bénin.
+      </p>
+
+      <!-- Rangée de badges pilule blancs à point vert -->
+      <div class="flex flex-wrap items-center justify-center gap-3 max-w-4xl mx-auto">
+        
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-brand-indigo font-bold text-xs sm:text-sm shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-brand-success"></span>
+          CGI (Code Général des Impôts Bénin)
+        </div>
+
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-brand-indigo font-bold text-xs sm:text-sm shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-brand-success"></span>
+          Loi 98-019 portant Code de Sécurité Sociale (CNSS)
+        </div>
+
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-brand-indigo font-bold text-xs sm:text-sm shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-brand-success"></span>
+          Décret 2025-672 (AMO Bénin)
+        </div>
+
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-brand-indigo font-bold text-xs sm:text-sm shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-brand-success"></span>
+          Convention CCGT 2005
+        </div>
+
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-brand-indigo font-bold text-xs sm:text-sm shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-brand-success"></span>
+          SYSCOHADA Révisé (Comptes 42, 43, 44, 64)
+        </div>
+
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-brand-indigo font-bold text-xs sm:text-sm shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-brand-success"></span>
+          OHADA Traité Harmonisé
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       9. SECTION PERSONAS (Deux grandes cartes en dégradé)
+       ========================================================================= -->
+  <section id="pour-qui" class="py-24 bg-brand-bg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-brand-indigo tracking-tight">
+          Une interface calibrée pour chaque profil
+        </h2>
+        <p class="text-base text-brand-muted mt-3">
+          Que vous soyez entrepreneur autonome ou cabinet gérant 50 dossiers clients.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        
+        <!-- Persona 1 : Patron de TPE (Dégradé Indigo) -->
+        <div class="rounded-3xl p-8 sm:p-10 bg-gradient-to-br from-brand-indigo to-brand-indigo-dark text-white flex flex-col justify-between shadow-xl relative overflow-hidden group hover:scale-[1.01] transition-transform">
+          <div class="relative z-10">
+            <div class="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-brand-teal mb-6">
+              <!-- Icône au trait : Dirigeant / Entrepreneur -->
+              <svg class="w-7 h-7 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+              </svg>
+            </div>
+            
+            <h3 class="text-2xl sm:text-3xl font-extrabold text-white mb-3">
+              « Je dirige une TPE »
+            </h3>
+            
+            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+              Boutique, restaurant, agence, atelier ou société de services de 1 à 25 salariés. Vous n'avez pas de DRH dédié. Vous voulez payer vite, sans erreur et respecter les lois sans jargon.
+            </p>
+
+            <div class="space-y-2.5 text-xs text-slate-200 mb-8 font-semibold">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                Application mobile ultra intuitive
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                Paiement direct par MTN MoMo & Moov Money
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                Gratuit jusqu'à 3 salariés
+              </div>
+            </div>
+          </div>
+
+          <div class="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between">
+            <span class="text-sm font-bold text-brand-teal">Espace Salariés & Patron</span>
+            <a href="#tarifs" class="inline-flex items-center text-sm font-extrabold text-white group-hover:translate-x-1 transition-transform">
+              Découvrir →
+            </a>
+          </div>
+        </div>
+
+        <!-- Persona 2 : Cabinet Fiduciaire (Dégradé Teal) -->
+        <div class="rounded-3xl p-8 sm:p-10 bg-gradient-to-br from-brand-teal-dark to-[#1B7068] text-white flex flex-col justify-between shadow-xl relative overflow-hidden group hover:scale-[1.01] transition-transform">
+          <div class="relative z-10">
+            <div class="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-white mb-6">
+              <!-- Icône au trait : Cabinet comptable / Immeuble -->
+              <svg class="w-7 h-7 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/>
+              </svg>
+            </div>
+            
+            <h3 class="text-2xl sm:text-3xl font-extrabold text-white mb-3">
+              « Je gère un cabinet »
+            </h3>
+            
+            <p class="text-slate-100 text-sm leading-relaxed mb-6">
+              Experts-comptables, fiduciaires et auditeurs. Vous supervisez des dizaines de dossiers clients simultanément avec un besoin absolu de traçabilité SYSCOHADA et d'exports e-Services.
+            </p>
+
+            <div class="space-y-2.5 text-xs text-slate-100 mb-8 font-semibold">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-white stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                Portefeuille multi-dossiers & droits d'accès granulaires
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-white stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                Génération automatique du journal d'OD SYSCOHADA
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-white stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                Campagne de clôture en lot et assistance IA explicable
+              </div>
+            </div>
+          </div>
+
+          <div class="relative z-10 pt-4 border-t border-white/20 flex items-center justify-between">
+            <span class="text-sm font-bold text-white">Console Web Professionnelle</span>
+            <a href="#tarifs" class="inline-flex items-center text-sm font-extrabold text-white group-hover:translate-x-1 transition-transform">
+              Découvrir →
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       10. SECTION TARIFS TEASER (Freemium béninois)
+       ========================================================================= -->
+  <section id="tarifs" class="py-24 bg-white border-y border-brand-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="bg-brand-bg rounded-3xl border border-brand-border p-8 sm:p-12 lg:p-16 max-w-4xl mx-auto text-center relative overflow-hidden">
+        
+        <span class="text-xs font-extrabold text-brand-teal-dark bg-brand-teal-light px-3.5 py-1.5 rounded-full uppercase tracking-wider border border-brand-teal/20">
+          Tarification Transparente
+        </span>
+
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-brand-indigo mt-4 mb-4 tracking-tight">
+          Au prix d'un salarié, pas d'un comptable
+        </h2>
+
+        <p class="text-base sm:text-lg text-brand-muted max-w-xl mx-auto mb-8">
+          Commencez gratuitement dès aujourd'hui. Faites évoluer votre abonnement uniquement quand votre équipe s'agrandit.
+        </p>
+
+        <!-- Grille des 2 formules simplifiées -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto text-left mb-10">
+          
+          <div class="bg-white p-6 rounded-2xl border-2 border-brand-teal shadow-sm">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xs font-extrabold uppercase text-brand-teal-dark tracking-wider">Formule TPE</span>
+              <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">Freemium</span>
+            </div>
+            <div class="text-3xl font-extrabold text-brand-indigo mb-1 tabular-nums">0 F <span class="text-sm font-medium text-brand-muted">/ mois</span></div>
+            <p class="text-xs text-brand-muted mb-4">Pour les TPE jusqu'à 3 salariés inclus.</p>
+            <div class="space-y-1.5 text-xs text-brand-indigo font-semibold">
+              <p>✓ Tous les calculs légaux Bénin</p>
+              <p>✓ Bulletins PDF & WhatsApp</p>
+              <p>✓ Déclarations DGI & CNSS</p>
+            </div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-brand-border hover:border-brand-indigo transition-colors shadow-sm">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xs font-extrabold uppercase text-brand-indigo tracking-wider">Croissance & Cabinet</span>
+              <span class="px-2 py-0.5 rounded-full bg-indigo-50 text-brand-indigo text-[10px] font-bold">Dès le 4e</span>
+            </div>
+            <div class="text-3xl font-extrabold text-brand-indigo mb-1 tabular-nums">1 500 F <span class="text-sm font-medium text-brand-muted">/ salarié</span></div>
+            <p class="text-xs text-brand-muted mb-4">Sans engagement, paiement MoMo mensuel.</p>
+            <div class="space-y-1.5 text-xs text-brand-indigo font-semibold">
+              <p>✓ Salariés illimités</p>
+              <p>✓ Rapprochement SYSCOHADA</p>
+              <p>✓ Support dédié à Cotonou</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="https://app.wasalaire.techbybo.fr/login" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl text-base font-extrabold text-brand-ink bg-brand-teal hover:bg-brand-teal-dark hover:shadow-glow-teal transition-all shadow-md active:scale-95">
+            Créer mon compte gratuit
+          </a>
+          <a href="https://app.wasalaire.techbybo.fr/login" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-4 rounded-xl text-sm font-bold text-brand-indigo bg-white border border-brand-border hover:bg-brand-indigo/5 transition-all">
+            Voir la grille tarifaire complète
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       11. SECTION FAQ (Accordéons épurés et interactifs)
+       ========================================================================= -->
+  <section id="faq" class="py-24 bg-brand-bg">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center mb-16">
+        <span class="text-xs font-extrabold text-brand-indigo bg-brand-indigo/5 px-3.5 py-1.5 rounded-full uppercase tracking-wider">
+          Réponses Claires
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-brand-indigo mt-4 mb-4 tracking-tight">
+          Questions fréquemment posées
+        </h2>
+        <p class="text-base text-brand-muted">
+          Tout ce que vous devez savoir avant de confier votre paie à WaSalaire.
+        </p>
+      </div>
+
+      <div class="space-y-4">
+        
+        <!-- FAQ 1 -->
+        <details class="group bg-white rounded-2xl border border-brand-border p-6 [&_summary::-webkit-details-marker]:none transition-all duration-200">
+          <summary class="flex items-center justify-between cursor-pointer font-bold text-lg text-brand-indigo">
+            <span>WaSalaire est-il vraiment à jour des barèmes fiscaux béninois ?</span>
+            <span class="ml-4 flex-shrink-0 w-8 h-8 rounded-full bg-brand-bg flex items-center justify-center text-brand-indigo group-open:rotate-180 transition-transform">
+              <svg class="w-4 h-4 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+              </svg>
+            </span>
+          </summary>
+          <div class="mt-4 pt-4 border-t border-brand-border text-sm text-brand-muted leading-relaxed">
+            Oui, absolument. WaSalaire intègre le barème par tranches de l'Impôt sur les Traitements et Salaires (ITS), le taux du Versement Patronal sur Salaires (VPS à 4 %), les plafonds de cotisations CNSS (Régime Général 16,4 % patronal et 3,6 % salarial), ainsi que la prévoyance AMO (Assurance Maladie Obligatoire). En cas de réforme fiscale promulguée par la DGI, le moteur est mis à jour sans frais supplémentaires.
+          </div>
+        </details>
+
+        <!-- FAQ 2 -->
+        <details class="group bg-white rounded-2xl border border-brand-border p-6 [&_summary::-webkit-details-marker]:none transition-all duration-200">
+          <summary class="flex items-center justify-between cursor-pointer font-bold text-lg text-brand-indigo">
+            <span>Comment mes employés reçoivent-ils leurs fiches de paie ?</span>
+            <summary-arrow></summary-arrow>
+            <span class="ml-4 flex-shrink-0 w-8 h-8 rounded-full bg-brand-bg flex items-center justify-center text-brand-indigo group-open:rotate-180 transition-transform">
+              <svg class="w-4 h-4 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+              </svg>
+            </span>
+          </summary>
+          <div class="mt-4 pt-4 border-t border-brand-border text-sm text-brand-muted leading-relaxed">
+            Dès validation de la période, chaque salarié reçoit son bulletin officiel au format PDF directement sur son compte WhatsApp officiel ou par SMS sécurisé. Le document est chiffré et protégé par son identifiant IFU ou son code confidentiel à 4 chiffres. Ils peuvent également y accéder depuis leur espace salarié mobile.
+          </div>
+        </details>
+
+        <!-- FAQ 3 -->
+        <details class="group bg-white rounded-2xl border border-brand-border p-6 [&_summary::-webkit-details-marker]:none transition-all duration-200">
+          <summary class="flex items-center justify-between cursor-pointer font-bold text-lg text-brand-indigo">
+            <span>Mes données sont-elles protégées conformément à la loi béninoise ?</span>
+            <span class="ml-4 flex-shrink-0 w-8 h-8 rounded-full bg-brand-bg flex items-center justify-center text-brand-indigo group-open:rotate-180 transition-transform">
+              <svg class="w-4 h-4 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+              </svg>
+            </span>
+          </summary>
+          <div class="mt-4 pt-4 border-t border-brand-border text-sm text-brand-muted leading-relaxed">
+            WaSalaire applique strictement les directives de l'APDP (Autorité de Protection des Données Personnelles) et les exigences de la Loi n° 2017-20 portant Code du numérique en République du Bénin. Vos données salariales, identifiants IFU et numéros de comptes bancaires sont chiffrés de bout en bout et hébergés dans des environnements bancaires sécurisés.
+          </div>
+        </details>
+
+        <!-- FAQ 4 -->
+        <details class="group bg-white rounded-2xl border border-brand-border p-6 [&_summary::-webkit-details-marker]:none transition-all duration-200">
+          <summary class="flex items-center justify-between cursor-pointer font-bold text-lg text-brand-indigo">
+            <span>Puis-je exporter mes écritures vers mon logiciel comptable ?</span>
+            <span class="ml-4 flex-shrink-0 w-8 h-8 rounded-full bg-brand-bg flex items-center justify-center text-brand-indigo group-open:rotate-180 transition-transform">
+              <svg class="w-4 h-4 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+              </svg>
+            </span>
+          </summary>
+          <div class="mt-4 pt-4 border-t border-brand-border text-sm text-brand-muted leading-relaxed">
+            Absolument. WaSalaire génère instantanément l'Opération Diverse (OD de paie) conforme au plan comptable SYSCOHADA Révisé (Comptes 641, 664, 431, 447, 421). Vous pouvez exporter ces écritures en un clic aux formats FEC, Excel ou CSV compatibles avec Sage, Tompro, QuickBooks ou votre logiciel fiduciaire habituel.
+          </div>
+        </details>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       12. SECTION CTA FINALE (Bande Indigo)
+       ========================================================================= -->
+  <section class="py-20 bg-brand-indigo text-white relative overflow-hidden">
+    
+    <!-- Halo teal diffus -->
+    <div class="pointer-events-none absolute -bottom-24 right-0 w-[500px] h-[500px] bg-brand-teal/20 rounded-full blur-3xl"></div>
+
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-6">
+        La prochaine paie, vous la faites avec WaSalaire ?
+      </h2>
+      
+      <p class="text-base sm:text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
+        Rejoignez les entreprises et cabinets béninois qui ont transformé leur fin de mois en une simple formalité de 3 minutes.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="#tarifs" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl text-base font-extrabold text-brand-ink bg-brand-teal hover:bg-brand-teal-dark hover:shadow-glow-teal transition-all shadow-lg active:scale-95">
+          Commencer gratuitement
+          <svg class="w-5 h-5 ml-2 stroke-2 stroke-current" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+          </svg>
+        </a>
+        <a href="https://app.wasalaire.techbybo.fr/login" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-4 rounded-xl text-base font-bold text-white bg-white/10 hover:bg-white/20 border border-white/20 transition-all">
+          Demander une démo cabinet
+        </a>
+      </div>
+
+      <div class="mt-8 flex items-center justify-center gap-6 text-xs text-slate-300 font-medium">
+        <span class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          Sans carte bancaire
+        </span>
+        <span class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          Opérationnel en 2 minutes
+        </span>
+        <span class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-brand-teal stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          Support local à Cotonou
+        </span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       13. PIED DE PAGE SOMBRE (Ink / Nuit)
+       ========================================================================= -->
+  <footer class="bg-brand-ink text-white pt-16 pb-12 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
+        
+        <!-- Logo & Présentation à gauche (2 colonnes) -->
+        <div class="lg:col-span-2">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-brand-teal flex items-center justify-center font-extrabold text-brand-ink text-lg">
+              WS
+            </div>
+            <span class="text-2xl font-extrabold tracking-tight text-white">
+              WaSalaire
+            </span>
+          </div>
+          <p class="text-sm font-semibold text-brand-teal italic mb-4">
+            « La paie, simplement. »
+          </p>
+          <p class="text-xs text-slate-400 leading-relaxed max-w-sm mb-6">
+            Solution SaaS de calcul de paie, télédéclarations DGI & CNSS et décaissements Mobile Money conforme à la réglementation de la République du Bénin.
+          </p>
+          <div class="flex items-center gap-2 text-xs font-semibold text-slate-400">
+            <span class="w-2 h-2 rounded-full bg-brand-success"></span>
+            Serveurs sécurisés · Cotonou & UEMOA
+          </div>
+        </div>
+
+        <!-- Colonne Produit -->
+        <div>
+          <h4 class="text-xs font-extrabold text-white uppercase tracking-wider mb-4">
+            Produit
+          </h4>
+          <ul class="space-y-2.5 text-xs text-slate-400 font-medium">
+            <li><a href="#fonctionnalites" class="hover:text-brand-teal transition-colors">Calcul & Barèmes Bénin</a></li>
+            <li><a href="#fonctionnalites" class="hover:text-brand-teal transition-colors">Distribution WhatsApp</a></li>
+            <li><a href="#fonctionnalites" class="hover:text-brand-teal transition-colors">Déclarations e-Services DGI</a></li>
+            <li><a href="#fonctionnalites" class="hover:text-brand-teal transition-colors">Télédéclarations CNSS</a></li>
+            <li><a href="#fonctionnalites" class="hover:text-brand-teal transition-colors">Rapprochement SYSCOHADA</a></li>
+            <li><a href="#fonctionnalites" class="hover:text-brand-teal transition-colors">Agrégation FedaPay MoMo</a></li>
+          </ul>
+        </div>
+
+        <!-- Colonne Entreprise -->
+        <div>
+          <h4 class="text-xs font-extrabold text-white uppercase tracking-wider mb-4">
+            Entreprise
+          </h4>
+          <ul class="space-y-2.5 text-xs text-slate-400 font-medium">
+            <li><a href="#pour-qui" class="hover:text-brand-teal transition-colors">Espace TPE</a></li>
+            <li><a href="#pour-qui" class="hover:text-brand-teal transition-colors">Portefeuille Cabinets</a></li>
+            <li><a href="#tarifs" class="hover:text-brand-teal transition-colors">Grille des tarifs</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-teal transition-colors">Programme Partenaires</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-teal transition-colors">Centre d'aide & Documentation</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-teal transition-colors">Contactez notre support</a></li>
+          </ul>
+        </div>
+
+        <!-- Colonne Légal -->
+        <div>
+          <h4 class="text-xs font-extrabold text-white uppercase tracking-wider mb-4">
+            Légal & Sécurité
+          </h4>
+          <ul class="space-y-2.5 text-xs text-slate-400 font-medium">
+            <li><a href="#conformite" class="hover:text-brand-teal transition-colors">Conformité DGI & CGI</a></li>
+            <li><a href="#conformite" class="hover:text-brand-teal transition-colors">Code de Sécurité Sociale CNSS</a></li>
+            <li><a href="#conformite" class="hover:text-brand-teal transition-colors">Protection des données APDP</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-teal transition-colors">Conditions Générales (CGU)</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-teal transition-colors">Politique de confidentialité</a></li>
+            <li><a href="https://app.wasalaire.techbybo.fr/login" class="hover:text-brand-teal transition-colors">Sécurité & Chiffrement</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Bas de page avec copyright -->
+      <div class="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+        <p>© 2026 WaSalaire Technologies SAS — Cotonou, Bénin. Tous droits réservés.</p>
+        <p class="flex items-center gap-1.5">
+          <span>Développé pour les équipes qui font avancer le Bénin 🇧🇯</span>
+        </p>
+      </div>
+
+    </div>
+  </footer>
+
 </body>
 </html>

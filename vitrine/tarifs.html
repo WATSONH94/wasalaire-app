@@ -1,132 +1,356 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <script>if("serviceWorker"in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})}).catch(function(){});if(self.caches){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k)})}).catch(function(){})}}</script>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Tarifs — WaSalaire</title>
-<meta name="description" content="Gratuit jusqu'à 3 salariés. Ensuite un prix par salarié et par mois, dégressif. Offre dédiée aux cabinets comptables.">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
-</head>
-<body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-<symbol id="i-calc" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8"/><path d="M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01M16 17h.01"/></symbol>
-<symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></symbol>
-<symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></symbol>
-<symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
-<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
-<symbol id="i-org" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l6-4v17"/><path d="M11 21V10l8 4v7"/><path d="M8 11h.01M8 15h.01M15 14h.01M15 18h.01"/></symbol>
-<symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
-<symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 4 13C4 7 11 4 19 4c0 8-4 16-8 16z"/><path d="M11 20c0-5 3-9 7-11"/></symbol>
-<symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M9 3a2 2 0 0 1 4 0c0 .6-.2 1 .5 1H16a1 1 0 0 1 1 1v2.5c0 .7.4.5 1 .5a2 2 0 0 1 0 4c-.6 0-1-.2-1 .5V19a1 1 0 0 1-1 1h-2.5c-.7 0-.5.4-.5 1a2 2 0 0 1-4 0c0-.6.2-1-.5-1H6a1 1 0 0 1-1-1v-2.5c0-.7-.4-.5-1-.5a2 2 0 0 1 0-4c.6 0 1 .2 1-.5V5a1 1 0 0 1 1-1h2.5c.7 0 .5-.4.5-1z"/></symbol>
-<symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.5 21a1.8 1.8 0 0 1-3 0"/></symbol>
-<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></symbol>
-<symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
-<symbol id="i-rocket" viewBox="0 0 24 24"><path d="M5 13c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z"/><path d="M12 15l-3-3a9 9 0 0 1 3-7c2.5-2.5 6-2.5 8-2 .5 2 .5 5.5-2 8a9 9 0 0 1-6 4z"/><path d="M15 9h.01"/></symbol>
-<symbol id="i-health" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
-<symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M6 21h12"/><path d="M5 7h14"/><path d="M7 7l-3 6a3 3 0 0 0 6 0z"/><path d="M17 7l3 6a3 3 0 0 1-6 0z"/></symbol>
-<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
-<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
-<symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M16 8l-2.5 5.5L8 16l2.5-5.5z"/></symbol>
-<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></symbol>
-<symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
-<symbol id="i-badge" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></symbol>
-</defs></svg>
-<div class="progress"></div>
-<header class="header"><div class="bar container">
-  <a class="brand" href="index.html"><img src="assets/logo.png" alt="WaSalaire — La paie, simplement." class="logo-img"></a>
-  <nav class="nav"><a class="link" href="fonctionnalites.html">Fonctionnalités</a><a class="link" href="pour-qui.html">Pour qui</a><a class="link" href="tarifs.html">Tarifs</a><a class="link" href="conformite.html">Conformité</a><a class="link" href="faq.html">FAQ</a><a class="link m-cta" href="https://app.wasalaire.techbybo.fr/login">Commencer →</a></nav>
-  <div class="nav-cta"><a class="btn btn-ghost" href="https://app.wasalaire.techbybo.fr/login" style="padding:10px 16px">Se connecter</a><a class="btn btn-primary" href="https://app.wasalaire.techbybo.fr/login">Commencer <span class="ar">→</span></a></div>
-  <button class="burger" aria-label="Menu"><span></span><span></span><span></span></button>
-</div></header>
+<!DOCTYPE html>
 
-<section class="page-hero">
-  <div class="aurora"></div><div class="hero-grid"></div>
-  <div class="container">
-    <span class="eyebrow" data-reveal>Tarifs</span>
-    <h1 data-reveal data-d="1">Au prix d'un salarié,<br>pas d'un comptable.</h1>
-    <p data-reveal data-d="2">Commencez gratuitement. Payez au salarié, par mois, avec un tarif qui baisse quand vous grandissez.</p>
-  </div>
+<html lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"surface-dim":"#dbd9e0","danger":"#B91C1C","warm-sand":"#F4D7B0","on-primary-fixed":"#000d60","on-error":"#ffffff","on-tertiary-fixed-variant":"#753311","on-tertiary-container":"#dc845b","primary":"#021064","outline-variant":"#c6c5d3","inverse-on-surface":"#f2eff7","secondary-fixed":"#70f8e8","border":"#E2E8F0","on-background":"#1b1b20","secondary":"#006a62","surface-tint":"#4c58a6","on-primary-container":"#8a95e9","on-secondary-fixed-variant":"#005049","error":"#ba1a1a","tertiary-fixed-dim":"#ffb595","on-secondary":"#ffffff","on-tertiary-fixed":"#351000","inverse-surface":"#303036","surface-bright":"#fbf8ff","on-primary":"#ffffff","on-primary-fixed-variant":"#343f8d","surface-container-lowest":"#ffffff","error-container":"#ffdad6","surface":"#FFFFFF","outline":"#767682","surface-variant":"#e4e1e9","on-tertiary":"#ffffff","on-secondary-container":"#007168","secondary-container":"#70f8e8","on-surface-variant":"#454651","surface-container-highest":"#e4e1e9","on-error-container":"#93000a","warning":"#D97706","surface-container":"#efedf4","background":"#F8FAFC","tertiary-container":"#5b2000","muted":"#64748B","surface-container-low":"#f5f2fa","inverse-primary":"#bcc3ff","on-secondary-fixed":"#00201d","primary-fixed-dim":"#bcc3ff","success":"#16A34A","secondary-fixed-dim":"#4fdbcc","surface-container-high":"#e9e7ee","on-surface":"#1b1b20","tertiary":"#391100","tertiary-fixed":"#ffdbcc","ink":"#0F172A","primary-fixed":"#dfe0ff","primary-container":"#1e2a78"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-xl":"1.5rem","space-md":"0.75rem","space-lg":"1rem","space-2xl":"2rem","space-xs":"0.25rem","margin":"1.5rem","gutter":"1rem","space-sm":"0.5rem"},"fontFamily":{"body-lg":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"subtitle-md":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"subtitle-lg":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"]},"fontSize":{"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"headline-lg":["28px",{"lineHeight":"36px","fontWeight":"800"}],"subtitle-md":["16px",{"lineHeight":"22px","fontWeight":"700"}],"label-lg":["13px",{"lineHeight":"18px","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","fontWeight":"600"}],"subtitle-lg":["18px",{"lineHeight":"24px","fontWeight":"700"}],"headline-md":["22px",{"lineHeight":"28px","fontWeight":"800"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased"><header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(15,23,42,0.06)]"><div class="h-20 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between"><a class="flex items-center gap-3 group" data-path="accueil" href="https://app.wasalaire.techbybo.fr/login"><div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center font-headline-md text-headline-md text-on-secondary-container shadow-[0_1px_4px_rgba(0,106,98,0.15)] group-hover:scale-105 transition-transform">W</div><div class="flex items-center gap-2"><span class="font-headline-md text-headline-md text-primary tracking-tight">WaSalaire</span><span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md uppercase tracking-wider">Bénin</span></div></a><nav class="hidden lg:flex items-center gap-8" data-active-classes="text-primary font-subtitle-md underline decoration-secondary-container decoration-2 underline-offset-8"><a class="text-on-surface-variant hover:text-on-surface font-body-md text-body-md transition-colors" data-path="fonctionnalites" href="https://app.wasalaire.techbybo.fr/login">Fonctionnalités</a><a class="text-on-surface-variant hover:text-on-surface font-body-md text-body-md transition-colors" data-path="pour-qui" href="https://app.wasalaire.techbybo.fr/login">Pour qui</a><a class="text-on-surface-variant hover:text-on-surface font-body-md text-body-md transition-colors" data-path="conformite-securite" href="https://app.wasalaire.techbybo.fr/login">Conformité & Sécurité</a><a aria-current="page" class="transition-colors text-primary font-subtitle-md underline decoration-secondary-container decoration-2 underline-offset-8" data-path="tarifs" href="https://app.wasalaire.techbybo.fr/login">Tarifs</a><a class="text-on-surface-variant hover:text-on-surface font-body-md text-body-md transition-colors" data-path="faq" href="https://app.wasalaire.techbybo.fr/login">FAQ</a></nav><div class="flex items-center gap-3"><a class="hidden sm:inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-surface text-primary border border-border font-label-lg text-label-lg hover:bg-surface-container-low hover:text-primary transition-all" data-path="connexion" href="https://app.wasalaire.techbybo.fr/login">Connexion</a><a class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-secondary-container text-ink font-subtitle-md text-subtitle-md hover:bg-secondary-fixed transition-all shadow-[0_1px_3px_rgba(15,23,42,0.08)]" data-path="inscription" href="https://app.wasalaire.techbybo.fr/login">Essai gratuit</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-1"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-background"><div class="flex flex-col w-full">
+<!-- SECTION 1: HEADER & BILLING TOGGLE -->
+<section class="relative w-full pt-12 pb-16 overflow-hidden">
+<!-- Subtle gradient background halo -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-gradient-to-b from-secondary-container/25 via-primary-fixed/20 to-transparent blur-3xl -z-10 pointer-events-none"></div>
+<div class="max-w-5xl mx-auto px-6 text-center flex flex-col items-center">
+<!-- Eyebrow -->
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary-container/30 text-secondary font-label-md text-label-md tracking-widest uppercase mb-6">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>Tarifs clairs & prédictibles</span>
+</div>
+<!-- Main Title -->
+<h1 class="font-headline-lg text-headline-lg text-primary max-w-2xl tracking-tight leading-tight mb-4">
+        Au prix d'un salarié, pas d'un comptable.
+      </h1>
+<!-- Subtitle -->
+<p class="font-subtitle-lg text-subtitle-lg text-muted max-w-xl mb-10">
+        Commencez gratuitement. Payez au salarié, par mois, avec un tarif qui baisse quand vous grandissez.
+      </p>
+<!-- Segmented Switch: Mensuel / Annuel -->
+<div class="inline-flex items-center p-1.5 rounded-xl bg-surface-container-low shadow-sm">
+<button aria-pressed="true" class="relative px-5 py-2 rounded-lg font-subtitle-md text-subtitle-md transition-all duration-200 bg-primary text-on-primary shadow-sm" id="toggle-mensuel" type="button">
+          Mensuel
+        </button>
+<button aria-pressed="false" class="relative flex items-center gap-2 px-5 py-2 rounded-lg font-subtitle-md text-subtitle-md text-muted hover:text-on-surface transition-all duration-200" id="toggle-annuel" type="button">
+<span>Annuel</span>
+<span class="px-2 py-0.5 rounded-md bg-warm-sand/50 text-tertiary-container font-label-md text-label-md tracking-tight">
+            −2 mois offerts
+          </span>
+</button>
+</div>
+</div>
 </section>
-
-<section class="section" style="padding-top:20px">
-  <div class="container" style="text-align:center">
-    <div class="toggle" data-reveal>
-      <button class="on" data-period="mensuel">Mensuel</button>
-      <button data-period="annuel">Annuel <span class="tag-save">−2 mois</span></button>
-    </div>
-    <div class="plans" style="text-align:left">
-      <div class="plan" data-reveal>
-        <div class="pname">Découverte</div>
-        <div class="price"><span>0 F</span><span class="muted" style="font-size:1rem">/mois</span></div>
-        <p class="muted">Pour démarrer et tester sur de vrais bulletins.</p>
-        <ul>
-          <li><span class="ck">✓</span> Jusqu'à 3 salariés</li>
-          <li><span class="ck">✓</span> Calcul, bulletins, contrôles</li>
-          <li><span class="ck">✓</span> App mobile + envoi WhatsApp</li>
-          <li><span class="ck">✓</span> 1 société</li>
-        </ul>
-        <a class="btn btn-ghost" href="https://app.wasalaire.techbybo.fr/login">Commencer</a>
-      </div>
-      <div class="plan feat" data-reveal data-d="1">
-        <div class="ribbon">Le plus choisi</div>
-        <div class="pname">Entreprise</div>
-        <div class="price"><span data-m="900 F" data-a="750 F">900 F</span><span class="muted" style="font-size:1rem">/salarié/mois</span></div>
-        <p class="muted">Pour les TPE/PME qui veulent tout automatiser.</p>
-        <ul>
-          <li><span class="ck">✓</span> Salariés illimités</li>
-          <li><span class="ck">✓</span> Déclarations DGI &amp; CNSS + AMO</li>
-          <li><span class="ck">✓</span> Paiement mobile money &amp; virement</li>
-          <li><span class="ck">✓</span> Comptabilité SYSCOHADA + export</li>
-          <li><span class="ck">✓</span> Congés, soldes de tout compte, WaDocs</li>
-          <li><span class="ck">✓</span> Support prioritaire</li>
-        </ul>
-        <a class="btn btn-primary" href="https://app.wasalaire.techbybo.fr/login">Commencer gratuitement <span class="ar">→</span></a>
-      </div>
-      <div class="plan" data-reveal data-d="2">
-        <div class="pname">Cabinet</div>
-        <div class="price"><span data-m="700 F" data-a="580 F">700 F</span><span class="muted" style="font-size:1rem">/salarié/mois</span></div>
-        <p class="muted">Pour les cabinets gérant plusieurs dossiers.</p>
-        <ul>
-          <li><span class="ck">✓</span> Tout « Entreprise »</li>
-          <li><span class="ck">✓</span> Portefeuille multi-sociétés illimité</li>
-          <li><span class="ck">✓</span> Campagnes de paie de masse</li>
-          <li><span class="ck">✓</span> Rôles &amp; accès par dossier (RBAC)</li>
-          <li><span class="ck">✓</span> Tarif dégressif par volume</li>
-        </ul>
-        <a class="btn btn-ghost" href="contact.html">Parler à l'équipe</a>
-      </div>
-    </div>
-    <p class="muted" data-reveal style="margin-top:22px;font-size:.9rem">Prix indicatifs en FCFA, HT. Paiement par mobile money ou virement. Remise annuelle = 2 mois offerts.</p>
-  </div>
+<!-- SECTION 2: PRICING GRID (3 CARDS) -->
+<section class="w-full pb-16">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+<!-- CARD 1: DÉCOUVERTE -->
+<div class="flex flex-col justify-between bg-surface rounded-2xl p-8 lg:p-9 shadow-sm hover:shadow-md transition-shadow">
+<div>
+<div class="flex items-center justify-between gap-4 mb-4">
+<h2 class="font-headline-md text-headline-md text-primary tracking-tight">Découverte</h2>
+<span class="px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-md text-label-md font-semibold">
+                Gratuit à vie
+              </span>
+</div>
+<p class="font-body-md text-body-md text-muted mb-6 min-h-[40px]">
+              Idéal pour les toutes petites structures qui souhaitent automatiser sans frais.
+            </p>
+<div class="flex items-baseline gap-2 mb-8">
+<span class="font-headline-lg text-[40px] text-primary tabular-nums tracking-tight font-extrabold">0 F</span>
+<span class="font-body-md text-body-md text-muted">/mois</span>
+</div>
+<!-- Features list -->
+<ul class="flex flex-col gap-3.5 mb-8 text-on-surface font-body-md text-body-md">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Jusqu'à <strong>3 salariés</strong> actifs inclus</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Calcul de paie déterministe certifié</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Bulletins de paie conformes DGT & CGI Bénin</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Contrôles réglementaires automatiques</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Application mobile patron & salarié</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Envoi direct des fiches par WhatsApp & PDF</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>1 société configurée</span>
+</li>
+</ul>
+</div>
+<a class="w-full inline-flex items-center justify-center py-3.5 px-6 rounded-xl bg-surface-container-low hover:bg-surface-container text-primary font-subtitle-md text-subtitle-md transition-colors text-center" data-path="inscription" href="https://app.wasalaire.techbybo.fr/login">
+            Commencer
+          </a>
+</div>
+<!-- CARD 2: ENTREPRISE (FEATURED) -->
+<div class="relative flex flex-col justify-between rounded-2xl p-8 lg:p-9 bg-primary text-on-primary shadow-xl lg:-mt-4 lg:mb-[-16px] z-10 overflow-hidden">
+<!-- Ambient card gradient / accent pill -->
+<div class="absolute -top-24 -right-24 w-60 h-60 bg-secondary-container/20 rounded-full blur-2xl pointer-events-none"></div>
+<div>
+<div class="flex items-center justify-between gap-4 mb-4">
+<h2 class="font-headline-md text-headline-md text-on-primary tracking-tight">Entreprise</h2>
+<span class="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md font-bold uppercase tracking-wider shadow-sm">
+                Le plus choisi
+              </span>
+</div>
+<p class="font-body-md text-body-md text-inverse-primary mb-6 min-h-[40px]">
+              Pour les PME en croissance voulant une conformité fiscale et sociale totale.
+            </p>
+<div class="flex items-baseline gap-2 mb-8">
+<span class="font-headline-lg text-[44px] text-on-primary tabular-nums tracking-tight font-extrabold" id="price-entreprise">900 F</span>
+<span class="font-body-md text-body-md text-inverse-primary" id="sub-entreprise">/salarié/mois</span>
+</div>
+<!-- Features list -->
+<ul class="flex flex-col gap-3.5 mb-8 text-on-primary font-body-md text-body-md">
+<li class="flex items-start gap-3 font-semibold text-secondary-container">
+<span class="material-symbols-outlined text-secondary-container text-[20px] flex-shrink-0 mt-0.5">add_circle</span>
+<span>Salariés illimités • Tout Découverte inclus</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary-container text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Télédéclarations DGI (ITS, VPS) & bordereaux CNSS</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary-container text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Gestion de l'AMO (Assurance Maladie Obligatoire)</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary-container text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Décaissement groupé MTN, Moov via FedaPay & virement</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary-container text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Comptabilité SYSCOHADA (OD de paie, export FEC/CSV)</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary-container text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Gestion RH : congés, solde de tout compte, registre légal</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary-container text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Module WaDocs (génération contrats & signatures)</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary-container text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Support prioritaire WhatsApp & téléphone à Cotonou</span>
+</li>
+</ul>
+</div>
+<a class="w-full inline-flex items-center justify-center py-4 px-6 rounded-xl bg-secondary-container hover:bg-secondary-fixed text-ink font-subtitle-md text-subtitle-md font-extrabold shadow-md transition-all text-center" data-path="inscription" href="https://app.wasalaire.techbybo.fr/login">
+            Commencer gratuitement
+          </a>
+</div>
+<!-- CARD 3: CABINET -->
+<div class="flex flex-col justify-between bg-surface rounded-2xl p-8 lg:p-9 shadow-sm hover:shadow-md transition-shadow">
+<div>
+<div class="flex items-center justify-between gap-4 mb-4">
+<h2 class="font-headline-md text-headline-md text-primary tracking-tight">Cabinet</h2>
+<span class="px-3 py-1 rounded-full bg-surface-container-high text-secondary font-label-md text-label-md font-semibold">
+                Multi-dossiers
+              </span>
+</div>
+<p class="font-body-md text-body-md text-muted mb-6 min-h-[40px]">
+              Pour les experts-comptables, fiduciaires et gestionnaires multi-sociétés.
+            </p>
+<div class="flex items-baseline gap-2 mb-8">
+<span class="font-headline-lg text-[40px] text-primary tabular-nums tracking-tight font-extrabold" id="price-cabinet">700 F</span>
+<span class="font-body-md text-body-md text-muted" id="sub-cabinet">/salarié/mois</span>
+</div>
+<!-- Features list -->
+<ul class="flex flex-col gap-3.5 mb-8 text-on-surface font-body-md text-body-md">
+<li class="flex items-start gap-3 font-semibold text-primary">
+<span class="material-symbols-outlined text-secondary text-[20px] flex-shrink-0 mt-0.5">add_circle</span>
+<span>Tout ce qui est inclus dans Entreprise</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Portefeuille multi-sociétés illimité</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Campagnes de paie de masse (calcul et clôture groupés)</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Matrice de rôles & droits d'accès granulaires par dossier</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Tarification dégressive au-delà de 200 salariés</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+<span>Gestionnaire de compte dédié & formation cabinet</span>
+</li>
+</ul>
+</div>
+<a class="w-full inline-flex items-center justify-center py-3.5 px-6 rounded-xl bg-surface-container-low hover:bg-surface-container text-primary font-subtitle-md text-subtitle-md transition-colors text-center" data-path="contact" href="https://app.wasalaire.techbybo.fr/login">
+            Parler à l'équipe
+          </a>
+</div>
+</div>
+</div>
 </section>
-
-<section class="section alt">
-  <div class="container">
-    <div class="section-head" data-reveal><span class="eyebrow">Sans mauvaise surprise</span><h2>Ce qui est toujours inclus</h2></div>
-    <div class="grid3">
-      <div class="card" data-reveal><div class="fic"><svg class="icon"><use href="#i-refresh"/></svg></div><h3>Mises à jour réglementaires</h3><p>Barèmes, taux et textes suivis et appliqués — sans surcoût.</p></div>
-      <div class="card" data-reveal data-d="1"><div class="fic"><svg class="icon"><use href="#i-lock"/></svg></div><h3>Sécurité &amp; sauvegardes</h3><p>Isolation des données, audit, sauvegardes. Inclus dans tous les plans.</p></div>
-      <div class="card" data-reveal data-d="2"><div class="fic"><svg class="icon"><use href="#i-rocket"/></svg></div><h3>Prise en main</h3><p>Onboarding guidé en moins de 30 minutes, en français.</p></div>
-    </div>
-  </div>
+<!-- SECTION 3: INFORMATIVE NOTE -->
+<section class="w-full pb-20">
+<div class="max-w-4xl mx-auto px-6">
+<div class="flex items-start gap-4 p-5 rounded-2xl bg-surface shadow-sm">
+<span class="material-symbols-outlined text-secondary text-[24px] flex-shrink-0 mt-0.5">info</span>
+<p class="font-body-md text-body-md text-muted leading-relaxed">
+<strong class="text-on-surface">Prix indicatifs en FCFA, hors taxes (HT).</strong> Paiement flexible par Mobile Money (MTN MoMo, Moov Money) ou virement bancaire. Remise annuelle : 2 mois offerts sur l'engagement annuel (soit 10 mois facturés pour 12 mois de service).
+        </p>
+</div>
+</div>
 </section>
+<!-- SECTION 4: TOUJOURS INCLUS -->
+<section class="w-full py-16 bg-surface-container-low/70">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<!-- Section Header -->
+<div class="text-center max-w-2xl mx-auto mb-12">
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight mb-3">
+          Ce qui ne vous coûtera jamais un franc de plus.
+        </h2>
+<p class="font-subtitle-md text-subtitle-md text-muted">
+          Toutes les formules bénéficient du même niveau d'exigence et de sécurité.
+        </p>
+</div>
+<!-- 3 Feature Pillars -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Pillar 1 -->
+<div class="bg-surface rounded-2xl p-7 shadow-sm flex flex-col items-start">
+<div class="w-12 h-12 rounded-xl bg-secondary-container/40 flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-secondary text-[26px]">gavel</span>
+</div>
+<h3 class="font-subtitle-lg text-subtitle-lg text-primary mb-3">
+            Mises à jour réglementaires automatiques
+          </h3>
+<p class="font-body-md text-body-md text-muted leading-relaxed">
+            Chaque modification du Code Général des Impôts, de la convention collective ou des barèmes CNSS/AMO est déployée immédiatement sans surcoût.
+          </p>
+</div>
+<!-- Pillar 2 -->
+<div class="bg-surface rounded-2xl p-7 shadow-sm flex flex-col items-start">
+<div class="w-12 h-12 rounded-xl bg-secondary-container/40 flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-secondary text-[26px]">security</span>
+</div>
+<h3 class="font-subtitle-lg text-subtitle-lg text-primary mb-3">
+            Sécurité & sauvegardes quotidiennes
+          </h3>
+<p class="font-body-md text-body-md text-muted leading-relaxed">
+            Hébergement certifié, chiffrement de bout en bout, conformité APDP Bénin (Loi n° 2017-20) et sauvegardes automatiques répliquées.
+          </p>
+</div>
+<!-- Pillar 3 -->
+<div class="bg-surface rounded-2xl p-7 shadow-sm flex flex-col items-start">
+<div class="w-12 h-12 rounded-xl bg-secondary-container/40 flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-secondary text-[26px]">speed</span>
+</div>
+<h3 class="font-subtitle-lg text-subtitle-lg text-primary mb-3">
+            Prise en main guidée < 30 min
+          </h3>
+<p class="font-body-md text-body-md text-muted leading-relaxed">
+            Assistant d'onboarding étape par étape, import simplifié de vos fichiers existants et accompagnement bienveillant pour votre premier cycle.
+          </p>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 5: FINAL CTA BANNER -->
+<section class="w-full py-16 px-6 lg:px-12">
+<div class="max-w-6xl mx-auto rounded-3xl bg-primary text-on-primary p-10 lg:p-14 relative overflow-hidden shadow-xl text-center flex flex-col items-center">
+<!-- Decorative geometric SVG circles -->
+<svg class="absolute -right-20 -bottom-20 w-96 h-96 opacity-10 pointer-events-none" fill="none" viewbox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<circle cx="100" cy="100" r="90" stroke="currentColor" stroke-width="2"></circle>
+<circle cx="100" cy="100" r="60" stroke="currentColor" stroke-width="2"></circle>
+<circle cx="100" cy="100" r="30" stroke="currentColor" stroke-width="2"></circle>
+</svg>
+<svg class="absolute -left-20 -top-20 w-96 h-96 opacity-10 pointer-events-none" fill="none" viewbox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<circle cx="100" cy="100" r="80" stroke="currentColor" stroke-width="2"></circle>
+</svg>
+<span class="px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md tracking-wider uppercase mb-5">
+        Sans carte bancaire • Sans engagement
+      </span>
+<h2 class="font-headline-lg text-headline-lg text-on-primary tracking-tight max-w-xl mb-4">
+        Essayez sur votre vraie paie.
+      </h2>
+<p class="font-subtitle-lg text-subtitle-lg text-inverse-primary max-w-xl mb-8 leading-relaxed">
+        Calculez votre prochain cycle gratuitement et sans engagement. Prenez 15 minutes pour vérifier la différence sur vos déclarations DGI et CNSS.
+      </p>
+<div class="flex flex-col sm:flex-row items-center gap-4 mb-8">
+<a class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-secondary-container hover:bg-secondary-fixed text-ink font-subtitle-md text-subtitle-md font-extrabold shadow-lg transition-transform hover:scale-105" data-path="inscription" href="https://app.wasalaire.techbybo.fr/login">
+<span>Commencer gratuitement</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</a>
+</div>
+<div class="flex flex-wrap items-center justify-center gap-6 text-inverse-primary font-label-lg text-label-lg">
+<span class="inline-flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary-container text-[18px]">verified</span>
+          Configuration immédiate
+        </span>
+<span class="inline-flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary-container text-[18px]">verified</span>
+          Conforme DGI & CNSS Bénin
+        </span>
+<span class="inline-flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary-container text-[18px]">verified</span>
+          Données hébergées en toute sécurité
+        </span>
+</div>
+</div>
+</section>
+<!-- Interactive vanilla JS for billing cycle toggle -->
+<script>
+    (function() {
+      const btnMensuel = document.getElementById('toggle-mensuel');
+      const btnAnnuel = document.getElementById('toggle-annuel');
+      const priceEntreprise = document.getElementById('price-entreprise');
+      const subEntreprise = document.getElementById('sub-entreprise');
+      const priceCabinet = document.getElementById('price-cabinet');
+      const subCabinet = document.getElementById('sub-cabinet');
 
-<section class="section"><div class="container"><div class="cta-band" data-reveal>
-  <h2>Essayez sur votre vraie paie</h2><p>Gratuit jusqu'à 3 salariés. Aucune carte requise.</p>
-  <div class="hero-cta"><a class="btn btn-primary btn-lg" href="https://app.wasalaire.techbybo.fr/login">Démarrer <span class="ar">→</span></a></div>
-</div></div></section>
+      if (!btnMensuel || !btnAnnuel) return;
 
-<footer class="footer"><div class="container">
-  <div class="f-grid">
-    <div><div class="f-brand"><img src="assets/logo-blanc.png" alt="WaSalaire" class="logo-img-foot"></div><p style="max-width:34ch;color:#94a3b8">La paie, simplement. Le logiciel de paie pensé pour les entreprises et cabinets du Bénin.</p></div>
-    <div><h4>Produit</h4><a href="fonctionnalites.html">Fonctionnalités</a><a href="tarifs.html">Tarifs</a><a href="pour-qui.html">Pour qui</a><a href="conformite.html">Conformité</a></div>
-    <div><h4>Entreprise</h4><a href="a-propos.html">À propos</a><a href="contact.html">Contact</a><a href="faq.html">FAQ</a></div>
-    <div><h4>Légal</h4><a href="mentions-legales.html">Mentions légales</a><a href="mentions-legales.html#confidentialite">Confidentialité</a><a href="mentions-legales.html#cgu">CGU</a></div>
-  </div>
-  <div class="f-bottom"><span>© <span data-year>2026</span> WaSalaire — Cotonou, Bénin.</span><span>La paie, simplement.</span></div>
-</div></footer>
-<script src="assets/motion.js"></script>
-</body></html>
+      function setBilling(isAnnual) {
+        if (isAnnual) {
+          // Annual active
+          btnAnnuel.className = 'relative flex items-center gap-2 px-5 py-2 rounded-lg font-subtitle-md text-subtitle-md transition-all duration-200 bg-primary text-on-primary shadow-sm';
+          btnAnnuel.setAttribute('aria-pressed', 'true');
+
+          btnMensuel.className = 'relative px-5 py-2 rounded-lg font-subtitle-md text-subtitle-md text-muted hover:text-on-surface transition-all duration-200';
+          btnMensuel.setAttribute('aria-pressed', 'false');
+
+          if (priceEntreprise) priceEntreprise.textContent = '750 F';
+          if (subEntreprise) subEntreprise.textContent = '/salarié/mois (9 000 F/an)';
+
+          if (priceCabinet) priceCabinet.textContent = '580 F';
+          if (subCabinet) subCabinet.textContent = '/salarié/mois (7 000 F/an)';
+        } else {
+          // Monthly active
+          btnMensuel.className = 'relative px-5 py-2 rounded-lg font-subtitle-md text-subtitle-md transition-all duration-200 bg-primary text-on-primary shadow-sm';
+          btnMensuel.setAttribute('aria-pressed', 'true');
+
+          btnAnnuel.className = 'relative flex items-center gap-2 px-5 py-2 rounded-lg font-subtitle-md text-subtitle-md text-muted hover:text-on-surface transition-all duration-200';
+          btnAnnuel.setAttribute('aria-pressed', 'false');
+
+          if (priceEntreprise) priceEntreprise.textContent = '900 F';
+          if (subEntreprise) subEntreprise.textContent = '/salarié/mois';
+
+          if (priceCabinet) priceCabinet.textContent = '700 F';
+          if (subCabinet) subCabinet.textContent = '/salarié/mois';
+        }
+      }
+
+      btnMensuel.addEventListener('click', function() { setBilling(false); });
+      btnAnnuel.addEventListener('click', function() { setBilling(true); });
+    })();
+  </script>
+</div></main><footer class="w-full bg-surface-container-low pt-16 pb-12 mt-16 border-t border-border"><div class="max-w-7xl mx-auto px-6 lg:px-12"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12"><div class="lg:col-span-2 flex flex-col gap-4"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-secondary-container flex items-center justify-center font-headline-md text-headline-md text-on-secondary-container">W</div><span class="font-headline-md text-headline-md text-primary tracking-tight">WaSalaire</span></div><p class="font-subtitle-md text-subtitle-md text-on-surface">La paie, simplement.</p><p class="font-body-md text-body-md text-on-surface-variant max-w-sm">Le moteur de gestion sociale et de paie automatisé conforme à 100% au Code du Travail et à la fiscalité de la République du Bénin.</p><div class="flex flex-col gap-2 pt-2 text-on-surface-variant font-body-md text-body-md"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-[20px]">location_on</span><span>Boulevard de la Marina, Cotonou, Bénin</span></div><div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-[20px]">call</span><span>+229 21 00 00 00</span></div><div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-[20px]">mail</span><span>support@wasalaire.bj</span></div></div></div><div class="flex flex-col gap-3"><h4 class="font-label-lg text-label-lg text-primary uppercase tracking-wider">Produit</h4><div class="flex flex-col gap-2 font-body-md text-body-md"><a class="text-on-surface-variant hover:text-on-surface transition-colors" data-path="fonctionnalites" href="https://app.wasalaire.techbybo.fr/login">Moteur de Paie</a><a class="text-on-surface-variant hover:text-on-surface transition-colors" data-path="fonctionnalites" href="https://app.wasalaire.techbybo.fr/login">Bulletins & Déclarations</a><a class="text-on-surface-variant hover:text-on-surface transition-colors" data-path="pour-qui" href="https://app.wasalaire.techbybo.fr/login">Pour PME & Cabinets</a><a class="text-on-surface-variant hover:text-on-surface transition-colors" data-path="tarifs" href="https://app.wasalaire.techbybo.fr/login">Simulateur de Tarifs</a></div></div><div class="flex flex-col gap-3"><h4 class="font-label-lg text-label-lg text-primary uppercase tracking-wider">Ressources</h4><div class="flex flex-col gap-2 font-body-md text-body-md"><a class="text-on-surface-variant hover:text-on-surface transition-colors" data-path="faq" href="https://app.wasalaire.techbybo.fr/login">Centre d'aide & FAQ</a><a class="text-on-surface-variant hover:text-on-surface transition-colors" data-path="conformite-securite" href="https://app.wasalaire.techbybo.fr/login">Guide Fiscal DGI 2024</a><a class="text-on-surface-variant hover:text-on-surface transition-colors" data-path="conformite-securite" href="https://app.wasalaire.techbybo.fr/login">Barèmes CNSS Bénin</a><a class="text-on-surface-variant hover:text-on-surface transition-colors" data-path="contact" href="https://app.wasalaire.techbybo.fr/login">Assistance dédiée</a></div></div><div class="flex flex-col gap-3"><h4 class="font-label-lg text-label-lg text-primary uppercase tracking-wider">Légal & Conformité</h4><div class="flex flex-col gap-2 font-body-md text-body-md"><a class="text-on-surface-variant hover:text-on-surface transition-colors" data-path="conformite-securite" href="https://app.wasalaire.techbybo.fr/login">Conformité DGI & CNSS</a><a class="text-on-surface-variant hover:text-on-surface transition-colors" data-path="conformite-securite" href="https://app.wasalaire.techbybo.fr/login">Protection APDP Bénin</a><a class="text-on-surface-variant hover:text-on-surface transition-colors" data-path="confidentialite" href="https://app.wasalaire.techbybo.fr/login">Politique de confidentialité</a><a class="text-on-surface-variant hover:text-on-surface transition-colors" data-path="cgu" href="https://app.wasalaire.techbybo.fr/login">Conditions d'utilisation</a></div></div></div><div class="pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4"><p class="font-body-md text-body-md text-on-surface-variant text-center sm:text-left">© WaSalaire — Cotonou, Bénin. Tous droits réservés.</p><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-success inline-block"></span><span class="font-label-md text-label-md text-on-surface-variant">Système 100% conforme DGI / CNSS Bénin</span></div></div></div></footer></body></html>

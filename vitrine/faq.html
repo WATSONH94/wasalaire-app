@@ -1,56 +1,345 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <script>if("serviceWorker"in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})}).catch(function(){});if(self.caches){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k)})}).catch(function(){})}}</script>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FAQ — WaSalaire</title>
-<meta name="description" content="Questions fréquentes sur WaSalaire : conformité, mobile money, cabinets, sécurité, mise en route.">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
-</head>
-<body>
-<div class="progress"></div>
-<header class="header"><div class="bar container">
-  <a class="brand" href="index.html"><img src="assets/logo.png" alt="WaSalaire — La paie, simplement." class="logo-img"></a>
-  <nav class="nav"><a class="link" href="fonctionnalites.html">Fonctionnalités</a><a class="link" href="pour-qui.html">Pour qui</a><a class="link" href="tarifs.html">Tarifs</a><a class="link" href="conformite.html">Conformité</a><a class="link" href="faq.html">FAQ</a><a class="link m-cta" href="https://app.wasalaire.techbybo.fr/login">Commencer →</a></nav>
-  <div class="nav-cta"><a class="btn btn-ghost" href="https://app.wasalaire.techbybo.fr/login" style="padding:10px 16px">Se connecter</a><a class="btn btn-primary" href="https://app.wasalaire.techbybo.fr/login">Commencer <span class="ar">→</span></a></div>
-  <button class="burger" aria-label="Menu"><span></span><span></span><span></span></button>
-</div></header>
+<!DOCTYPE html>
 
-<section class="page-hero" style="padding-bottom:20px">
-  <div class="aurora"></div><div class="hero-grid"></div>
-  <div class="container">
-    <span class="eyebrow" data-reveal>FAQ</span>
-    <h1 data-reveal data-d="1">Vos questions,<br>nos réponses.</h1>
-  </div>
-</section>
+<html lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#021064", "on-primary": "#ffffff", "secondary-fixed": "#70f8e8", "warning": "#D97706", "on-secondary-fixed": "#00201d", "background": "#F8FAFC", "inverse-primary": "#bcc3ff", "secondary": "#006a62", "on-secondary": "#ffffff", "surface-bright": "#fbf8ff", "on-tertiary-fixed": "#351000", "outline": "#767682", "surface-tint": "#4c58a6", "muted": "#64748B", "on-surface": "#1b1b20", "surface-container-low": "#f5f2fa", "on-error-container": "#93000a", "border": "#E2E8F0", "tertiary": "#391100", "tertiary-container": "#5b2000", "surface-container": "#efedf4", "danger": "#B91C1C", "inverse-on-surface": "#f2eff7", "warm-sand": "#F4D7B0", "primary-fixed-dim": "#bcc3ff", "secondary-container": "#70f8e8", "primary-container": "#1e2a78", "error": "#ba1a1a", "on-primary-fixed": "#000d60", "on-primary-container": "#8a95e9", "surface-dim": "#dbd9e0", "surface": "#FFFFFF", "tertiary-fixed-dim": "#ffb595", "inverse-surface": "#303036", "secondary-fixed-dim": "#4fdbcc", "on-tertiary-container": "#dc845b", "on-primary-fixed-variant": "#343f8d", "on-secondary-fixed-variant": "#005049", "tertiary-fixed": "#ffdbcc", "surface-variant": "#e4e1e9", "on-tertiary-fixed-variant": "#753311", "primary-fixed": "#dfe0ff", "outline-variant": "#c6c5d3", "on-background": "#1b1b20", "on-surface-variant": "#454651", "error-container": "#ffdad6", "on-tertiary": "#ffffff", "surface-container-high": "#e9e7ee", "success": "#16A34A", "surface-container-highest": "#e4e1e9", "on-error": "#ffffff", "on-secondary-container": "#007168", "ink": "#0F172A", "surface-container-lowest": "#ffffff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-md": "0.75rem", "margin": "1.5rem", "gutter": "1rem", "space-xs": "0.25rem", "space-2xl": "2rem", "space-lg": "1rem", "space-sm": "0.5rem", "space-xl": "1.5rem" }, fontFamily: { "headline-lg": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "subtitle-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "subtitle-md": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"] }, fontSize: { "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "800" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "subtitle-lg": ["18px", { "lineHeight": "24px", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "800" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "600" }], "label-lg": ["13px", { "lineHeight": "18px", "fontWeight": "600" }], "subtitle-md": ["16px", { "lineHeight": "22px", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }] } } } };</script></head><body class="bg-background font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-space-lg"><a class="flex items-center gap-space-md focus:outline-none" data-path="home" href="https://app.wasalaire.techbybo.fr/login"><div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-sm ring-2 ring-secondary-container/40"><span class="font-headline-md text-headline-md text-secondary-container leading-none select-none">W</span></div><div class="flex flex-col"><span class="font-headline-md text-headline-md text-primary tracking-tight leading-none">WaSalaire</span><span class="font-label-md text-label-md text-muted leading-tight mt-0.5">La paie, simplement.</span></div></a><nav class="hidden xl:flex items-center gap-space-xs p-1 rounded-xl" data-active-classes="bg-surface-container text-primary font-bold"><a class="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150" data-path="fonctionnalites" href="https://app.wasalaire.techbybo.fr/login">Fonctionnalités</a><a class="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150" data-path="pour-qui" href="https://app.wasalaire.techbybo.fr/login">Pour qui</a><a class="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150" data-path="tarifs" href="https://app.wasalaire.techbybo.fr/login">Tarifs</a><a class="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150" data-path="conformite-securite" href="https://app.wasalaire.techbybo.fr/login">Conformité &amp; Sécurité</a><a aria-current="page" class="px-space-md py-space-sm rounded-lg transition-colors duration-150 bg-surface-container text-primary font-bold" data-path="faq" href="https://app.wasalaire.techbybo.fr/login">FAQ</a><a class="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150" data-path="a-propos" href="https://app.wasalaire.techbybo.fr/login">À propos</a><a class="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150" data-path="contact" href="https://app.wasalaire.techbybo.fr/login">Contact</a></nav><div class="flex items-center gap-space-md"><a class="hidden sm:inline-flex items-center justify-center px-space-lg py-space-sm rounded-xl font-label-lg text-label-lg text-primary bg-surface hover:bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.04)] transition-all duration-150" data-path="login" href="https://app.wasalaire.techbybo.fr/login">Connexion</a><a class="inline-flex items-center justify-center px-space-xl py-space-md rounded-xl font-subtitle-md text-subtitle-md text-on-secondary-fixed bg-secondary-container hover:bg-secondary-fixed-dim transition-all duration-150 shadow-[0_1px_8px_rgba(0,0,0,0.04)]" data-path="essai-gratuit" href="https://app.wasalaire.techbybo.fr/login">Essai gratuit</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 ml-1"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Interactive Background Element -->
+<div class="relative w-full py-space-2xl px-6 lg:px-12 overflow-hidden">
+<div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[840px] h-[400px] bg-gradient-to-b from-secondary-container/20 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+<!-- Header Section -->
+<div class="max-w-3xl mx-auto text-center relative z-10 flex flex-col items-center">
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary-container/30 text-on-secondary-fixed mb-space-md">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+<span class="font-label-md text-label-md tracking-wider uppercase font-bold text-secondary">Foire aux questions</span>
+</div>
+<h1 class="font-headline-lg text-[36px] sm:text-[42px] leading-tight text-primary-container font-extrabold tracking-tight mb-space-sm">
+        Vos questions, nos réponses.
+      </h1>
+<p class="font-body-lg text-body-lg text-muted max-w-2xl mx-auto leading-relaxed">
+        Tout ce que vous devez savoir sur la gestion de paie, la conformité fiscale et sociale au Bénin, et le fonctionnement de WaSalaire.
+      </p>
+<!-- Quick Search Bar & Topic Filter -->
+<div class="w-full max-w-xl mt-space-xl">
+<div class="relative flex items-center bg-surface rounded-2xl shadow-sm border border-border p-2 focus-within:ring-2 focus-within:ring-secondary-container/80 transition-all">
+<span class="material-symbols-outlined text-muted ml-3 text-[22px]">search</span>
+<input class="w-full px-3 py-2 text-body-md text-on-surface placeholder:text-muted bg-transparent focus:outline-none" id="faq-search" placeholder="Rechercher une question ou un thème (ITS, CNSS, mobile, tarif...)" type="text"/>
+<button class="hidden text-muted hover:text-on-surface pr-3" id="clear-search" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- Filter Chips -->
+<div class="flex items-center justify-center gap-2 mt-4 flex-wrap text-label-md font-label-md">
+<button class="filter-chip px-3 py-1 rounded-full bg-primary text-on-primary transition-all" data-filter="all">Tous</button>
+<button class="filter-chip px-3 py-1 rounded-full bg-surface text-muted hover:text-on-surface border border-border transition-all" data-filter="fiscal">Fiscalité &amp; DGI</button>
+<button class="filter-chip px-3 py-1 rounded-full bg-surface text-muted hover:text-on-surface border border-border transition-all" data-filter="social">CNSS &amp; AMO</button>
+<button class="filter-chip px-3 py-1 rounded-full bg-surface text-muted hover:text-on-surface border border-border transition-all" data-filter="mobile">Mobile &amp; Virement</button>
+<button class="filter-chip px-3 py-1 rounded-full bg-surface text-muted hover:text-on-surface border border-border transition-all" data-filter="tarifs">Tarifs &amp; Cabinet</button>
+</div>
+</div>
+</div>
+<!-- Accordion Section -->
+<div class="max-w-[780px] mx-auto mt-space-2xl space-y-space-md relative z-10" id="faq-list">
+<!-- Question 1 (Open by default) -->
+<article class="faq-item group bg-surface rounded-2xl border border-secondary-container/70 shadow-sm transition-all duration-200" data-category="fiscal social" data-keywords="reglementation loi cgi benin code travail ccgt cnss conformite">
+<button aria-expanded="true" class="faq-trigger w-full flex items-center justify-between text-left p-5 sm:p-6" type="button">
+<span class="font-subtitle-lg text-subtitle-lg text-primary-container pr-4">
+            WaSalaire est-il conforme à la réglementation béninoise ?
+          </span>
+<div class="faq-icon-wrapper flex-shrink-0 w-9 h-9 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary transition-transform duration-200 rotate-45">
+<span class="material-symbols-outlined text-[20px] transition-transform font-bold">add</span>
+</div>
+</button>
+<div class="faq-content px-5 sm:px-6 pb-6 text-on-surface-variant font-body-md text-body-md leading-relaxed border-t border-border/40 pt-3">
+<p>
+            Oui, à 100 %. WaSalaire intègre nativement le Code Général des Impôts (CGI) du Bénin, le Code du Travail (Loi 2017-05), la Convention Collective Générale du Travail (CCGT 2005) et les décrets CNSS. Chaque calcul d’ITS, de VPS, de cotisations sociales ou d’indemnité légale est horodaté et rattaché à son article de loi de référence.
+          </p>
+</div>
+</article>
+<!-- Question 2 -->
+<article class="faq-item group bg-surface rounded-2xl border border-border shadow-sm transition-all duration-200" data-category="fiscal" data-keywords="its brut base cnss impot traitement salaire deduction cgi article 122">
+<button aria-expanded="false" class="faq-trigger w-full flex items-center justify-between text-left p-5 sm:p-6" type="button">
+<span class="font-subtitle-lg text-subtitle-lg text-primary-container pr-4">
+            La base de l'ITS, brut ou brut moins CNSS ?
+          </span>
+<div class="faq-icon-wrapper flex-shrink-0 w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-primary-container transition-transform duration-200">
+<span class="material-symbols-outlined text-[20px] transition-transform font-bold">add</span>
+</div>
+</button>
+<div class="faq-content hidden px-5 sm:px-6 pb-6 text-on-surface-variant font-body-md text-body-md leading-relaxed border-t border-border/40 pt-3">
+<p>
+            Conformément aux dispositions de l’article 122 et 124 du CGI de la République du Bénin, l’assiette de l’Impôt sur les Traitements et Salaires (ITS) est calculée sur le montant brut imposable des rémunérations. WaSalaire applique strictement cette règle légale sans déduction préalable de la part ouvrière CNSS, éliminant tout risque de redressement fiscal.
+          </p>
+</div>
+</article>
+<!-- Question 3 -->
+<article class="faq-item group bg-surface rounded-2xl border border-border shadow-sm transition-all duration-200" data-category="mobile" data-keywords="telephone smartphone mobile application web onboarding">
+<button aria-expanded="false" class="faq-trigger w-full flex items-center justify-between text-left p-5 sm:p-6" type="button">
+<span class="font-subtitle-lg text-subtitle-lg text-primary-container pr-4">
+            Je n'ai qu'un téléphone, puis-je tout faire ?
+          </span>
+<div class="faq-icon-wrapper flex-shrink-0 w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-primary-container transition-transform duration-200">
+<span class="material-symbols-outlined text-[20px] transition-transform font-bold">add</span>
+</div>
+</button>
+<div class="faq-content hidden px-5 sm:px-6 pb-6 text-on-surface-variant font-body-md text-body-md leading-relaxed border-t border-border/40 pt-3">
+<p>
+            Absolument. WaSalaire a été conçu selon une approche résolument mobile-first. Vous pouvez créer votre entreprise, ajouter vos collaborateurs, valider les variables, lancer le calcul de paie et ordonner les paiements directement depuis votre smartphone via l'application web ou mobile.
+          </p>
+</div>
+</article>
+<!-- Question 4 -->
+<article class="faq-item group bg-surface rounded-2xl border border-border shadow-sm transition-all duration-200" data-category="mobile" data-keywords="virement banque mobile money mtn momo moov boa ecobank bulletin whatsapp sms">
+<button aria-expanded="false" class="faq-trigger w-full flex items-center justify-between text-left p-5 sm:p-6" type="button">
+<span class="font-subtitle-lg text-subtitle-lg text-primary-container pr-4">
+            Comment mes salariés sont-ils payés ?
+          </span>
+<div class="faq-icon-wrapper flex-shrink-0 w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-primary-container transition-transform duration-200">
+<span class="material-symbols-outlined text-[20px] transition-transform font-bold">add</span>
+</div>
+</button>
+<div class="faq-content hidden px-5 sm:px-6 pb-6 text-on-surface-variant font-body-md text-body-md leading-relaxed border-t border-border/40 pt-3">
+<p>
+            En un clic, vous pouvez initier les virements bancaires (toutes banques de la place béninoise : BOA, Ecobank, BIIC, etc.) ou les paiements Mobile Money instantanés (MTN MoMo et Moov Money via nos partenaires agrégateurs agréés). Vos salariés reçoivent automatiquement leur bulletin certifié par SMS ou WhatsApp.
+          </p>
+</div>
+</article>
+<!-- Question 5 -->
+<article class="faq-item group bg-surface rounded-2xl border border-border shadow-sm transition-all duration-200" data-category="fiscal social" data-keywords="declarations dgi cnss e-services tele-declaration vps cotisations calendrier">
+<button aria-expanded="false" class="faq-trigger w-full flex items-center justify-between text-left p-5 sm:p-6" type="button">
+<span class="font-subtitle-lg text-subtitle-lg text-primary-container pr-4">
+            Et les déclarations DGI et CNSS ?
+          </span>
+<div class="faq-icon-wrapper flex-shrink-0 w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-primary-container transition-transform duration-200">
+<span class="material-symbols-outlined text-[20px] transition-transform font-bold">add</span>
+</div>
+</button>
+<div class="faq-content hidden px-5 sm:px-6 pb-6 text-on-surface-variant font-body-md text-body-md leading-relaxed border-t border-border/40 pt-3">
+<p>
+            À chaque clôture de cycle, WaSalaire génère automatiquement les bordereaux de télé-déclaration prêts pour la plateforme e-Services de la DGI (échéance le 10 du mois pour l'ITS et le VPS) et les fichiers normés pour la CNSS Cotonou (J+15). Un calendrier d'alertes vous prévient en amont.
+          </p>
+</div>
+</article>
+<!-- Question 6 -->
+<article class="faq-item group bg-surface rounded-2xl border border-border shadow-sm transition-all duration-200" data-category="tarifs" data-keywords="cabinet comptable expert multi-societes syscohada clients portefeuille">
+<button aria-expanded="false" class="faq-trigger w-full flex items-center justify-between text-left p-5 sm:p-6" type="button">
+<span class="font-subtitle-lg text-subtitle-lg text-primary-container pr-4">
+            Je suis cabinet, puis-je gérer plusieurs sociétés ?
+          </span>
+<div class="faq-icon-wrapper flex-shrink-0 w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-primary-container transition-transform duration-200">
+<span class="material-symbols-outlined text-[20px] transition-transform font-bold">add</span>
+</div>
+</button>
+<div class="faq-content hidden px-5 sm:px-6 pb-6 text-on-surface-variant font-body-md text-body-md leading-relaxed border-t border-border/40 pt-3">
+<p>
+            Parfaitement. Notre offre Cabinet permet de piloter un portefeuille multi-sociétés illimité avec isolation stricte des données par client. Vous disposez de campagnes de paie groupées, d'une gestion granulaire des droits par dossier et d'un export direct des écritures comptables selon le plan SYSCOHADA Révisé.
+          </p>
+</div>
+</article>
+<!-- Question 7 -->
+<article class="faq-item group bg-surface rounded-2xl border border-border shadow-sm transition-all duration-200" data-category="social" data-keywords="securite donnes apdp chiffrage hebergement otp authentification">
+<button aria-expanded="false" class="faq-trigger w-full flex items-center justify-between text-left p-5 sm:p-6" type="button">
+<span class="font-subtitle-lg text-subtitle-lg text-primary-container pr-4">
+            Mes données sont-elles en sécurité ?
+          </span>
+<div class="faq-icon-wrapper flex-shrink-0 w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-primary-container transition-transform duration-200">
+<span class="material-symbols-outlined text-[20px] transition-transform font-bold">add</span>
+</div>
+</button>
+<div class="faq-content hidden px-5 sm:px-6 pb-6 text-on-surface-variant font-body-md text-body-md leading-relaxed border-t border-border/40 pt-3">
+<p>
+            Vos données salariales et personnelles sont chiffrées de bout en bout et hébergées conformément aux exigences de l'Autorité de Protection des Données Personnelles (APDP Bénin, Loi n° 2017-20). L'accès est protégé par authentification forte à usage unique (OTP).
+          </p>
+</div>
+</article>
+<!-- Question 8 -->
+<article class="faq-item group bg-surface rounded-2xl border border-border shadow-sm transition-all duration-200" data-category="tarifs mobile" data-keywords="temps demarrer onboarding ifu configurer at mp accident travail">
+<button aria-expanded="false" class="faq-trigger w-full flex items-center justify-between text-left p-5 sm:p-6" type="button">
+<span class="font-subtitle-lg text-subtitle-lg text-primary-container pr-4">
+            Combien de temps pour démarrer ?
+          </span>
+<div class="faq-icon-wrapper flex-shrink-0 w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-primary-container transition-transform duration-200">
+<span class="material-symbols-outlined text-[20px] transition-transform font-bold">add</span>
+</div>
+</button>
+<div class="faq-content hidden px-5 sm:px-6 pb-6 text-on-surface-variant font-body-md text-body-md leading-relaxed border-t border-border/40 pt-3">
+<p>
+            Moins de 30 minutes. Notre assistant guidé d'onboarding vous permet de renseigner votre IFU, configurer vos taux d'accidents de travail (AT/MP) et importer vos premiers salariés facilement. Vous pouvez lancer votre premier cycle le jour même.
+          </p>
+</div>
+</article>
+<!-- Question 9 -->
+<article class="faq-item group bg-surface rounded-2xl border border-border shadow-sm transition-all duration-200" data-category="tarifs" data-keywords="cout prix tarif fcfa gratuit 900 700 abonnement micro-entreprise">
+<button aria-expanded="false" class="faq-trigger w-full flex items-center justify-between text-left p-5 sm:p-6" type="button">
+<span class="font-subtitle-lg text-subtitle-lg text-primary-container pr-4">
+            Que coûte WaSalaire ?
+          </span>
+<div class="faq-icon-wrapper flex-shrink-0 w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-primary-container transition-transform duration-200">
+<span class="material-symbols-outlined text-[20px] transition-transform font-bold">add</span>
+</div>
+</button>
+<div class="faq-content hidden px-5 sm:px-6 pb-6 text-on-surface-variant font-body-md text-body-md leading-relaxed border-t border-border/40 pt-3">
+<p>
+            WaSalaire est gratuit sans limite de temps pour les micro-entreprises jusqu'à 3 salariés. Au-delà, nos tarifs sont transparents : <span class="font-semibold text-ink font-mono">900 FCFA</span> par salarié et par mois pour la formule Entreprise, et <span class="font-semibold text-ink font-mono">700 FCFA</span> par salarié et par mois pour les cabinets d'expertise comptable, sans frais cachés.
+          </p>
+</div>
+</article>
+<!-- Question 10 -->
+<article class="faq-item group bg-surface rounded-2xl border border-border shadow-sm transition-all duration-200" data-category="social" data-keywords="amo assurance maladie obligatoire loi 2020-37 employeur salarie">
+<button aria-expanded="false" class="faq-trigger w-full flex items-center justify-between text-left p-5 sm:p-6" type="button">
+<span class="font-subtitle-lg text-subtitle-lg text-primary-container pr-4">
+            Gérez-vous l'AMO ?
+          </span>
+<div class="faq-icon-wrapper flex-shrink-0 w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-primary-container transition-transform duration-200">
+<span class="material-symbols-outlined text-[20px] transition-transform font-bold">add</span>
+</div>
+</button>
+<div class="faq-content hidden px-5 sm:px-6 pb-6 text-on-surface-variant font-body-md text-body-md leading-relaxed border-t border-border/40 pt-3">
+<p>
+            Oui. Le module d'Assurance Maladie Obligatoire (Décret d'application de la Loi 2020-37) avec répartition employeur (80 %) / salarié (20 %) et collecte unifiée est pré-paramétré dans le moteur de calcul et activable dès l'entrée en vigueur des obligations de votre secteur.
+          </p>
+</div>
+</article>
+<!-- No Results State -->
+<div class="hidden text-center py-12 bg-surface rounded-2xl border border-border p-8" id="no-results">
+<span class="material-symbols-outlined text-muted text-[40px] mb-2">search_off</span>
+<h3 class="font-subtitle-lg text-subtitle-lg text-primary-container mb-1">Aucune question trouvée</h3>
+<p class="font-body-md text-body-md text-muted">Essayez un autre mot-clé ou contactez directement notre équipe.</p>
+</div>
+</div>
+<!-- Bottom CTA Banner -->
+<div class="max-w-[780px] mx-auto mt-space-2xl mb-space-xl">
+<div class="relative overflow-hidden bg-primary-container text-on-primary rounded-3xl p-8 sm:p-10 shadow-lg border border-primary">
+<!-- Subtle line artwork -->
+<div class="absolute right-0 top-0 bottom-0 w-1/2 pointer-events-none opacity-10">
+<svg class="w-full h-full object-cover" fill="none" viewbox="0 0 400 400">
+<circle cx="300" cy="200" r="180" stroke="currentColor" stroke-width="2"></circle>
+<circle cx="300" cy="200" r="120" stroke="currentColor" stroke-dasharray="6 6" stroke-width="1.5"></circle>
+<circle cx="300" cy="200" r="60" stroke="currentColor" stroke-width="1.5"></circle>
+</svg>
+</div>
+<div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+<div class="max-w-md">
+<h2 class="font-headline-md text-headline-md text-on-primary font-bold tracking-tight mb-2">
+              Une autre question ?
+            </h2>
+<p class="font-body-md text-body-md text-primary-fixed leading-relaxed">
+              Notre équipe basée à Cotonou est disponible pour vous accompagner dans la prise en main de votre paie ou la migration depuis votre ancien système.
+            </p>
+</div>
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto flex-shrink-0">
+<a class="inline-flex items-center justify-center px-6 py-3 rounded-xl font-subtitle-md text-subtitle-md text-on-secondary-fixed bg-secondary-container hover:bg-secondary-fixed-dim transition-all shadow-sm font-bold text-center" data-path="essai-gratuit" href="https://app.wasalaire.techbybo.fr/login">
+              Créer un compte gratuit
+            </a>
+<a class="inline-flex items-center justify-center px-6 py-3 rounded-xl font-label-lg text-label-lg text-on-primary border border-primary-fixed/30 hover:bg-primary/40 transition-all text-center" data-path="contact" href="https://app.wasalaire.techbybo.fr/login">
+              Contacter le support
+            </a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function () {
+    const triggers = document.querySelectorAll('.faq-trigger');
+    const searchInput = document.getElementById('faq-search');
+    const clearButton = document.getElementById('clear-search');
+    const filterChips = document.querySelectorAll('.filter-chip');
+    const faqItems = document.querySelectorAll('.faq-item');
+    const noResults = document.getElementById('no-results');
 
-<section class="section" style="padding-top:20px"><div class="container">
-  <div class="faq">
-    <details class="qa" data-reveal open><summary>WaSalaire est-il conforme à la réglementation béninoise ? <span class="plus">+</span></summary><div class="ans">Oui. Le moteur s'appuie sur le Code général des impôts, le Code de sécurité sociale (Loi 98-019), la CCGT 2005, la Loi 2017-05 et les décrets en vigueur. Chaque règle est datée, versionnée et rattachée à sa source. Nos calculs sont destinés à être contresignés par des professionnels inscrits avant usage en production.</div></details>
-    <details class="qa" data-reveal><summary>La base de l'ITS, c'est le brut ou le brut moins CNSS ? <span class="plus">+</span></summary><div class="ans">Le Code général des impôts (Art. 122 et 124) retient le brut, sans déduction de la cotisation CNSS salariale. WaSalaire applique cette base par défaut, conformément au texte en vigueur.</div></details>
-    <details class="qa" data-reveal><summary>Je n'ai qu'un téléphone. Puis-je tout faire ? <span class="plus">+</span></summary><div class="ans">Oui — c'est le cœur de WaSalaire. Lancer la paie, vérifier, payer, envoyer les bulletins : tout depuis le mobile, y compris avec une connexion limitée (mode hors-ligne pour la saisie).</div></details>
-    <details class="qa" data-reveal><summary>Comment mes salariés sont-ils payés ? <span class="plus">+</span></summary><div class="ans">Au choix, salarié par salarié : mobile money (MTN, Moov via FedaPay), virement bancaire (UEMOA), espèces ou chèque. Les ordres mobile money sont idempotents et suivis — pas de double paiement.</div></details>
-    <details class="qa" data-reveal><summary>Et les déclarations DGI et CNSS ? <span class="plus">+</span></summary><div class="ans">WaSalaire prépare les déclarations ITS/VPS, la liste nominative CNSS et l'AMO, au format attendu par e-services, avec un échéancier (ITS le 10, CNSS J+15) et des rappels avant chaque date.</div></details>
-    <details class="qa" data-reveal><summary>Je suis cabinet comptable : puis-je gérer plusieurs sociétés ? <span class="plus">+</span></summary><div class="ans">Oui. Toute la hiérarchie cabinet → client → groupe → société → établissement est gérée, chaque dossier isolé. Vous pilotez des campagnes de paie multi-sociétés et déléguez par rôle.</div></details>
-    <details class="qa" data-reveal><summary>Mes données sont-elles en sécurité ? <span class="plus">+</span></summary><div class="ans">Isolation stricte entre sociétés (au niveau base de données), journal d'audit, droits par rôle × périmètre configurables, séparation des tâches (4 yeux) activable, connexion par code OTP. Démarche APDP en place.</div></details>
-    <details class="qa" data-reveal><summary>Combien de temps pour démarrer ? <span class="plus">+</span></summary><div class="ans">Moins de 30 minutes avec l'onboarding guidé : société, paramètres, salariés, accès. Vous pouvez importer vos salariés par fichier.</div></details>
-    <details class="qa" data-reveal><summary>Que coûte WaSalaire ? <span class="plus">+</span></summary><div class="ans">Gratuit jusqu'à 3 salariés. Au-delà, un prix par salarié et par mois, dégressif, avec une offre dédiée aux cabinets. Voir la page <a href="tarifs.html" style="color:var(--teal-600);font-weight:700">Tarifs</a>.</div></details>
-    <details class="qa" data-reveal><summary>Gérez-vous l'AMO (assurance maladie obligatoire) ? <span class="plus">+</span></summary><div class="ans">Oui, le module AMO est prêt (Décret 2025-672 : 80/20, collecte via CNSS) et paramétrable. Il reste inactif tant que la date d'effet officielle n'est pas renseignée, pour ne rien appliquer prématurément.</div></details>
-  </div>
-  <div style="text-align:center;margin-top:36px" data-reveal><a class="btn btn-primary btn-lg" href="contact.html">Une autre question ? Écrivez-nous <span class="ar">→</span></a></div>
-</div></section>
+    // Accordion Toggle Logic
+    triggers.forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const item = trigger.closest('.faq-item');
+        const content = item.querySelector('.faq-content');
+        const iconWrapper = trigger.querySelector('.faq-icon-wrapper');
+        const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
 
-<footer class="footer"><div class="container">
-  <div class="f-grid">
-    <div><div class="f-brand"><img src="assets/logo-blanc.png" alt="WaSalaire" class="logo-img-foot"></div><p style="max-width:34ch;color:#94a3b8">La paie, simplement. Le logiciel de paie pensé pour les entreprises et cabinets du Bénin.</p></div>
-    <div><h4>Produit</h4><a href="fonctionnalites.html">Fonctionnalités</a><a href="tarifs.html">Tarifs</a><a href="pour-qui.html">Pour qui</a><a href="conformite.html">Conformité</a></div>
-    <div><h4>Entreprise</h4><a href="a-propos.html">À propos</a><a href="contact.html">Contact</a><a href="faq.html">FAQ</a></div>
-    <div><h4>Légal</h4><a href="mentions-legales.html">Mentions légales</a><a href="mentions-legales.html#confidentialite">Confidentialité</a><a href="mentions-legales.html#cgu">CGU</a></div>
-  </div>
-  <div class="f-bottom"><span>© <span data-year>2026</span> WaSalaire — Cotonou, Bénin.</span><span>La paie, simplement.</span></div>
-</div></footer>
-<script src="assets/motion.js"></script>
-</body></html>
+        if (isExpanded) {
+          content.classList.add('hidden');
+          trigger.setAttribute('aria-expanded', 'false');
+          iconWrapper.classList.remove('rotate-45', 'bg-secondary-container/20', 'text-secondary');
+          iconWrapper.classList.add('bg-surface-container-low', 'text-primary-container');
+          item.classList.remove('border-secondary-container/70');
+          item.classList.add('border-border');
+        } else {
+          content.classList.remove('hidden');
+          trigger.setAttribute('aria-expanded', 'true');
+          iconWrapper.classList.add('rotate-45', 'bg-secondary-container/20', 'text-secondary');
+          iconWrapper.classList.remove('bg-surface-container-low', 'text-primary-container');
+          item.classList.add('border-secondary-container/70');
+          item.classList.remove('border-border');
+        }
+      });
+    });
+
+    // Search and Filter State
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    function filterFAQ() {
+      let visibleCount = 0;
+      const normalizedQuery = searchQuery.trim().toLowerCase();
+
+      faqItems.forEach(item => {
+        const keywords = (item.getAttribute('data-keywords') || '').toLowerCase();
+        const questionText = item.querySelector('.faq-trigger span').textContent.toLowerCase();
+        const categories = (item.getAttribute('data-category') || '').split(' ');
+
+        const matchesQuery = !normalizedQuery || 
+          keywords.includes(normalizedQuery) || 
+          questionText.includes(normalizedQuery);
+
+        const matchesCategory = currentFilter === 'all' || categories.includes(currentFilter);
+
+        if (matchesQuery && matchesCategory) {
+          item.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+
+      if (visibleCount === 0) {
+        noResults.classList.remove('hidden');
+      } else {
+        noResults.classList.add('hidden');
+      }
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        if (searchQuery.length > 0) {
+          clearButton.classList.remove('hidden');
+        } else {
+          clearButton.classList.add('hidden');
+        }
+        filterFAQ();
+      });
+    }
+
+    if (clearButton) {
+      clearButton.addEventListener('click', () => {
+        searchInput.value = '';
+        searchQuery = '';
+        clearButton.classList.add('hidden');
+        filterFAQ();
+        searchInput.focus();
+      });
+    }
+
+    filterChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        filterChips.forEach(c => {
+          c.classList.remove('bg-primary', 'text-on-primary');
+          c.classList.add('bg-surface', 'text-muted', 'border', 'border-border');
+        });
+        chip.classList.add('bg-primary', 'text-on-primary');
+        chip.classList.remove('bg-surface', 'text-muted', 'border', 'border-border');
+        currentFilter = chip.getAttribute('data-filter');
+        filterFAQ();
+      });
+    });
+  })();
+</script></main><footer class="w-full bg-surface shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="max-w-7xl mx-auto px-6 lg:px-12 py-space-2xl"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-space-2xl mb-space-2xl"><div class="lg:col-span-2 space-y-space-md"><div class="flex items-center gap-space-md"><div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-sm"><span class="font-headline-md text-headline-md text-secondary-container leading-none select-none">W</span></div><div class="flex flex-col"><span class="font-headline-md text-headline-md text-primary tracking-tight leading-none">WaSalaire</span><span class="font-label-md text-label-md text-muted mt-0.5">La paie, simplement.</span></div></div><p class="font-body-md text-body-md text-on-surface-variant max-w-sm">Solution moderne de gestion de paie, déclarations DGI et cotisations CNSS conçue pour les entreprises, cabinets et directeurs RH au Bénin.</p><div class="pt-space-xs space-y-1 font-body-md text-body-md text-muted"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-secondary text-[18px]">location_on</span><span>Haie Vive, Cotonou, République du Bénin</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-secondary text-[18px]">mail</span><span>contact@wasalaire.bj</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-secondary text-[18px]">call</span><span>+229 21 00 00 00</span></div></div></div><div class="space-y-space-md"><span class="font-subtitle-md text-subtitle-md text-primary block">Produit</span><ul class="space-y-space-sm font-body-md text-body-md"><li class="leading-none"><a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="fonctionnalites" href="https://app.wasalaire.techbybo.fr/login">Fonctionnalités</a></li><li class="leading-none"><a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="tarifs" href="https://app.wasalaire.techbybo.fr/login">Tarifs</a></li><li class="leading-none"><a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="app-mobile" href="https://app.wasalaire.techbybo.fr/login">App Mobile</a></li><li class="leading-none"><a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="conformite-securite" href="https://app.wasalaire.techbybo.fr/login">Sécurité &amp; Données</a></li></ul></div><div class="space-y-space-md"><span class="font-subtitle-md text-subtitle-md text-primary block">Ressources</span><ul class="space-y-space-sm font-body-md text-body-md"><li class="leading-none"><a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="documentation-dgi" href="https://app.wasalaire.techbybo.fr/login">Documentation DGI</a></li><li class="leading-none"><a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="baremes-cnss" href="https://app.wasalaire.techbybo.fr/login">Barèmes CNSS Bénin</a></li><li class="leading-none"><a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="faq" href="https://app.wasalaire.techbybo.fr/login">Foire aux questions</a></li><li class="leading-none"><a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="modeles-contrats" href="https://app.wasalaire.techbybo.fr/login">Modèles de contrats</a></li></ul></div><div class="space-y-space-md"><span class="font-subtitle-md text-subtitle-md text-primary block">Société</span><ul class="space-y-space-sm font-body-md text-body-md"><li class="leading-none"><a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="a-propos" href="https://app.wasalaire.techbybo.fr/login">À propos de nous</a></li><li class="leading-none"><a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="contact" href="https://app.wasalaire.techbybo.fr/login">Contact direct</a></li><li class="leading-none"><a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="mentions-legales" href="https://app.wasalaire.techbybo.fr/login">Mentions légales</a></li><li class="leading-none"><a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="conformite-apdp" href="https://app.wasalaire.techbybo.fr/login">Conformité APDP Bénin</a></li></ul></div></div><div class="pt-space-xl flex flex-col md:flex-row items-center justify-between gap-space-md text-muted font-label-md text-label-md"><p>© WaSalaire — Cotonou, Bénin. La paie, simplement.</p><div class="flex items-center gap-space-md"><span class="inline-flex items-center gap-1 text-secondary font-label-md text-label-md"><span class="material-symbols-outlined text-[16px]">verified_user</span>Conforme Code du Travail Béninois</span></div></div></div></footer></body></html>

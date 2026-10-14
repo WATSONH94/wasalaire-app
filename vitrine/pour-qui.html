@@ -1,84 +1,365 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <script>if("serviceWorker"in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})}).catch(function(){});if(self.caches){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k)})}).catch(function(){})}}</script>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Pour qui — WaSalaire</title>
-<meta name="description" content="WaSalaire pour les TPE/PME et pour les cabinets comptables du Bénin. Mobile-first pour les patrons, multi-dossiers pour les cabinets.">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
-</head>
-<body>
-<div class="progress"></div>
-<header class="header"><div class="bar container">
-  <a class="brand" href="index.html"><img src="assets/logo.png" alt="WaSalaire — La paie, simplement." class="logo-img"></a>
-  <nav class="nav"><a class="link" href="fonctionnalites.html">Fonctionnalités</a><a class="link" href="pour-qui.html">Pour qui</a><a class="link" href="tarifs.html">Tarifs</a><a class="link" href="conformite.html">Conformité</a><a class="link" href="faq.html">FAQ</a><a class="link m-cta" href="https://app.wasalaire.techbybo.fr/login">Commencer →</a></nav>
-  <div class="nav-cta"><a class="btn btn-ghost" href="https://app.wasalaire.techbybo.fr/login" style="padding:10px 16px">Se connecter</a><a class="btn btn-primary" href="https://app.wasalaire.techbybo.fr/login">Commencer <span class="ar">→</span></a></div>
-  <button class="burger" aria-label="Menu"><span></span><span></span><span></span></button>
-</div></header>
+<!DOCTYPE html>
 
-<section class="page-hero">
-  <div class="aurora"></div><div class="hero-grid"></div>
-  <div class="container">
-    <span class="eyebrow" data-reveal>Pour qui</span>
-    <h1 data-reveal data-d="1">Un outil, deux réalités<br>bien béninoises.</h1>
-    <p data-reveal data-d="2">Le patron de TPE qui fait tout depuis son téléphone. Le cabinet qui gère des dizaines de dossiers. WaSalaire parle aux deux.</p>
-  </div>
+<html lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>WaSalaire - La paie, simplement</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"inverse-primary":"#bcc3ff","danger":"#B91C1C","secondary-fixed-dim":"#4fdbcc","on-tertiary-fixed":"#351000","on-secondary-fixed-variant":"#005049","primary-container":"#1e2a78","warning":"#D97706","on-background":"#1b1b20","surface-container-highest":"#e4e1e9","tertiary-container":"#5b2000","on-surface":"#1b1b20","on-primary":"#ffffff","on-surface-variant":"#454651","primary-fixed-dim":"#bcc3ff","on-tertiary-fixed-variant":"#753311","inverse-on-surface":"#f2eff7","muted":"#64748B","outline-variant":"#c6c5d3","outline":"#767682","on-secondary-container":"#007168","surface-container-high":"#e9e7ee","surface-tint":"#4c58a6","tertiary-fixed-dim":"#ffb595","secondary-container":"#70f8e8","secondary-fixed":"#70f8e8","error":"#ba1a1a","on-secondary":"#ffffff","on-tertiary-container":"#dc845b","success":"#16A34A","surface-container-lowest":"#ffffff","tertiary":"#391100","inverse-surface":"#303036","tertiary-fixed":"#ffdbcc","ink":"#0F172A","background":"#F8FAFC","surface":"#FFFFFF","on-primary-fixed":"#000d60","secondary":"#006a62","primary-fixed":"#dfe0ff","on-error-container":"#93000a","warm-sand":"#F4D7B0","surface-dim":"#dbd9e0","error-container":"#ffdad6","primary":"#021064","surface-container":"#efedf4","on-primary-fixed-variant":"#343f8d","border":"#E2E8F0","on-secondary-fixed":"#00201d","surface-container-low":"#f5f2fa","on-tertiary":"#ffffff","surface-variant":"#e4e1e9","on-error":"#ffffff","surface-bright":"#fbf8ff","on-primary-container":"#8a95e9"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-2xl":"2rem","gutter":"1rem","space-sm":"0.5rem","space-lg":"1rem","space-xl":"1.5rem","space-md":"0.75rem","margin":"1.5rem","space-xs":"0.25rem"},"fontFamily":{"headline-md":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"subtitle-md":["Plus Jakarta Sans"],"subtitle-lg":["Plus Jakarta Sans"]},"fontSize":{"headline-md":["22px",{"lineHeight":"28px","fontWeight":"800"}],"headline-lg":["28px",{"lineHeight":"36px","fontWeight":"800"}],"label-lg":["13px",{"lineHeight":"18px","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"subtitle-md":["16px",{"lineHeight":"22px","fontWeight":"700"}],"subtitle-lg":["18px",{"lineHeight":"24px","fontWeight":"700"}]}}}};</script></head><body class="bg-background text-on-surface font-body-md text-body-md antialiased selection:bg-secondary-container selection:text-ink"><header class="fixed top-0 left-0 right-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(15,23,42,0.05)]"><div class="h-20 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-space-lg"><div class="flex items-center gap-space-md"><a class="flex items-center gap-space-sm" data-path="accueil" href="https://app.wasalaire.techbybo.fr/login"><div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-[24px]">payments</span></div><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-headline-md text-headline-md text-primary tracking-tight">WaSalaire</span><span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-[#008751]/10 text-[#008751] font-label-md text-[10px] font-bold tracking-wide uppercase border border-[#008751]/20">Bénin 🇧🇯</span></div><span class="font-label-md text-muted text-[11px] -mt-1 hidden sm:inline">La paie, simplement.</span></div></a></div><nav class="hidden xl:flex items-center gap-space-lg" data-active-classes="text-primary font-subtitle-md"><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors py-2" data-path="fonctionnalites" href="https://app.wasalaire.techbybo.fr/login">Fonctionnalités</a><a aria-current="page" class="transition-colors py-2 text-primary font-subtitle-md" data-path="pour-qui" href="https://app.wasalaire.techbybo.fr/login">Pour qui</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors py-2" data-path="tarifs" href="https://app.wasalaire.techbybo.fr/login">Tarifs</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors py-2" data-path="conformite" href="https://app.wasalaire.techbybo.fr/login">Conformité</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors py-2" data-path="faq" href="https://app.wasalaire.techbybo.fr/login">FAQ</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors py-2" data-path="a-propos" href="https://app.wasalaire.techbybo.fr/login">À propos</a></nav><div class="flex items-center gap-space-md"><a class="hidden sm:inline-flex items-center justify-center h-11 px-space-lg rounded-xl bg-surface border border-border text-primary font-subtitle-md text-subtitle-md hover:bg-surface-container-low transition-colors" data-path="connexion" href="https://app.wasalaire.techbybo.fr/login">Connexion</a><a class="inline-flex items-center justify-center h-11 px-space-lg rounded-xl bg-secondary-container text-ink font-headline-md text-label-lg shadow-sm hover:opacity-95 transition-opacity" data-path="inscription" href="https://app.wasalaire.techbybo.fr/login">Commencer gratuitement</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-background min-h-[calc(100vh-20rem)]"><div class="flex flex-col w-full">
+<section class="relative w-full py-16 lg:py-24 px-6 lg:px-12 bg-background overflow-hidden">
+<div class="max-w-7xl mx-auto flex flex-col items-center text-center">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container shadow-sm mb-6">
+<span class="material-symbols-outlined text-secondary text-[16px]">domain_verification</span>
+<span class="font-label-md text-label-md tracking-wider uppercase text-secondary font-bold">Pour qui</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg lg:text-[44px] lg:leading-[52px] text-primary tracking-tight max-w-4xl">
+        Un outil, deux réalités bien béninoises.
+      </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mt-4">
+        Le patron de TPE qui fait tout depuis son téléphone. Le cabinet qui gère des dizaines de dossiers.
+      </p>
+<div class="flex items-center gap-4 mt-8">
+<a class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface text-primary shadow-sm hover:bg-surface-container transition-colors" href="#section-tpe">
+<span class="material-symbols-outlined text-secondary text-[18px]">smartphone</span>
+<span class="font-subtitle-md text-subtitle-md">Dirigeants TPE</span>
+</a>
+<a class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface text-primary shadow-sm hover:bg-surface-container transition-colors" href="#section-cabinets">
+<span class="material-symbols-outlined text-secondary text-[18px]">account_balance</span>
+<span class="font-subtitle-md text-subtitle-md">Cabinets Comptables</span>
+</a>
+</div>
+</div>
 </section>
-
-<section class="section" style="padding-top:20px"><div class="container split">
-  <div class="txt" data-reveal>
-    <span class="eyebrow">TPE &amp; PME</span>
-    <h2>Vous dirigez. Vous n'êtes pas comptable.</h2>
-    <p class="muted">Pas besoin d'expert à côté de vous ni d'ordinateur. Vous lancez la paie, vous vérifiez, vous payez par mobile money, vos salariés reçoivent leur bulletin sur WhatsApp. Terminé.</p>
-    <ul>
-      <li><span class="ck">✓</span> Mobile-first, gros boutons, français clair</li>
-      <li><span class="ck">✓</span> Gratuit jusqu'à 3 salariés</li>
-      <li><span class="ck">✓</span> Déclarations et échéances rappelées à l'avance</li>
-    </ul>
-    <a class="btn btn-primary" style="margin-top:22px" href="contact.html">Je dirige une TPE <span class="ar">→</span></a>
-  </div>
-  <div class="visual" data-reveal data-d="1">
-    <div class="p-card"><div class="p-row"><span>📱 Lancer la paie</span><span class="chip">1 geste</span></div></div>
-    <div class="p-card"><div class="p-row"><span>Net à payer</span><strong class="tabnum">592 020 F</strong></div></div>
-    <div class="p-card" style="margin-bottom:0"><div class="p-row"><span>💬 Bulletins envoyés</span><span class="chip" style="background:#dcfce7;color:#166534">3/3</span></div></div>
-  </div>
-</div></section>
-
-<section class="section alt"><div class="container split rev">
-  <div class="txt" data-reveal>
-    <span class="eyebrow">Cabinets comptables</span>
-    <h2>Tout votre portefeuille, sous contrôle.</h2>
-    <p class="muted">Gérez cabinet → client → groupe → société → établissement, chaque dossier isolé. Lancez des campagnes de paie de masse, suivez l'avancement, déléguez par rôle sans jamais mélanger les données.</p>
-    <ul>
-      <li><span class="ck">✓</span> Multi-sociétés illimité, isolation stricte</li>
-      <li><span class="ck">✓</span> Campagnes de paie : calculer, clôturer, déclarer en masse</li>
-      <li><span class="ck">✓</span> Rôles &amp; accès par dossier, matrice de droits configurable</li>
-      <li><span class="ck">✓</span> Tarif dégressif par volume</li>
-    </ul>
-    <a class="btn btn-dark" style="margin-top:22px" href="contact.html">Je gère un cabinet <span class="ar">→</span></a>
-  </div>
-  <div class="visual" data-reveal data-d="1">
-    <div class="p-row" style="font-weight:700;color:var(--indigo)"><span>Campagne — Septembre</span><span class="chip">66 %</span></div>
-    <div class="p-card" style="margin-top:12px"><div class="p-row"><span>Groupe ADJOVI</span><span class="chip" style="background:#e0e7ff;color:#3730a3">En cours</span></div><div class="p-row"><span>Hôtel du Lac</span><span class="chip" style="background:#dcfce7;color:#166534">Validée</span></div><div class="p-row"><span>Pharma Plus</span><span class="chip">À préparer</span></div></div>
-  </div>
-</div></section>
-
-<section class="section"><div class="container"><div class="cta-band" data-reveal>
-  <h2>Quelle que soit votre taille</h2><p>Commencez gratuitement, montez en puissance quand vous voulez.</p>
-  <div class="hero-cta"><a class="btn btn-primary btn-lg" href="https://app.wasalaire.techbybo.fr/login">Commencer gratuitement <span class="ar">→</span></a></div>
-</div></div></section>
-
-<footer class="footer"><div class="container">
-  <div class="f-grid">
-    <div><div class="f-brand"><img src="assets/logo-blanc.png" alt="WaSalaire" class="logo-img-foot"></div><p style="max-width:34ch;color:#94a3b8">La paie, simplement. Le logiciel de paie pensé pour les entreprises et cabinets du Bénin.</p></div>
-    <div><h4>Produit</h4><a href="fonctionnalites.html">Fonctionnalités</a><a href="tarifs.html">Tarifs</a><a href="pour-qui.html">Pour qui</a><a href="conformite.html">Conformité</a></div>
-    <div><h4>Entreprise</h4><a href="a-propos.html">À propos</a><a href="contact.html">Contact</a><a href="faq.html">FAQ</a></div>
-    <div><h4>Légal</h4><a href="mentions-legales.html">Mentions légales</a><a href="mentions-legales.html#confidentialite">Confidentialité</a><a href="mentions-legales.html#cgu">CGU</a></div>
-  </div>
-  <div class="f-bottom"><span>© <span data-year>2026</span> WaSalaire — Cotonou, Bénin.</span><span>La paie, simplement.</span></div>
-</div></footer>
-<script src="assets/motion.js"></script>
-</body></html>
+<section class="w-full py-16 lg:py-24 px-6 lg:px-12 bg-surface" id="section-tpe">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+<div class="lg:col-span-6 flex flex-col">
+<div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-lg bg-surface-container w-fit mb-4">
+<span class="material-symbols-outlined text-secondary text-[16px]">storefront</span>
+<span class="font-label-md text-label-md text-secondary font-bold uppercase tracking-wide">PME &amp; Entreprises locales</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">
+          TPE &amp; PME — Vous dirigez. Vous n’êtes pas comptable.
+        </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-4 mb-8">
+          Pilotez vos obligations salariales sans lourdeur administrative. Une application légère, transparente et calibrée pour les gérants qui se concentrent sur la croissance de leur activité.
+        </p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+<div class="p-4 rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-2">
+<div class="w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[20px]">touch_app</span>
+</div>
+<span class="font-subtitle-md text-subtitle-md text-primary">Ergonomie smartphone</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Larges commandes tactiles et termes simples, exploitables directement sur le terrain.</span>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-2">
+<div class="w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-secondary shadow-sm">
+<span class="material-symbols-outlined text-[20px]">verified</span>
+</div>
+<span class="font-subtitle-md text-subtitle-md text-primary">Gratuit jusqu’à 3 salariés</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Accès sans frais aux calculs et téléchargement illimité des fiches certifiées.</span>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-2">
+<div class="w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-warning shadow-sm">
+<span class="material-symbols-outlined text-[20px]">alarm</span>
+</div>
+<span class="font-subtitle-md text-subtitle-md text-primary">Alertes échéances légales</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Notifications anticipées pour les déclarations DGI au 10 et CNSS au 15 de chaque mois.</span>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-2">
+<div class="w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[20px]">send_to_mobile</span>
+</div>
+<span class="font-subtitle-md text-subtitle-md text-primary">Diffusion WhatsApp</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Distribution sécurisée et instantanée des bulletins officiels sur messagerie.</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<a class="inline-flex items-center justify-center h-12 px-6 rounded-xl bg-secondary-container text-ink font-subtitle-md text-subtitle-md shadow-sm hover:opacity-90 transition-opacity" data-path="inscription" href="https://app.wasalaire.techbybo.fr/login">
+            Je dirige une TPE
+            <span class="material-symbols-outlined ml-2 text-[20px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<div class="lg:col-span-6 flex justify-center">
+<div class="w-full max-w-[420px] rounded-3xl bg-surface-container-highest p-4 shadow-xl">
+<div class="w-full rounded-2xl bg-surface p-5 shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between pb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">phone_iphone</span>
+<span class="font-subtitle-md text-subtitle-md text-primary">WaSalaire Mobile</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-secondary font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+                Nov 2025
+              </span>
+</div>
+<div class="p-4 rounded-xl bg-primary text-on-primary shadow-sm flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-inverse-primary tracking-wide uppercase">Paie mensuelle</span>
+<span class="material-symbols-outlined text-secondary-fixed text-[20px]">bolt</span>
+</div>
+<div>
+<span class="font-body-md text-body-md text-inverse-primary block">Net total à régler</span>
+<span class="font-headline-lg text-headline-lg tracking-tight font-extrabold text-on-primary">592 020 FCFA</span>
+</div>
+<button class="w-full h-11 rounded-lg bg-secondary-container text-ink font-subtitle-md text-subtitle-md flex items-center justify-center gap-2 shadow-sm hover:opacity-95" type="button">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+                Lancer la paie de Novembre
+              </button>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-muted uppercase">Salariés inscrits</span>
+<span class="font-label-md text-label-md text-primary font-bold">3 collaborateurs</span>
+</div>
+<div class="p-3 rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-label-md text-label-md font-bold">
+                    KA
+                  </div>
+<div>
+<span class="font-subtitle-md text-body-md text-primary block leading-tight">K. Agbodjan</span>
+<span class="font-label-md text-label-md text-muted">Contrat CDI</span>
+</div>
+</div>
+<span class="font-subtitle-md text-subtitle-md text-on-surface">220 500 FCFA</span>
+</div>
+<div class="p-3 rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-label-md text-label-md font-bold">
+                    MD
+                  </div>
+<div>
+<span class="font-subtitle-md text-body-md text-primary block leading-tight">M. Dossou</span>
+<span class="font-label-md text-label-md text-muted">Contrat CDI</span>
+</div>
+</div>
+<span class="font-subtitle-md text-subtitle-md text-on-surface">195 020 FCFA</span>
+</div>
+<div class="p-3 rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-label-md text-label-md font-bold">
+                    SB
+                  </div>
+<div>
+<span class="font-subtitle-md text-body-md text-primary block leading-tight">S. Bio</span>
+<span class="font-label-md text-label-md text-muted">Contrat CDD</span>
+</div>
+</div>
+<span class="font-subtitle-md text-subtitle-md text-on-surface">176 500 FCFA</span>
+</div>
+</div>
+<div class="p-3 rounded-xl bg-surface-container flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-success text-[20px]">task_alt</span>
+<div>
+<span class="font-subtitle-md text-body-md text-primary block leading-tight">Bulletins envoyés</span>
+<span class="font-label-md text-label-md text-muted">Canal WhatsApp vérifié</span>
+</div>
+</div>
+<span class="inline-flex items-center px-2 py-1 rounded bg-surface font-label-md text-label-md text-success font-bold shadow-sm">
+                3 sur 3 délivrés
+              </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="w-full py-12 px-6 lg:px-12 bg-surface-container-low">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="relative overflow-hidden rounded-2xl bg-surface p-6 shadow-sm flex items-center gap-6">
+<div class="w-1/3 h-28 rounded-xl overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Un gérant d'entreprise béninoise en tenue décontractée souriant tout en consultant son smartphone dans un bureau moderne et lumineux à Cotonou avec des touches de teintes indigo et turquoise" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwqkNyLS3FlL0qgkSdtqex5kRWA99r2blihaNyY4ON7ZPjrByPFd8IsjyyWLOZ7W68JQbN3f9XvQG64xusPL05ABwUlWRvpIGvg2HZevYHa0q4KbgM3UghDaIwPJY3E15gl_Ay2bO5CIjgERSMzKqGWZusQ9NRiXZQOZT2w-csqv5sZ93i3jpTIQMZlRqW9jm6ejv5ADDB1IapzGap-dMsPO2_chERQFSfg3_aTs8XgN_2RQgsBZ8"/>
+</div>
+<div class="flex flex-col">
+<span class="font-subtitle-md text-subtitle-md text-primary">Gestion en direct sur le terrain</span>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">
+            Les gérants d’ateliers, de restaurants et de négoces à Cotonou et Parakou valident leurs paies entre deux rendez-vous clients, sans paperasse superflue.
+          </p>
+</div>
+</div>
+<div class="relative overflow-hidden rounded-2xl bg-surface p-6 shadow-sm flex items-center gap-6">
+<div class="w-1/3 h-28 rounded-xl overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Une équipe d'experts-comptables analysant des graphiques financiers sur des écrans d'ordinateurs dans un cabinet fiduciaire élégant à Haie Vive Cotonou sous une lumière naturelle tamisée" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCE-c7kAGLxHiO9KQvnakhi4KUOqMF11K05Vchh0jNHFQR9Kw07zNP_az5BWIHUI8xU_q9OvH_N07TrZL8C2bf9ZgXe8le0XLoZxoA9K4eqfGhN0iWhfQeLDFpCZVZ0Kw1oc0AJjEvpXiLhMXPJXsPwDGD3rIw-ehEG_8KKOw-DpgtSBtBegh0XjgPPfavfSzqOVhmBH_Dbfj8zpOXvyhPWYRaCB8NJhccUKyI7tix2DuIdVG6Ye_c"/>
+</div>
+<div class="flex flex-col">
+<span class="font-subtitle-md text-subtitle-md text-primary">Supervision centralisée</span>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">
+            Les collaborateurs de cabinets génèrent leurs liasses d’écritures comptables en quelques minutes et sécurisent les obligations des clients.
+          </p>
+</div>
+</div>
+</div>
+</section>
+<section class="w-full py-16 lg:py-24 px-6 lg:px-12 bg-background" id="section-cabinets">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+<div class="lg:col-span-6 order-2 lg:order-1 flex justify-center">
+<div class="w-full rounded-2xl bg-surface p-6 shadow-md flex flex-col gap-5">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div>
+<span class="font-headline-md text-headline-md text-primary block">Portefeuille Fiduciaire</span>
+<span class="font-label-md text-label-md text-muted">Campagne mensuelle — 24 dossiers au total</span>
+</div>
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container">
+<span class="material-symbols-outlined text-secondary text-[18px]">sync</span>
+<span class="font-label-md text-label-md text-primary font-bold">Avancement 66 %</span>
+</div>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2.5 overflow-hidden">
+<div class="bg-secondary h-2.5 rounded-full" style="width: 66%;"></div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="grid grid-cols-12 p-3 rounded-lg bg-surface-container-high font-label-md text-label-md text-muted">
+<span class="col-span-5">Raison sociale</span>
+<span class="col-span-2 text-center">Salariés</span>
+<span class="col-span-3 text-right">Masse brute</span>
+<span class="col-span-2 text-right">Statut</span>
+</div>
+<div class="grid grid-cols-12 items-center p-3 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="col-span-5 flex items-center gap-2">
+<span class="material-symbols-outlined text-success text-[16px]">check_circle</span>
+<span class="font-subtitle-md text-body-md text-primary truncate">Société Bénin Transit</span>
+</div>
+<span class="col-span-2 text-center font-body-md text-body-md text-on-surface">18</span>
+<span class="col-span-3 text-right font-subtitle-md text-body-md text-on-surface">4 850 000 FCFA</span>
+<div class="col-span-2 flex justify-end">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-surface text-success font-label-md text-label-md font-bold shadow-sm">Validée</span>
+</div>
+</div>
+<div class="grid grid-cols-12 items-center p-3 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="col-span-5 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[16px]">hourglass_top</span>
+<span class="font-subtitle-md text-body-md text-primary truncate">Sainte-Rita Distribution</span>
+</div>
+<span class="col-span-2 text-center font-body-md text-body-md text-on-surface">9</span>
+<span class="col-span-3 text-right font-subtitle-md text-body-md text-on-surface">2 140 000 FCFA</span>
+<div class="col-span-2 flex justify-end">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-surface text-secondary font-label-md text-label-md font-bold shadow-sm">En cours</span>
+</div>
+</div>
+<div class="grid grid-cols-12 items-center p-3 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="col-span-5 flex items-center gap-2">
+<span class="material-symbols-outlined text-warning text-[16px]">pending_actions</span>
+<span class="font-subtitle-md text-body-md text-primary truncate">Clinique de l’Aurore</span>
+</div>
+<span class="col-span-2 text-center font-body-md text-body-md text-on-surface">14</span>
+<span class="col-span-3 text-right font-subtitle-md text-body-md text-on-surface">3 680 000 FCFA</span>
+<div class="col-span-2 flex justify-end">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-surface text-warning font-label-md text-label-md font-bold shadow-sm">À préparer</span>
+</div>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div>
+<span class="font-label-md text-label-md text-muted uppercase">Consolidé période</span>
+<span class="font-headline-md text-headline-md text-primary block">10 670 000 FCFA</span>
+</div>
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface shadow-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">account_tree</span>
+<span class="font-label-md text-label-md text-primary font-bold">OD SYSCOHADA générées</span>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-6 order-1 lg:order-2 flex flex-col">
+<div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-lg bg-surface-container w-fit mb-4">
+<span class="material-symbols-outlined text-primary text-[16px]">business_center</span>
+<span class="font-label-md text-label-md text-primary font-bold uppercase tracking-wide">Fiduciaires &amp; Experts-comptables</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">
+          Cabinets comptables — Tout votre portefeuille, sous contrôle.
+        </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-4 mb-8">
+          Optimisez vos processus de production sociale. Un environnement multiclients robuste pensé pour déléguer, valider et réduire à néant les retards de dépôt légal.
+        </p>
+<div class="flex flex-col gap-4 mb-8">
+<div class="p-4 rounded-xl bg-surface shadow-sm flex items-start gap-4">
+<div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[22px]">lock</span>
+</div>
+<div>
+<span class="font-subtitle-md text-subtitle-md text-primary">Cloisonnement strict multi-clients</span>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">
+                Isolation technique complète des données de chaque dossier, en conformité avec les directives APDP.
+              </p>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low shadow-sm flex items-start gap-4">
+<div class="w-10 h-10 rounded-xl bg-surface flex items-center justify-center text-secondary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[22px]">checklist</span>
+</div>
+<div>
+<span class="font-subtitle-md text-subtitle-md text-primary">Traitement groupé des campagnes</span>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">
+                Lancement, arrêté et génération des états périodiques en lots pour l’ensemble de votre parc d’entreprises.
+              </p>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface shadow-sm flex items-start gap-4">
+<div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[22px]">manage_accounts</span>
+</div>
+<div>
+<span class="font-subtitle-md text-subtitle-md text-primary">Droits d’accès par collaborateur</span>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">
+                Affectation fine des dossiers par assistant, réviseur ou associé avec piste d’audit exhaustive.
+              </p>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-low shadow-sm flex items-start gap-4">
+<div class="w-10 h-10 rounded-xl bg-surface flex items-center justify-center text-primary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[22px]">receipt_long</span>
+</div>
+<div>
+<span class="font-subtitle-md text-subtitle-md text-primary">Écritures d’opérations diverses SYSCOHADA</span>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">
+                Export direct de l’OD de paie conforme au plan comptable révisé, importable sans ressaisie dans votre logiciel de tenue.
+              </p>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface shadow-sm flex items-start gap-4">
+<div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[22px]">price_change</span>
+</div>
+<div>
+<span class="font-subtitle-md text-subtitle-md text-primary">Tarifs dégressifs au volume</span>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">
+                Barèmes adaptés au nombre total de bulletins traités par mois sur l’ensemble du portefeuille.
+              </p>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<a class="inline-flex items-center justify-center h-12 px-6 rounded-xl bg-primary text-on-primary font-subtitle-md text-subtitle-md shadow-sm hover:opacity-95 transition-opacity" data-path="inscription" href="https://app.wasalaire.techbybo.fr/login">
+            Je gère un cabinet
+            <span class="material-symbols-outlined ml-2 text-[20px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section class="w-full py-16 px-6 lg:px-12 bg-surface">
+<div class="max-w-7xl mx-auto rounded-3xl bg-primary text-on-primary p-8 lg:p-14 shadow-xl relative overflow-hidden">
+<div class="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-secondary opacity-10 pointer-events-none"></div>
+<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+<div class="max-w-2xl">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-container text-inverse-primary font-label-md text-label-md uppercase font-bold mb-4">
+<span class="material-symbols-outlined text-[16px]">speed</span>
+            Prise en main immédiate
+          </div>
+<h2 class="font-headline-lg text-headline-lg lg:text-[34px] lg:leading-[42px] tracking-tight font-extrabold text-on-primary">
+            Quelle que soit votre taille, fiabilisez votre paie.
+          </h2>
+<p class="font-body-lg text-body-lg text-inverse-primary mt-3">
+            Rejoignez dès aujourd’hui les dirigeants et cabinets béninois qui éliminent les pénalités de retard et calculent leurs salaires au centime près.
+          </p>
+</div>
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 shrink-0">
+<a class="inline-flex items-center justify-center h-13 px-8 rounded-xl bg-secondary-container text-ink font-headline-md text-subtitle-md shadow-sm hover:opacity-90 transition-opacity" data-path="inscription" href="https://app.wasalaire.techbybo.fr/login">
+            Commencer gratuitement
+          </a>
+<a class="inline-flex items-center justify-center h-13 px-6 rounded-xl bg-primary-container text-on-primary font-subtitle-md text-subtitle-md hover:bg-surface-container-highest/20 transition-colors" data-path="tarifs" href="https://app.wasalaire.techbybo.fr/login">
+            Consulter les tarifs
+          </a>
+</div>
+</div>
+</div>
+</section>
+</div></main><footer class="w-full bg-surface-container-low border-t border-border mt-space-2xl"><div class="max-w-7xl mx-auto px-6 lg:px-12 pt-space-2xl pb-space-xl"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-space-xl mb-space-2xl"><div class="lg:col-span-2 flex flex-col gap-space-md"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-on-primary"><span class="material-symbols-outlined text-[20px]">payments</span></div><span class="font-headline-md text-headline-md text-primary tracking-tight">WaSalaire</span></div><p class="font-body-md text-body-md text-on-surface-variant max-w-sm">Plateforme cloud de gestion sociale et de paie automatisée, conçue sur mesure pour les entreprises, fiduciaires et experts-comptables en République du Bénin.</p><div class="flex items-center gap-space-sm pt-space-xs"><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-surface border border-border font-label-md text-label-md text-on-surface"><span class="material-symbols-outlined text-success text-[16px]">verified_user</span>Conforme DGI Bénin</span><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-surface border border-border font-label-md text-label-md text-on-surface"><span class="material-symbols-outlined text-success text-[16px]">shield</span>Homologué APDP</span></div></div><div class="flex flex-col gap-space-sm"><span class="font-subtitle-md text-subtitle-md text-primary">Solution</span><a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="fonctionnalites" href="https://app.wasalaire.techbybo.fr/login">Calcul Paie &amp; Bulletins</a><a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="conformite" href="https://app.wasalaire.techbybo.fr/login">Déclarations CNSS</a><a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="conformite" href="https://app.wasalaire.techbybo.fr/login">Télédéclaration DGI (AIB/IPTS)</a><a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="tarifs" href="https://app.wasalaire.techbybo.fr/login">Grille Tarifaire</a><a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="pour-qui" href="https://app.wasalaire.techbybo.fr/login">Cabinets &amp; Cabinets RH</a></div><div class="flex flex-col gap-space-sm"><span class="font-subtitle-md text-subtitle-md text-primary">Ressources &amp; Légal</span><a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="faq" href="https://app.wasalaire.techbybo.fr/login">Foire Aux Questions</a><a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="a-propos" href="https://app.wasalaire.techbybo.fr/login">Notre Vision</a><a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="mentions-legales" href="https://app.wasalaire.techbybo.fr/login">Mentions Légales</a><a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="politique-confidentialite" href="https://app.wasalaire.techbybo.fr/login">Protection des Données (APDP)</a><a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="cgu" href="https://app.wasalaire.techbybo.fr/login">Conditions Générales d'Usage</a></div><div class="flex flex-col gap-space-sm"><span class="font-subtitle-md text-subtitle-md text-primary">Siège &amp; Contacts</span><p class="font-body-md text-body-md text-on-surface-variant">Haie Vive, Îlot 420<br/>Cotonou, République du Bénin</p><div class="flex flex-col gap-1 pt-1"><span class="font-label-md text-label-md text-muted">Assistance locale</span><a class="font-subtitle-md text-body-md text-on-surface hover:text-primary" href="tel:+22901900000">+229 01 90 00 00</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary" href="mailto:contact@wasalaire.bj">contact@wasalaire.bj</a></div></div></div><div class="pt-space-lg border-t border-border flex flex-col md:flex-row items-center justify-between gap-space-md font-label-md text-label-md text-muted"><p>© 2025 WaSalaire SAS — Cotonou, Bénin. Tous droits réservés.</p><p class="text-center md:text-right">Moteur conforme au Code du Travail béninois, barèmes IPTS, VPS et cotisations CNSS en vigueur.</p></div></div></footer></body></html>
