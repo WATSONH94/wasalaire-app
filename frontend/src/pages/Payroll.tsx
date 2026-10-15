@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { api, ApiError, fcfa, type Controls, type Employee, type Payslip } from '../api'
+import { api, ApiError, fcfa, type Company, type Controls, type Employee, type Payslip } from '../api'
 import { Badge, Button, Card, Field, Icon, Select } from '../stitch'
+import BulletinModal from '../components/BulletinModal'
 
 export default function Payroll() {
   const { companyId } = useParams()
@@ -18,8 +19,11 @@ export default function Payroll() {
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [closed, setClosed] = useState(false)
+  const [bulletin, setBulletin] = useState<Payslip | null>(null)
+  const [company, setCompany] = useState<Company | null>(null)
 
   useEffect(() => { api.employees(cid).then((r) => setEmployees(r.employes)).catch(() => undefined) }, [cid])
+  useEffect(() => { api.companies().then((r) => setCompany(r.companies.find((c) => c.id === cid) ?? null)).catch(() => undefined) }, [cid])
 
   async function run(label: string, fn: () => Promise<void>) {
     setError(null); setBusy(label)
@@ -168,6 +172,7 @@ export default function Payroll() {
                   <th className="py-3 px-4 text-right">Brut</th>
                   <th className="py-3 px-4 text-right">Coût employeur</th>
                   <th className="py-3 px-6 text-right">Net à payer</th>
+                  <th className="py-3 px-4 text-center w-28">Bulletin</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border text-body-md text-ink">
@@ -180,12 +185,27 @@ export default function Payroll() {
                     <td className="py-3.5 px-4 text-right tabular-nums text-muted">{fcfa(p.brut)}</td>
                     <td className="py-3.5 px-4 text-right tabular-nums text-muted">{fcfa(p.cout_employeur)}</td>
                     <td className="py-3.5 px-6 text-right tabular-nums font-extrabold text-secondary">{fcfa(p.net)}</td>
+                    <td className="py-3.5 px-4 text-center">
+                      <button onClick={() => setBulletin(p)} className="inline-flex items-center gap-1 text-secondary font-bold text-label-md hover:underline" title="Voir le bulletin">
+                        <Icon name="receipt_long" className="text-[16px]" /> Voir
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </Card>
+      )}
+
+      {bulletin && (
+        <BulletinModal
+          payslip={bulletin}
+          mois={mois}
+          annee={annee}
+          societe={company?.raison_sociale ?? company?.nom}
+          onClose={() => setBulletin(null)}
+        />
       )}
     </div>
   )

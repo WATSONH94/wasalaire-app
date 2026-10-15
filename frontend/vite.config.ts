@@ -23,9 +23,10 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/v1': 'http://localhost:8000',
-      '/health': 'http://localhost:8000',
-      '/assets': 'http://localhost:8000',
+      // Backend API locale (dev). Port surchargé par VITE_API_PORT si besoin (défaut 8000).
+      '/v1': `http://localhost:${process.env.VITE_API_PORT ?? 8000}`,
+      '/health': `http://localhost:${process.env.VITE_API_PORT ?? 8000}`,
+      '/assets': `http://localhost:${process.env.VITE_API_PORT ?? 8000}`,
     },
   },
 })

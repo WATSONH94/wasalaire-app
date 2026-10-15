@@ -548,6 +548,17 @@ def create_company(body: CompanyCreateIn, ctx: Ctx = Depends(require("me.read"))
         raise HTTPException(status_code=403, detail=msg or "Création refusée")
     return {"company_id": str(row[0])}
 
+@app.get("/v1/companies/{company_id}/runs")
+def company_runs(company_id: str, ctx: Ctx = Depends(require("run.declaration.read"))):
+    """Cycles de paie calculés d'une société (pour Déclarations / historique). RLS-scopé."""
+    _require_company(ctx, company_id)
+    rows = ctx.conn.execute(
+        "SELECT r.id, pp.mois, pp.annee, pp.statut, r.date_execution "
+        "FROM payroll_run r JOIN payroll_period pp ON pp.id = r.period_id "
+        "WHERE r.company_id = %s ORDER BY r.date_execution DESC", (company_id,)).fetchall()
+    return {"runs": [{"run_id": str(r[0]), "mois": r[1], "annee": r[2], "statut": r[3],
+                      "date_execution": r[4].isoformat() if r[4] else None} for r in rows]}
+
 @app.get("/v1/employees")
 def employees(company_id: str, ctx: Ctx = Depends(require("employee.read"))):
     _require_company(ctx, company_id)
@@ -919,11 +930,92 @@ def payout_list(run_id: str, ctx: Ctx = Depends(require("payout.read"))):
     return {"run_id": run_id, "items": list_payout(ctx.conn, run_id)}
 
 
-# ─────────────── Administration PLATEFORME (SaaS : comptes, abonnements) ───────────────
+# ─────────────── Administration INTERNE WaSalaire (back-office éditeur SaaS) ───────────────
+# Rôles internes (platform_role) ≠ rôles clients (access_grant). Capacités contrôlées serveur.
 _PLATFORM_ROLES = {"admin_plateforme", "super_admin"}
+_INTERNAL_ROLES = {"super_admin", "admin_plateforme", "support", "conformite", "commercial"}
+
+# Capacité interne -> rôles autorisés (super_admin est toujours autorisé, cf. require_internal).
+INTERNAL_CAPS: dict[str, set[str]] = {
+    "admin.dashboard.read":        _INTERNAL_ROLES,
+    "admin.orgs.read":             {"admin_plateforme", "support", "commercial"},
+    "admin.orgs.manage":           {"admin_plateforme"},
+    "admin.internal_users.read":   {"admin_plateforme"},
+    "admin.internal_users.manage": set(),                         # super_admin only
+    "admin.client_users.read":     {"admin_plateforme", "support"},
+    "admin.subscriptions.read":    {"admin_plateforme", "commercial"},
+    "admin.subscriptions.manage":  {"admin_plateforme", "commercial"},
+    "admin.referentials.read":     {"admin_plateforme", "conformite"},
+    "admin.referentials.propose":  {"conformite"},
+    "admin.referentials.validate": {"conformite"},                # + super_admin ; 4-eyes ≠ proposeur
+    "admin.audit.read":            {"admin_plateforme"},
+    "admin.support.read":          {"admin_plateforme", "support"},
+    "admin.settings.manage":       set(),                         # super_admin only
+}
+
+def require_internal(cap: str):
+    """Dépendance back-office ADMIN interne. super_admin toujours autorisé ; sinon selon la
+    capacité. Toujours vérifié CÔTÉ SERVEUR (jamais délégué au front)."""
+    def _dep(ctx: Ctx = Depends(current_ctx)) -> Ctx:
+        if ctx.must_change:
+            raise HTTPException(status_code=409, detail="Changement de mot de passe requis.")
+        if not ctx.mfa:
+            raise HTTPException(status_code=403, detail="Authentification à deux facteurs requise.")
+        allowed = INTERNAL_CAPS.get(cap, set())
+        if ctx.platform_role == "super_admin" or ctx.platform_role in allowed:
+            return ctx
+        raise HTTPException(status_code=403, detail="Réservé à l'administration WaSalaire.")
+    return _dep
+
+@app.get("/v1/admin/overview")
+def admin_overview(ctx: Ctx = Depends(require_internal("admin.dashboard.read"))):
+    row = ctx.conn.execute("SELECT admin_overview()").fetchone()
+    return row[0] if row else {}
+
+@app.get("/v1/admin/organizations")
+def admin_organizations(ctx: Ctx = Depends(require_internal("admin.orgs.read"))):
+    rows = ctx.conn.execute(
+        "SELECT workspace_id, nom, type, nb_companies, plan, statut, is_beta, created_at "
+        "FROM admin_organizations()").fetchall()
+    return {"organizations": [{"id": str(r[0]), "nom": r[1], "type": r[2], "nb_companies": r[3],
+                               "plan": r[4], "statut": r[5], "is_beta": r[6],
+                               "created_at": r[7].isoformat() if r[7] else None} for r in rows]}
+
+@app.get("/v1/admin/internal-users")
+def admin_internal_users(ctx: Ctx = Depends(require_internal("admin.internal_users.read"))):
+    rows = ctx.conn.execute(
+        "SELECT id, email, platform_role, statut, totp_enrolled, must_change_password, created_at "
+        "FROM admin_internal_users()").fetchall()
+    return {"users": [{"id": str(r[0]), "email": r[1], "platform_role": r[2], "statut": r[3],
+                       "totp_enrolled": r[4], "must_change_password": r[5],
+                       "created_at": r[6].isoformat() if r[6] else None} for r in rows]}
+
+class SetPlatformRoleIn(BaseModel):
+    user_id: str
+    platform_role: str
+
+@app.put("/v1/admin/internal-users/role")
+def admin_set_role(body: SetPlatformRoleIn, ctx: Ctx = Depends(require_internal("admin.internal_users.manage"))):
+    try:
+        ctx.conn.execute("SELECT admin_set_platform_role(%s, %s, %s)",
+                         (ctx.user_id, body.user_id, body.platform_role)).fetchone()
+    except Exception as e:
+        msg = str(getattr(e, "diag", None) and e.diag.message_primary or e).strip()
+        raise HTTPException(status_code=400, detail=msg or "Modification refusée")
+    return {"user_id": body.user_id, "platform_role": body.platform_role}
+
+@app.get("/v1/admin/audit")
+def admin_audit(limit: int = 100, ctx: Ctx = Depends(require_internal("admin.audit.read"))):
+    rows = ctx.conn.execute("SELECT id, user_id, email, type, ip, detail, created_at "
+                            "FROM admin_audit(%s)", (limit,)).fetchall()
+    return {"events": [{"id": str(r[0]), "user_id": str(r[1]) if r[1] else None, "email": r[2],
+                        "type": r[3], "ip": r[4], "detail": r[5],
+                        "created_at": r[6].isoformat() if r[6] else None} for r in rows]}
+
+# ─────────────── Administration PLATEFORME (abonnements) ───────────────
 
 @app.get("/v1/platform/users")
-def platform_users(ctx: Ctx = Depends(require_platform(_PLATFORM_ROLES))):
+def platform_users(ctx: Ctx = Depends(require_internal("admin.client_users.read"))):
     rows = ctx.conn.execute(
         "SELECT id, email, platform_role, statut, totp_enrolled, must_change_password "
         "FROM app_user ORDER BY email").fetchall()
@@ -931,7 +1023,7 @@ def platform_users(ctx: Ctx = Depends(require_platform(_PLATFORM_ROLES))):
                        "totp_enrolled": r[4], "must_change_password": r[5]} for r in rows]}
 
 @app.get("/v1/platform/subscriptions")
-def platform_subscriptions(ctx: Ctx = Depends(require_platform(_PLATFORM_ROLES))):
+def platform_subscriptions(ctx: Ctx = Depends(require_internal("admin.subscriptions.read"))):
     rows = ctx.conn.execute(
         "SELECT w.id, w.nom, w.type, p.code, s.statut, s.is_beta "
         "FROM subscription s JOIN workspace w ON w.id=s.workspace_id "
@@ -940,7 +1032,7 @@ def platform_subscriptions(ctx: Ctx = Depends(require_platform(_PLATFORM_ROLES))
                                "plan": r[3], "statut": r[4], "is_beta": r[5]} for r in rows]}
 
 @app.get("/v1/platform/plans")
-def platform_plans(ctx: Ctx = Depends(require_platform(_PLATFORM_ROLES))):
+def platform_plans(ctx: Ctx = Depends(require_internal("admin.subscriptions.read"))):
     rows = ctx.conn.execute("SELECT code, libelle, is_public, limites FROM plan ORDER BY code").fetchall()
     return {"plans": [{"code": r[0], "libelle": r[1], "is_public": r[2], "limites": r[3]} for r in rows]}
 
@@ -950,7 +1042,7 @@ class SetPlanIn(BaseModel):
     is_beta: bool = False
 
 @app.put("/v1/platform/subscription")
-def platform_set_plan(body: SetPlanIn, ctx: Ctx = Depends(require_platform(_PLATFORM_ROLES))):
+def platform_set_plan(body: SetPlanIn, ctx: Ctx = Depends(require_internal("admin.subscriptions.manage"))):
     plan = ctx.conn.execute("SELECT id FROM plan WHERE code=%s", (body.plan_code,)).fetchone()
     if not plan:
         raise HTTPException(status_code=400, detail=f"Plan inconnu : {body.plan_code}")
@@ -1008,7 +1100,9 @@ if _WEBDIST.exists() or _VITRINE.exists():
         if full_path.startswith(_API_PREFIXES):
             raise HTTPException(status_code=404, detail="Not found")
         host = request.headers.get("host", "").lower()
-        if host.startswith("app.") and _WEBDIST.exists():
+        # app.* = application CLIENT, admin.* = back-office INTERNE (même bundle SPA,
+        # la surface est choisie côté client ; l'autorisation reste 100% serveur).
+        if (host.startswith("app.") or host.startswith("admin.")) and _WEBDIST.exists():
             return _serve_dir(_WEBDIST, full_path, spa=True)
         if _VITRINE.exists():
             return _serve_dir(_VITRINE, full_path, spa=False)

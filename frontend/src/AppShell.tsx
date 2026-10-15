@@ -23,17 +23,12 @@ function currentCompanyId(pathname: string): string | undefined {
   return m ? m[1] : undefined
 }
 
-const ADMIN_NAV: { label: string; icon: string; to: string }[] = [
-  { label: 'Utilisateurs', icon: 'manage_accounts', to: '/admin/utilisateurs' },
-  { label: 'Abonnements', icon: 'card_membership', to: '/admin/abonnements' },
-]
-
 function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const { session, logout } = useAuth()
   const { pathname } = useLocation()
   const companyId = currentCompanyId(pathname)
   const roleLabel = session?.roles?.length ? session.roles.join(' · ') : 'Gestionnaire de paie'
-  const isAdmin = session?.platform_role === 'admin_plateforme' || session?.platform_role === 'super_admin'
+  const isInternal = !!session?.platform_role && session.platform_role !== 'none'
 
   return (
     <aside className="fixed top-0 left-0 h-screen w-60 z-40 bg-primary-container border-r border-border shadow-sm flex flex-col justify-between p-space-md">
@@ -74,25 +69,14 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             )
           })}
 
-          {isAdmin && (
-            <>
-              <div className="mt-3 mb-1 px-space-md text-[10px] font-bold tracking-wider uppercase text-on-primary-container/70">Administration</div>
-              {ADMIN_NAV.map((item) => (
-                <NavLink
-                  key={item.label}
-                  to={item.to}
-                  onClick={onNavigate}
-                  className={({ isActive }) =>
-                    `flex items-center gap-space-md px-space-md py-space-sm rounded-xl font-medium transition-colors duration-150 active:scale-95 ${
-                      isActive ? 'bg-secondary text-surface-container-lowest' : 'text-on-primary-container hover:text-surface-container-lowest hover:bg-primary'
-                    }`
-                  }
-                >
-                  <Icon name={item.icon} className="text-[20px]" />
-                  <span className="text-label-lg font-label-lg">{item.label}</span>
-                </NavLink>
-              ))}
-            </>
+          {isInternal && (
+            <a
+              href="/?surface=admin"
+              className="mt-3 flex items-center gap-space-md px-space-md py-space-sm rounded-xl font-bold text-warning bg-warning/10 hover:bg-warning/20 transition-colors"
+            >
+              <Icon name="admin_panel_settings" className="text-[20px]" />
+              <span className="text-label-lg">Admin WaSalaire</span>
+            </a>
           )}
         </nav>
       </div>

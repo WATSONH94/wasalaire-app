@@ -74,6 +74,14 @@ DO \$do\$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_proc WHERE proname='admin_nodes') THEN
     GRANT EXECUTE ON FUNCTION admin_nodes(uuid) TO wasalaire_app;
   END IF;
+  -- Back-office ADMIN interne (migration 013) : lectures transverses + set rôle + audit.
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname='admin_overview') THEN
+    GRANT EXECUTE ON FUNCTION admin_overview() TO wasalaire_app;
+    GRANT EXECUTE ON FUNCTION admin_organizations() TO wasalaire_app;
+    GRANT EXECUTE ON FUNCTION admin_internal_users() TO wasalaire_app;
+    GRANT EXECUTE ON FUNCTION admin_set_platform_role(uuid, uuid, text) TO wasalaire_app;
+    GRANT EXECUTE ON FUNCTION admin_audit(int) TO wasalaire_app;
+  END IF;
 END \$do\$;
 SQL
 

@@ -260,11 +260,13 @@ def validate_and_close(conn, period_id: str, run_id: str, actor: str | None = No
 
 def list_payslips(conn, run_id: str) -> list[dict]:
     rows = conn.execute(
-        "SELECT e.nom, p.brut, p.base_its, p.net_a_payer, p.cout_employeur, p.verrouille "
+        "SELECT e.nom, p.brut, p.base_its, p.net_a_payer, p.cout_employeur, p.verrouille, "
+        "       e.id, e.matricule, p.resultat "
         "FROM payslip p JOIN employee e ON e.id=p.employee_id WHERE p.run_id=%s "
         "ORDER BY e.nom", (run_id,)).fetchall()
     return [dict(nom=r[0], brut=float(r[1]), base_its=float(r[2]),
-                 net=float(r[3]), cout_employeur=float(r[4]), verrouille=r[5]) for r in rows]
+                 net=float(r[3]), cout_employeur=float(r[4]), verrouille=r[5],
+                 employee_id=str(r[6]), matricule=r[7], detail=r[8]) for r in rows]
 
 
 # ─────────────── Campagne de paie (multi-société) ───────────────

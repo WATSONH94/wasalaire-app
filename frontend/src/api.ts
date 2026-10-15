@@ -49,13 +49,30 @@ export interface Session { token: string; user_id: string; companies: string[]; 
 export interface Me { user_id: string; companies: string[]; roles: string[]; email?: string | null; platform_role?: string | null; mfa_enrolled?: boolean; mfa_enforced?: boolean }
 export interface Company { id: string; raison_sociale?: string; nom?: string; ifu?: string | null }
 export interface Employee { id: string; nom: string; matricule: string; methode_paiement?: string; salaire_base?: number | null }
-export interface Payslip { nom: string; brut: number; base_its: number; net: number; cout_employeur: number; verrouille: boolean }
+export interface PayslipDetail { its?: number; vps?: number; cnss_sal?: number; cnss_pat?: number; amo_sal?: number; amo_pat?: number; base_its?: number; assiette_cnss?: number; brut?: number; net?: number; cout_employeur?: number }
+export interface Payslip { nom: string; brut: number; base_its: number; net: number; cout_employeur: number; verrouille: boolean; employee_id?: string; matricule?: string; detail?: PayslipDetail | null }
 export interface Anomaly { nom?: string; gravite: string; message?: string; libelle?: string; code?: string }
 export interface Controls { run_id: string; bloquants: number; avertissements: number; anomalies: Anomaly[] }
 export interface PlatformUser { id: string; email: string; platform_role: string | null; statut: string; totp_enrolled: boolean; must_change_password: boolean }
 export interface PlatformSubscription { workspace_id: string; workspace: string; type: string; plan: string; statut: string; is_beta: boolean }
 export interface Plan { code: string; libelle: string; is_public: boolean; limites: Record<string, unknown> }
 export interface OrgNode { id: string; type: string; nom: string }
+export interface AdminOverview {
+  organizations: number; companies: number; establishments: number; users_active: number
+  internal_users: number; employees: number; payslips: number; runs_total: number
+  subscriptions_active: number; subscriptions_total: number
+}
+export interface AdminOrg { id: string; nom: string; type: string; nb_companies: number; plan: string | null; statut: string | null; is_beta: boolean | null; created_at: string | null }
+export interface AuditEvent { id: string; user_id: string | null; email: string | null; type: string; ip: string | null; detail: unknown; created_at: string | null }
+export interface Run { run_id: string; mois: number; annee: number; statut: string; date_execution: string | null }
+export interface Declaration {
+  run_id: string
+  bulletins: number
+  its_vps: { its_total: number; vps_total: number; base_its_total: number }
+  cnss: { salariale: number; patronale: number; assiette: number }
+  amo: { salariale: number; patronale: number }
+  net_total: number
+}
 
 export const api = {
   // ── Auth
@@ -82,7 +99,15 @@ export const api = {
     request<{ token: string; companies: string[]; roles: string[] }>(
       '/v1/auth/mfa/verify', { method: 'POST', body: { code }, bearer }),
 
-  // ── Plateforme (admin)
+  // ── Back-office ADMIN interne WaSalaire
+  adminOverview: () => request<AdminOverview>('/v1/admin/overview'),
+  adminOrganizations: () => request<{ organizations: AdminOrg[] }>('/v1/admin/organizations'),
+  adminInternalUsers: () => request<{ users: PlatformUser[] }>('/v1/admin/internal-users'),
+  adminSetRole: (user_id: string, platform_role: string) =>
+    request<{ user_id: string; platform_role: string }>('/v1/admin/internal-users/role', { method: 'PUT', body: { user_id, platform_role } }),
+  adminAudit: (limit = 100) => request<{ events: AuditEvent[] }>(`/v1/admin/audit?limit=${limit}`),
+
+  // ── Plateforme (comptes / abonnements)
   platformUsers: () => request<{ users: PlatformUser[] }>('/v1/platform/users'),
   platformSubscriptions: () => request<{ subscriptions: PlatformSubscription[] }>('/v1/platform/subscriptions'),
   platformPlans: () => request<{ plans: Plan[] }>('/v1/platform/plans'),
@@ -110,6 +135,8 @@ export const api = {
   calculate: (body: { company_id: string; period_id: string; periode: string }) =>
     request<{ run_id: string; bulletins: number }>('/v1/periods/calculate', { method: 'POST', body }),
   controls: (runId: string) => request<Controls>(`/v1/runs/${runId}/controls`),
+  companyRuns: (companyId: string) => request<{ runs: Run[] }>(`/v1/companies/${companyId}/runs`),
+  declarationFull: (runId: string) => request<Declaration>(`/v1/runs/${runId}/declaration`),
   closeRun: (runId: string, periodId: string) =>
     request<{ run_id: string; statut: string }>(`/v1/runs/${runId}/close` + qs({ period_id: periodId }), { method: 'POST' }),
   payslips: (runId: string) => request<{ run_id: string; bulletins: Payslip[] }>(`/v1/runs/${runId}/payslips`),
