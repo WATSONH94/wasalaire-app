@@ -8,6 +8,7 @@ import InternalUsers from './pages/InternalUsers'
 import ClientUsers from './pages/ClientUsers'
 import Audit from './pages/Audit'
 import AdminPlaceholder from './pages/AdminPlaceholder'
+import Referentials from './pages/Referentials'
 import Abonnements from '../pages/admin/Abonnements'
 
 function RequireInternal({ children }: { children: React.ReactNode }) {
@@ -39,7 +40,7 @@ export default function AdminApp() {
         <Route path="internal-users" element={<InternalUsers />} />
         <Route path="client-users" element={<ClientUsers />} />
         <Route path="subscriptions" element={<Abonnements />} />
-        <Route path="referentials" element={<AdminPlaceholder title="Référentiels réglementaires" icon="gavel" description="Barèmes DGI/CNSS, rubriques, versions et workflow de validation (proposition → source → test → validation → publication). Module en cours d’intégration — aucune règle n’est inventée." />} />
+        <Route path="referentials" element={<Referentials />} />
         <Route path="audit" element={<Audit />} />
         <Route path="supervision" element={<AdminPlaceholder title="Supervision technique" icon="dns" description="État des services, API, jobs, sauvegardes et déploiements — relié à l’infrastructure réelle (en cours)." />} />
         <Route path="support" element={<AdminPlaceholder title="Support client" icon="support_agent" description="Tickets, incidents et suivi des demandes clients, avec interventions encadrées et tracées (en cours)." />} />

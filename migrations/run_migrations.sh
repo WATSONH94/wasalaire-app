@@ -82,6 +82,18 @@ DO \$do\$ BEGIN
     GRANT EXECUTE ON FUNCTION admin_set_platform_role(uuid, uuid, text) TO wasalaire_app;
     GRANT EXECUTE ON FUNCTION admin_audit(int) TO wasalaire_app;
   END IF;
+  -- Workflow référentiels réglementaires (migration 014).
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname='reg_change_publish') THEN
+    GRANT EXECUTE ON FUNCTION reg_referentials_read() TO wasalaire_app;
+    GRANT EXECUTE ON FUNCTION reg_changes_list() TO wasalaire_app;
+    GRANT EXECUTE ON FUNCTION reg_change_propose(uuid,text,text,jsonb,date,text,text) TO wasalaire_app;
+    GRANT EXECUTE ON FUNCTION reg_change_validate(uuid,uuid) TO wasalaire_app;
+    GRANT EXECUTE ON FUNCTION reg_change_reject(uuid,uuid,text) TO wasalaire_app;
+    GRANT EXECUTE ON FUNCTION reg_change_publish(uuid,uuid) TO wasalaire_app;
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name='regulatory_change') THEN
+    GRANT SELECT, INSERT, UPDATE ON regulatory_change TO wasalaire_app;
+  END IF;
 END \$do\$;
 SQL
 

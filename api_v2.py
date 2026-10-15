@@ -1004,6 +1004,60 @@ def admin_set_role(body: SetPlatformRoleIn, ctx: Ctx = Depends(require_internal(
         raise HTTPException(status_code=400, detail=msg or "Modification refusée")
     return {"user_id": body.user_id, "platform_role": body.platform_role}
 
+@app.get("/v1/admin/referentials")
+def admin_referentials(ctx: Ctx = Depends(require_internal("admin.referentials.read"))):
+    row = ctx.conn.execute("SELECT reg_referentials_read()").fetchone()
+    return row[0] if row else {}
+
+@app.get("/v1/admin/referentials/changes")
+def admin_reg_changes(ctx: Ctx = Depends(require_internal("admin.referentials.read"))):
+    rows = ctx.conn.execute(
+        "SELECT id, type, cible_code, payload, date_effet, source, note, statut, "
+        "propose_par, valide_par, created_at, published_at FROM reg_changes_list()").fetchall()
+    return {"changes": [{"id": str(r[0]), "type": r[1], "cible_code": r[2], "payload": r[3],
+                         "date_effet": r[4].isoformat() if r[4] else None, "source": r[5], "note": r[6],
+                         "statut": r[7], "propose_par": r[8], "valide_par": r[9],
+                         "created_at": r[10].isoformat() if r[10] else None,
+                         "published_at": r[11].isoformat() if r[11] else None} for r in rows]}
+
+class RegProposeIn(BaseModel):
+    type: str
+    cible_code: str
+    payload: dict
+    date_effet: str
+    source: str
+    note: str | None = None
+
+def _reg_call(ctx: Ctx, sql: str, params: tuple):
+    try:
+        return ctx.conn.execute(sql, params).fetchone()
+    except Exception as e:
+        msg = str(getattr(e, "diag", None) and e.diag.message_primary or e).strip()
+        raise HTTPException(status_code=400, detail=msg or "Opération refusée")
+
+@app.post("/v1/admin/referentials/changes")
+def admin_reg_propose(body: RegProposeIn, ctx: Ctx = Depends(require_internal("admin.referentials.propose"))):
+    import json as _json
+    row = _reg_call(ctx, "SELECT reg_change_propose(%s,%s,%s,%s::jsonb,%s,%s,%s)",
+                    (ctx.user_id, body.type, body.cible_code, _json.dumps(body.payload),
+                     body.date_effet, body.source, body.note))
+    return {"change_id": str(row[0])}
+
+@app.post("/v1/admin/referentials/changes/{change_id}/validate")
+def admin_reg_validate(change_id: str, ctx: Ctx = Depends(require_internal("admin.referentials.validate"))):
+    _reg_call(ctx, "SELECT reg_change_validate(%s,%s)", (ctx.user_id, change_id))
+    return {"change_id": change_id, "statut": "validee"}
+
+@app.post("/v1/admin/referentials/changes/{change_id}/reject")
+def admin_reg_reject(change_id: str, ctx: Ctx = Depends(require_internal("admin.referentials.validate"))):
+    _reg_call(ctx, "SELECT reg_change_reject(%s,%s,%s)", (ctx.user_id, change_id, None))
+    return {"change_id": change_id, "statut": "rejetee"}
+
+@app.post("/v1/admin/referentials/changes/{change_id}/publish")
+def admin_reg_publish(change_id: str, ctx: Ctx = Depends(require_internal("admin.referentials.validate"))):
+    _reg_call(ctx, "SELECT reg_change_publish(%s,%s)", (ctx.user_id, change_id))
+    return {"change_id": change_id, "statut": "publiee"}
+
 @app.get("/v1/admin/audit")
 def admin_audit(limit: int = 100, ctx: Ctx = Depends(require_internal("admin.audit.read"))):
     rows = ctx.conn.execute("SELECT id, user_id, email, type, ip, detail, created_at "

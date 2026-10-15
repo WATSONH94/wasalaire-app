@@ -64,6 +64,10 @@ export interface AdminOverview {
 }
 export interface AdminOrg { id: string; nom: string; type: string; nb_companies: number; plan: string | null; statut: string | null; is_beta: boolean | null; created_at: string | null }
 export interface AuditEvent { id: string; user_id: string | null; email: string | null; type: string; ip: string | null; detail: unknown; created_at: string | null }
+export interface RegRate { code: string; valeur: number; date_effet: string; source: string }
+export interface RegBracket { table_code: string; tranche_min: number; tranche_max: number | null; taux: number; date_effet: string; source: string }
+export interface RegReferentials { rates: RegRate[]; brackets: RegBracket[] }
+export interface RegChange { id: string; type: string; cible_code: string; payload: Record<string, number>; date_effet: string | null; source: string; note: string | null; statut: string; propose_par: string | null; valide_par: string | null; created_at: string | null; published_at: string | null }
 export interface Run { run_id: string; mois: number; annee: number; statut: string; date_execution: string | null }
 export interface Declaration {
   run_id: string
@@ -106,6 +110,13 @@ export const api = {
   adminSetRole: (user_id: string, platform_role: string) =>
     request<{ user_id: string; platform_role: string }>('/v1/admin/internal-users/role', { method: 'PUT', body: { user_id, platform_role } }),
   adminAudit: (limit = 100) => request<{ events: AuditEvent[] }>(`/v1/admin/audit?limit=${limit}`),
+  adminReferentials: () => request<RegReferentials>('/v1/admin/referentials'),
+  adminRegChanges: () => request<{ changes: RegChange[] }>('/v1/admin/referentials/changes'),
+  adminRegPropose: (body: { type: string; cible_code: string; payload: Record<string, number>; date_effet: string; source: string; note?: string }) =>
+    request<{ change_id: string }>('/v1/admin/referentials/changes', { method: 'POST', body }),
+  adminRegValidate: (id: string) => request<{ statut: string }>(`/v1/admin/referentials/changes/${id}/validate`, { method: 'POST' }),
+  adminRegReject: (id: string) => request<{ statut: string }>(`/v1/admin/referentials/changes/${id}/reject`, { method: 'POST' }),
+  adminRegPublish: (id: string) => request<{ statut: string }>(`/v1/admin/referentials/changes/${id}/publish`, { method: 'POST' }),
 
   // ── Plateforme (comptes / abonnements)
   platformUsers: () => request<{ users: PlatformUser[] }>('/v1/platform/users'),
