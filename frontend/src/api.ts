@@ -52,6 +52,7 @@ export interface Employee { id: string; nom: string; matricule: string; methode_
 export interface PayslipDetail { its?: number; vps?: number; cnss_sal?: number; cnss_pat?: number; amo_sal?: number; amo_pat?: number; base_its?: number; assiette_cnss?: number; brut?: number; net?: number; cout_employeur?: number }
 export interface Payslip { nom: string; brut: number; base_its: number; net: number; cout_employeur: number; verrouille: boolean; employee_id?: string; matricule?: string; detail?: PayslipDetail | null }
 export interface Anomaly { nom?: string; gravite: string; message?: string; libelle?: string; code?: string }
+export interface RubriqueCat { code: string; libelle: string; soumis_cnss: boolean; soumis_its: boolean; soumis_vps: boolean; nature: string }
 export interface Controls { run_id: string; bloquants: number; avertissements: number; anomalies: Anomaly[] }
 export interface PlatformUser { id: string; email: string; platform_role: string | null; statut: string; totp_enrolled: boolean; must_change_password: boolean }
 export interface PlatformSubscription { workspace_id: string; workspace: string; type: string; plan: string; statut: string; is_beta: boolean }
@@ -143,6 +144,7 @@ export const api = {
     request<{ period_id: string; statut: string }>('/v1/periods', { method: 'POST', body }),
   addVariable: (body: { company_id: string; period_id: string; employee_id: string; type: string; montant: number }) =>
     request<{ variable_id: string }>('/v1/periods/variables', { method: 'POST', body }),
+  rubriques: () => request<{ rubriques: RubriqueCat[] }>('/v1/rubriques'),
   calculate: (body: { company_id: string; period_id: string; periode: string }) =>
     request<{ run_id: string; bulletins: number }>('/v1/periods/calculate', { method: 'POST', body }),
   controls: (runId: string) => request<Controls>(`/v1/runs/${runId}/controls`),

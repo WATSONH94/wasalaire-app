@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { api, ApiError, fcfa, type Company, type Controls, type Employee, type Payslip } from '../api'
+import { api, ApiError, fcfa, type Company, type Controls, type Employee, type Payslip, type RubriqueCat } from '../api'
 import { Icon } from '../stitch'
 import BulletinModal from '../components/BulletinModal'
 
@@ -73,7 +73,8 @@ export default function Payroll() {
   const [payslips, setPayslips] = useState<Payslip[] | null>(null)
   const [employees, setEmployees] = useState<Employee[]>([])
   const [company, setCompany] = useState<Company | null>(null)
-  const [vr, setVr] = useState({ employee_id: '', type: 'Prime', montant: '' })
+  const [rubs, setRubs] = useState<RubriqueCat[]>([])
+  const [vr, setVr] = useState({ employee_id: '', code: 'prime', montant: '', hours: '', majoration: '0.12' })
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [closed, setClosed] = useState(false)
@@ -82,6 +83,7 @@ export default function Payroll() {
 
   useEffect(() => { api.employees(cid).then((r) => setEmployees(r.employes)).catch(() => undefined) }, [cid])
   useEffect(() => { api.companies().then((r) => setCompany(r.companies.find((c) => c.id === cid) ?? null)).catch(() => undefined) }, [cid])
+  useEffect(() => { api.rubriques().then((r) => setRubs(r.rubriques)).catch(() => undefined) }, [])
 
   async function run(label: string, fn: () => Promise<void>) {
     setError(null); setBusy(label)
@@ -93,8 +95,16 @@ export default function Payroll() {
   })
   const addVariable = () => run('var', async () => {
     if (!periodId || !vr.employee_id) return
-    await api.addVariable({ company_id: cid, period_id: periodId, employee_id: vr.employee_id, type: vr.type, montant: Number(vr.montant) })
-    setVr({ ...vr, montant: '' })
+    let montant = Number(vr.montant)
+    if (vr.code === 'heures_sup') {
+      const emp = employees.find((e) => e.id === vr.employee_id)
+      const base = emp?.salaire_base ?? 0
+      const tauxHoraire = base / 173.33
+      montant = Math.round(Number(vr.hours) * tauxHoraire * (1 + Number(vr.majoration)))
+    }
+    if (!montant) return
+    await api.addVariable({ company_id: cid, period_id: periodId, employee_id: vr.employee_id, type: vr.code, montant })
+    setVr({ ...vr, montant: '', hours: '' })
   })
   const calculate = () => run('calc', async () => {
     if (!periodId) return
@@ -170,18 +180,46 @@ export default function Payroll() {
           <button onClick={() => setShowVars((v) => !v)} className="flex items-center gap-2 text-subtitle-md font-bold text-ink">
             <Icon name={showVars ? 'expand_less' : 'expand_more'} /> Variables du mois <span className="text-muted font-normal text-label-md">(primes, heures sup — optionnel)</span>
           </button>
-          {showVars && (
-            <div className="flex flex-wrap items-end gap-3 mt-4">
-              <label className="space-y-1.5 min-w-[180px] flex-1"><span className="block text-label-lg font-semibold text-ink">Salarié</span>
-                <select value={vr.employee_id} onChange={(e) => setVr({ ...vr, employee_id: e.target.value })} className="w-full px-3 py-2.5 text-body-md bg-white rounded-xl border border-border outline-none focus:border-secondary">
-                  <option value="">—</option>{employees.map((e) => <option key={e.id} value={e.id}>{e.nom}</option>)}</select></label>
-              <label className="space-y-1.5 w-36"><span className="block text-label-lg font-semibold text-ink">Type</span>
-                <input value={vr.type} onChange={(e) => setVr({ ...vr, type: e.target.value })} className="w-full px-3 py-2.5 text-body-md bg-white rounded-xl border border-border outline-none focus:border-secondary" /></label>
-              <label className="space-y-1.5 w-36"><span className="block text-label-lg font-semibold text-ink">Montant</span>
-                <input type="number" value={vr.montant} onChange={(e) => setVr({ ...vr, montant: e.target.value })} className="w-full px-3 py-2.5 text-body-md bg-white rounded-xl border border-border outline-none focus:border-secondary" /></label>
-              <button onClick={addVariable} disabled={busy === 'var' || !vr.employee_id || !vr.montant} className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-surface-container text-ink font-bold rounded-xl hover:bg-border disabled:opacity-50"><Icon name="add" className="text-[18px]" />Ajouter</button>
-            </div>
-          )}
+          {showVars && (() => {
+            const sel = rubs.find((r) => r.code === vr.code)
+            const isHS = vr.code === 'heures_sup'
+            const assiettes = sel ? [sel.soumis_cnss && 'CNSS', sel.soumis_its && 'ITS', sel.soumis_vps && 'VPS'].filter(Boolean) : []
+            const horsCnss = sel && !sel.soumis_cnss && sel.nature === 'gain'
+            return (
+              <div className="mt-4 space-y-2">
+                <div className="flex flex-wrap items-end gap-3">
+                  <label className="space-y-1.5 min-w-[160px] flex-1"><span className="block text-label-lg font-semibold text-ink">Salarié</span>
+                    <select value={vr.employee_id} onChange={(e) => setVr({ ...vr, employee_id: e.target.value })} className="w-full px-3 py-2.5 text-body-md bg-white rounded-xl border border-border outline-none focus:border-secondary">
+                      <option value="">—</option>{employees.map((e) => <option key={e.id} value={e.id}>{e.nom}</option>)}</select></label>
+                  <label className="space-y-1.5 min-w-[180px]"><span className="block text-label-lg font-semibold text-ink">Rubrique</span>
+                    <select value={vr.code} onChange={(e) => setVr({ ...vr, code: e.target.value })} className="w-full px-3 py-2.5 text-body-md bg-white rounded-xl border border-border outline-none focus:border-secondary">
+                      {rubs.map((r) => <option key={r.code} value={r.code}>{r.libelle}</option>)}</select></label>
+                  {isHS ? (
+                    <>
+                      <label className="space-y-1.5 w-24"><span className="block text-label-lg font-semibold text-ink">Heures</span>
+                        <input type="number" value={vr.hours} onChange={(e) => setVr({ ...vr, hours: e.target.value })} className="w-full px-3 py-2.5 text-body-md bg-white rounded-xl border border-border outline-none focus:border-secondary" /></label>
+                      <label className="space-y-1.5 w-40"><span className="block text-label-lg font-semibold text-ink">Majoration</span>
+                        <select value={vr.majoration} onChange={(e) => setVr({ ...vr, majoration: e.target.value })} className="w-full px-3 py-2.5 text-body-md bg-white rounded-xl border border-border outline-none focus:border-secondary">
+                          <option value="0.12">+12% (41e-48e h)</option><option value="0.35">+35% (au-delà 48e)</option>
+                          <option value="0.50">+50% (dim./férié, nuit)</option><option value="1">+100% (nuit dim./férié)</option></select></label>
+                    </>
+                  ) : (
+                    <label className="space-y-1.5 w-36"><span className="block text-label-lg font-semibold text-ink">Montant</span>
+                      <input type="number" value={vr.montant} onChange={(e) => setVr({ ...vr, montant: e.target.value })} className="w-full px-3 py-2.5 text-body-md bg-white rounded-xl border border-border outline-none focus:border-secondary" /></label>
+                  )}
+                  <button onClick={addVariable} disabled={busy === 'var' || !vr.employee_id || (isHS ? !vr.hours : !vr.montant)} className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-secondary-fixed text-ink font-bold rounded-xl hover:bg-secondary-fixed-dim disabled:opacity-50"><Icon name="add" className="text-[18px]" />Ajouter</button>
+                </div>
+                {sel && (
+                  <p className="text-label-md text-muted flex items-center gap-1.5">
+                    <Icon name="info" className="text-[15px] text-secondary" />
+                    {sel.nature === 'retenue_net' ? 'Prélevée sur le net à payer (hors cotisations/impôt).'
+                      : sel.nature === 'retenue_brut' ? 'Réduit le brut et les assiettes (retenue).'
+                      : <>Soumise à : <span className="font-semibold text-ink">{assiettes.join(' · ') || 'aucune assiette'}</span>{horsCnss && <span className="text-success font-semibold"> — exonérée CNSS (remboursement de frais)</span>}</>}
+                  </p>
+                )}
+              </div>
+            )
+          })()}
         </div>
       )}
 

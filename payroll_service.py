@@ -77,28 +77,61 @@ def open_period(conn, company_id: str, mois: int, annee: int, actor: str | None 
     return pid
 
 
-def _rubriques_for(conn, company_id, employee_id, period_id) -> list[Rubrique]:
-    """Construit les rubriques du salarié : salaire de base (contrat) + variables."""
+# ─────────────────────────────────────────────────────────────
+# CATALOGUE STANDARD DE RUBRIQUES — assiettes issues des règles VALIDÉES
+# (13-BASE-REGLES-METIER/regles-metier.md). Permet à un utilisateur NON EXPERT
+# d'obtenir une paie EXACTE : il choisit une rubrique, les bonnes assiettes
+# CNSS/ITS/VPS sont appliquées automatiquement. Aucune règle inventée.
+#   code : (libellé, soumis_cnss, soumis_its, soumis_vps, nature)
+#   nature : 'gain' (ajouté au brut) | 'retenue_brut' (réduit le brut, ex. absence)
+#            | 'retenue_net' (prélevée après net, ex. avance/acompte)
+STANDARD_RUBRIQUES: dict[str, tuple[str, bool, bool, bool, str]] = {
+    "prime":               ("Prime / gratification",       True,  True,  True,  "gain"),
+    "gratification":       ("Gratification",               True,  True,  True,  "gain"),
+    "avantage_nature":     ("Avantage en nature",          True,  True,  True,  "gain"),   # CGI Art.123
+    "indemnite_transport": ("Indemnité de transport",      False, True,  True,  "gain"),   # hors CNSS (Loi 98-019 Art.22), soumis ITS (CGI Art.122)
+    "heures_sup":          ("Heures supplémentaires",      True,  True,  True,  "gain"),   # montant calculé (RG-HS-001)
+    "prime_anciennete":    ("Prime d'ancienneté",          True,  True,  True,  "gain"),   # conventionnel (RG-ANCIENNETE-001)
+    "absence":             ("Absence non rémunérée",       True,  True,  True,  "retenue_brut"),  # réduit le brut (RG, ST-05)
+    "avance":              ("Avance / acompte",            False, False, False, "retenue_net"),   # prélevée sur le net (RG-AVANCE)
+}
+
+
+def _rubriques_for(conn, company_id, employee_id, period_id) -> tuple[list[Rubrique], float]:
+    """Construit les rubriques du salarié : salaire de base (contrat) + variables.
+    Les assiettes proviennent (1) du paramétrage société `pay_element`, sinon (2) du
+    catalogue standard validé STANDARD_RUBRIQUES, sinon (3) 3 assiettes par défaut.
+    Retourne (rubriques_gains, total_retenues_net)."""
     base = conn.execute(
         "SELECT salaire_base FROM contract "
         "WHERE employee_id=%s AND statut='actif' ORDER BY date_debut DESC LIMIT 1",
         (employee_id,),
     ).fetchone()
     rub = [Rubrique("Salaire de base", float(base[0]))]
+    retenue_net = 0.0
     for typ, montant in conn.execute(
         "SELECT type, montant FROM variable "
         "WHERE employee_id=%s AND period_id=%s AND montant IS NOT NULL",
         (employee_id, period_id),
     ).fetchall():
+        m = float(montant)
         pe = conn.execute(
             "SELECT soumis_cnss, soumis_its, soumis_vps FROM pay_element "
             "WHERE company_id=%s AND code=%s", (company_id, typ),
         ).fetchone()
         if pe:
-            rub.append(Rubrique(typ, float(montant), bool(pe[0]), bool(pe[1]), bool(pe[2])))
-        else:  # rubrique libre : soumise aux 3 assiettes par défaut
-            rub.append(Rubrique(typ, float(montant)))
-    return rub
+            rub.append(Rubrique(typ, m, bool(pe[0]), bool(pe[1]), bool(pe[2])))
+        elif typ in STANDARD_RUBRIQUES:
+            libelle, c, i, v, nature = STANDARD_RUBRIQUES[typ]
+            if nature == "retenue_net":
+                retenue_net += abs(m)
+            elif nature == "retenue_brut":
+                rub.append(Rubrique(libelle, -abs(m), c, i, v))   # réduit le brut et les assiettes
+            else:
+                rub.append(Rubrique(libelle, m, c, i, v))
+        else:  # rubrique libre inconnue : soumise aux 3 assiettes par défaut (prudent)
+            rub.append(Rubrique(typ, m))
+    return rub, retenue_net
 
 
 def calculate_run(conn, company_id: str, period_id: str, periode: date,
@@ -146,7 +179,7 @@ def calculate_run(conn, company_id: str, period_id: str, periode: date,
 
     n = 0
     for emp_id, nom, categorie in employees:
-        rub = _rubriques_for(conn, company_id, emp_id, period_id)
+        rub, retenue_net = _rubriques_for(conn, company_id, emp_id, period_id)
         # Prime AMO de référence, calculée depuis les ayants droit à charge
         # (salarié + conjoint(s) = adultes ; enfants). N'est RETENUE que si l'AMO
         # est officiellement activée (date d'effet renseignée) - sinon amo=0.
@@ -159,14 +192,19 @@ def calculate_run(conn, company_id: str, period_id: str, periode: date,
         sal = Salarie(nom=nom, categorie=categorie, at_mp=at_mp, regime_vps=regime_vps,
                       prime_amo_mensuelle=prime_amo)
         b = calcul_bulletin(sal, rub, periode, reglement=rg)
+        # Retenue nette (avance/acompte) : prélevée APRÈS le net fiscal/social.
+        # Le net fiscal (b["net"], base des déclarations) est préservé ; seul le
+        # NET À PAYER est réduit (RG-AVANCE, retenue hors assiettes).
+        b["retenue_net"] = arrondi_fcfa(retenue_net)
+        b["net_a_payer"] = b["net"] - b["retenue_net"]
 
         payslip_id = conn.execute(
             "INSERT INTO payslip(company_id, run_id, employee_id, brut, base_cnss, "
             "base_its, total_retenues, net_a_payer, cout_employeur, resultat) "
             "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id",
             (company_id, run_id, emp_id, b["brut"], b["assiette_cnss"], b["base_its"],
-             b["cnss_sal"] + b["its"] + b["amo_sal"], b["net"], b["cout_employeur"],
-             json.dumps(b)),
+             b["cnss_sal"] + b["its"] + b["amo_sal"] + b["retenue_net"], b["net_a_payer"],
+             b["cout_employeur"], json.dumps(b)),
         ).fetchone()[0]
 
         for r in rub:  # lignes de gains

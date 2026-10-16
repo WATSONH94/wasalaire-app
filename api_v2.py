@@ -820,6 +820,16 @@ def add_var(body: VariableIn, ctx: Ctx = Depends(require("variable.add"))):
                        body.type, body.montant, actor=ctx.user_id)
     return {"variable_id": str(vid)}
 
+@app.get("/v1/rubriques")
+def rubriques_catalogue(ctx: Ctx = Depends(require("variable.add"))):
+    """Catalogue standard des rubriques de paie (assiettes CNSS/ITS/VPS pré-configurées
+    depuis les règles validées) : permet une saisie guidée garantissant une paie EXACTE."""
+    from payroll_service import STANDARD_RUBRIQUES
+    return {"rubriques": [
+        {"code": code, "libelle": lib, "soumis_cnss": c, "soumis_its": i, "soumis_vps": v, "nature": nat}
+        for code, (lib, c, i, v, nat) in STANDARD_RUBRIQUES.items()
+    ]}
+
 class VariableImportIn(BaseModel):
     company_id: str
     period_id: str
