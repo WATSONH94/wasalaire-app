@@ -30,7 +30,7 @@ from payroll_service import (
     add_variable, run_controls, declaration_aggregate, create_payout, list_payout,
     persist_declaration, persist_accounting, pay_registers, payment_register,
     payroll_accounting_reconciliation,
-    list_employees, list_companies, global_search, WorkflowError,
+    list_employees, list_companies, global_search, list_variables, list_periods, WorkflowError,
     create_campaign, attach_run_to_campaign, campaign_status, payroll_overview, provisions, reporting_summary,
     import_variables, effective_allowed_roles, set_permission_override,
     list_permission_overrides, get_governance_policy, set_governance_policy,
@@ -569,6 +569,12 @@ def company_runs(company_id: str, ctx: Ctx = Depends(require("run.declaration.re
                       "date_execution": r[4].isoformat() if r[4] else None,
                       "period_id": str(r[5]), "actif": r[6]} for r in rows]}
 
+@app.get("/v1/companies/{company_id}/periods")
+def company_periods(company_id: str, ctx: Ctx = Depends(require("run.declaration.read"))):
+    # Périodes de paie (y compris ouvertes non calculées). RLS-scopé.
+    _require_company(ctx, company_id)
+    return {"company_id": company_id, "periods": list_periods(ctx.conn, company_id)}
+
 @app.get("/v1/employees")
 def employees(company_id: str, ctx: Ctx = Depends(require("employee.read"))):
     _require_company(ctx, company_id)
@@ -887,6 +893,12 @@ def add_var(body: VariableIn, ctx: Ctx = Depends(require("variable.add"))):
     vid = add_variable(ctx.conn, body.company_id, body.employee_id, body.period_id,
                        body.type, body.montant, actor=ctx.user_id)
     return {"variable_id": str(vid)}
+
+@app.get("/v1/periods/{period_id}/variables")
+def period_variables(period_id: str, type: str | None = None,
+                     ctx: Ctx = Depends(require("run.declaration.read"))):
+    # Variables saisies sur une période (ex. type=avance). Lecture seule (RLS).
+    return {"period_id": period_id, "variables": list_variables(ctx.conn, period_id, type)}
 
 @app.get("/v1/rubriques")
 def rubriques_catalogue(ctx: Ctx = Depends(require("variable.add"))):

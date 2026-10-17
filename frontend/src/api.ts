@@ -97,6 +97,8 @@ export interface Registres {
     base_its_totale: number; its_total: number; vps_total: number; total_a_reverser: number
   }
 }
+export interface VariableRow { id: string; employee_id: string; nom: string; matricule: string; type: string; montant: number }
+export interface Period { period_id: string; mois: number; annee: number; statut: string }
 export interface SearchResults {
   societes: { id: string; nom: string }[]
   salaries: { id: string; nom: string; matricule: string; company_id: string; societe: string }[]
@@ -230,11 +232,14 @@ export const api = {
     request<{ period_id: string; statut: string }>('/v1/periods', { method: 'POST', body }),
   addVariable: (body: { company_id: string; period_id: string; employee_id: string; type: string; montant: number }) =>
     request<{ variable_id: string }>('/v1/periods/variables', { method: 'POST', body }),
+  periodVariables: (periodId: string, type?: string) =>
+    request<{ period_id: string; variables: VariableRow[] }>(`/v1/periods/${periodId}/variables` + qs({ type })),
   rubriques: () => request<{ rubriques: RubriqueCat[] }>('/v1/rubriques'),
   calculate: (body: { company_id: string; period_id: string; periode: string }) =>
     request<{ run_id: string; bulletins: number }>('/v1/periods/calculate', { method: 'POST', body }),
   controls: (runId: string) => request<Controls>(`/v1/runs/${runId}/controls`),
   companyRuns: (companyId: string) => request<{ runs: Run[] }>(`/v1/companies/${companyId}/runs`),
+  periods: (companyId: string) => request<{ periods: Period[] }>(`/v1/companies/${companyId}/periods`),
   search: (q: string) => request<SearchResults>('/v1/search' + qs({ q })),
   declarationFull: (runId: string) => request<Declaration>(`/v1/runs/${runId}/declaration`),
   closeRun: (runId: string, periodId: string) =>

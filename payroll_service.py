@@ -400,6 +400,30 @@ def reporting_summary(conn, company_id: str) -> dict:
 
 
 # ─────────────── Sociétés visibles (scope-RLS) ───────────────
+def list_periods(conn, company_id: str) -> list[dict]:
+    """Périodes de paie d'une société (y compris ouvertes non encore calculées)."""
+    rows = conn.execute(
+        "SELECT id, mois, annee, statut FROM payroll_period WHERE company_id=%s "
+        "ORDER BY annee DESC, mois DESC LIMIT 36", (company_id,)).fetchall()
+    return [dict(period_id=str(r[0]), mois=r[1], annee=r[2], statut=r[3]) for r in rows]
+
+
+def list_variables(conn, period_id: str, type_: str | None = None) -> list[dict]:
+    """Variables saisies sur une période (optionnellement filtrées par type/rubrique),
+    avec le nom du salarié."""
+    sql = ("SELECT v.id, v.employee_id, e.nom, e.matricule, v.type, v.montant "
+           "FROM variable v JOIN employee e ON e.id = v.employee_id "
+           "WHERE v.period_id = %s")
+    params: list = [period_id]
+    if type_:
+        sql += " AND v.type = %s"
+        params.append(type_)
+    sql += " ORDER BY e.nom"
+    rows = conn.execute(sql, tuple(params)).fetchall()
+    return [dict(id=str(r[0]), employee_id=str(r[1]), nom=r[2], matricule=r[3],
+                 type=r[4], montant=float(r[5])) for r in rows]
+
+
 def global_search(conn, q: str) -> dict:
     """Recherche globale (sous périmètre RLS) : sociétés par raison sociale,
     salariés par nom ou matricule. Retourne au plus 8 résultats de chaque type."""

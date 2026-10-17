@@ -22,6 +22,7 @@ import Rapprochement from './pages/Rapprochement'
 import Provisions from './pages/Provisions'
 import NotFound from './pages/NotFound'
 import Conges from './pages/Conges'
+import Avances from './pages/Avances'
 import Structure from './pages/Structure'
 import Campagnes from './pages/Campagnes'
 import Conformite from './pages/Conformite'
@@ -61,6 +62,7 @@ export default function App() {
           <Route path="wadocs" element={<WaDocs />} />
           <Route path="solde-tout-compte" element={<SoldeToutCompte />} />
           <Route path="conges" element={<Conges />} />
+          <Route path="avances" element={<Avances />} />
           <Route path="structure" element={<Structure />} />
         </Route>
         <Route path="*" element={<NotFound />} />
