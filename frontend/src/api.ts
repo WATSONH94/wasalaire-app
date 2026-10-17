@@ -109,6 +109,7 @@ export interface Provisions {
 }
 export interface GeneratedDoc { document_id: string; titre: string; contenu: string; hash: string; storage_uri: string | null }
 export interface DocListItem { titre: string; statut: string; date: string }
+export interface DocTemplate { id: string; name: string; category: string; contenu: string }
 export interface Reconciliation {
   run_id: string
   periode: { mois: number; annee: number }
@@ -251,10 +252,14 @@ export const api = {
   paymentRegister: (runId: string) => request<PaymentRegister>(`/v1/runs/${runId}/registre-paiement`),
   reconciliation: (runId: string) => request<Reconciliation>(`/v1/runs/${runId}/rapprochement`),
   provisions: (companyId: string) => request<Provisions>(`/v1/companies/${companyId}/provisions`),
-  generateDocument: (companyId: string, employeeId: string, titre: string) =>
-    request<GeneratedDoc>('/v1/documents/generate', { method: 'POST', body: { company_id: companyId, employee_id: employeeId, titre } }),
+  generateDocument: (companyId: string, employeeId: string, titre: string, templateId?: string) =>
+    request<GeneratedDoc>('/v1/documents/generate', { method: 'POST', body: { company_id: companyId, employee_id: employeeId, titre, template_id: templateId ?? null } }),
   documentsList: (companyId: string) =>
     request<{ documents: DocListItem[] }>('/v1/documents' + qs({ company_id: companyId })),
+  documentTemplates: (companyId: string) =>
+    request<{ templates: DocTemplate[] }>('/v1/document-templates' + qs({ company_id: companyId })),
+  createDocumentTemplate: (body: { company_id: string; name: string; category: string; contenu: string }) =>
+    request<{ template_id: string; name: string }>('/v1/document-templates', { method: 'POST', body }),
   attestation: (employeeId: string, companyId: string, type: 'travail' | 'salaire' | 'virement') =>
     request<Attestation>(`/v1/employees/${employeeId}/attestation` + qs({ company_id: companyId, type })),
   rupture: (employeeId: string, companyId: string, input: RuptureInput, preview: boolean) =>

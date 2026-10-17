@@ -47,7 +47,8 @@ from auth_service import (
 )
 from entitlements import check_can_add_employee, QuotaError
 from notifications import notify, list_notifications, WhatsAppGateway, SmsGateway, LogGateway
-from wadocs import CONTRAT_TEMPLATE, generate_document, list_documents
+from wadocs import (CONTRAT_TEMPLATE, generate_document, list_documents,
+                    create_template, list_templates, get_template)
 
 _DEFAULT_SECRET = "dev-secret-change-me"
 SECRET = os.environ.get("WASALAIRE_SECRET", _DEFAULT_SECRET).encode()
@@ -790,6 +791,7 @@ class DocGenIn(BaseModel):
     company_id: str
     employee_id: str
     titre: str = "Contrat de travail"
+    template_id: str | None = None
 
 @app.post("/v1/documents/generate")
 def doc_generate(body: DocGenIn, ctx: Ctx = Depends(require("document.generate"))):
@@ -806,13 +808,40 @@ def doc_generate(body: DocGenIn, ctx: Ctx = Depends(require("document.generate")
                "Salarié": {"nom": emp[0]},
                "Contrat": {"type": emp[1], "date_debut": str(emp[2]),
                            "salaire": float(emp[3]), "poste": emp[4] or "Salarié"}}
-    return generate_document(ctx.conn, body.company_id, body.titre, CONTRAT_TEMPLATE,
-                             context, employee_id=body.employee_id)
+    gabarit, titre = CONTRAT_TEMPLATE, body.titre
+    tpl_id = getattr(body, "template_id", None)
+    if tpl_id:
+        tpl = get_template(ctx.conn, tpl_id, body.company_id)
+        if not tpl:
+            raise HTTPException(status_code=404, detail="Modèle introuvable.")
+        titre, gabarit = tpl[0], tpl[1]
+    return generate_document(ctx.conn, body.company_id, titre, gabarit,
+                             context, employee_id=body.employee_id, template_id=tpl_id)
 
 @app.get("/v1/documents")
 def documents_list(company_id: str, ctx: Ctx = Depends(require("documents.read"))):
     _require_company(ctx, company_id)
     return {"documents": list_documents(ctx.conn, company_id)}
+
+class TemplateIn(BaseModel):
+    company_id: str
+    name: str
+    category: str = "courrier"
+    contenu: str
+
+@app.get("/v1/document-templates")
+def templates_list(company_id: str, ctx: Ctx = Depends(require("documents.read"))):
+    _require_company(ctx, company_id)
+    return {"templates": list_templates(ctx.conn, company_id)}
+
+@app.post("/v1/document-templates")
+def template_create(body: TemplateIn, ctx: Ctx = Depends(require("document.generate"))):
+    _require_company(ctx, body.company_id)
+    try:
+        tid = create_template(ctx.conn, body.company_id, body.name, body.category, body.contenu)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    return {"template_id": tid, "name": body.name}
 
 @app.post("/v1/periods")
 def create_period(body: PeriodIn, ctx: Ctx = Depends(require("period.open"))):

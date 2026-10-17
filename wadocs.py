@@ -54,11 +54,32 @@ Type de contrat : {{Contrat.type}}.
 """
 
 
+CATEGORIES = ("embauche", "vie_salarie", "paie", "depart", "declarations", "courrier")
+
+
 def create_template(conn, company_id, name, category, contenu) -> str:
+    if category not in CATEGORIES:
+        raise ValueError(f"category ∈ {CATEGORIES}")
     return str(conn.execute(
         "INSERT INTO document_template(company_id, name, category, contenu) "
         "VALUES (%s,%s,%s,%s) RETURNING id",
         (company_id, name, category, contenu)).fetchone()[0])
+
+
+def list_templates(conn, company_id) -> list[dict]:
+    """Modèles de la société (le contrat par défaut est fourni par le code, hors table)."""
+    rows = conn.execute(
+        "SELECT id, name, category, contenu FROM document_template "
+        "WHERE company_id=%s ORDER BY name", (company_id,)).fetchall()
+    return [dict(id=str(r[0]), name=r[1], category=r[2], contenu=r[3]) for r in rows]
+
+
+def get_template(conn, template_id, company_id):
+    """(name, contenu) d'un modèle de la société, sinon None."""
+    row = conn.execute(
+        "SELECT name, contenu FROM document_template WHERE id=%s AND company_id=%s",
+        (template_id, company_id)).fetchone()
+    return (row[0], row[1]) if row else None
 
 
 def generate_document(conn, company_id, titre, contenu_modele, context,
