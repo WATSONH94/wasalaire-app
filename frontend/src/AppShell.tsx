@@ -19,6 +19,7 @@ const NAV: NavItem[] = [
   { label: 'Rapprochement', icon: 'fact_check', to: (c) => (c ? `/c/${c}/rapprochement` : '/portefeuille'), scoped: true },
   { label: 'Documents', icon: 'folder', to: (c) => (c ? `/c/${c}/documents` : '/portefeuille'), scoped: true },
   { label: 'Registre paiement', icon: 'receipt_long', to: (c) => (c ? `/c/${c}/registre-paiement` : '/portefeuille'), scoped: true },
+  { label: 'WaDocs', icon: 'edit_document', to: (c) => (c ? `/c/${c}/wadocs` : '/portefeuille'), scoped: true },
   { label: 'Rupture / STC', icon: 'person_remove', to: (c) => (c ? `/c/${c}/solde-tout-compte` : '/portefeuille'), scoped: true },
   { label: 'Conformité', icon: 'verified_user', to: () => '/conformite' },
   { label: 'Reporting', icon: 'bar_chart', to: (c) => (c ? `/c/${c}/reporting` : '/portefeuille'), scoped: true },

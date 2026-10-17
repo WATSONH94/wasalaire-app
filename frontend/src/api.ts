@@ -98,6 +98,8 @@ export interface Registres {
   }
 }
 export interface Attestation { type: string; titre: string; contenu: string; salarie?: string }
+export interface GeneratedDoc { document_id: string; titre: string; contenu: string; hash: string; storage_uri: string | null }
+export interface DocListItem { titre: string; statut: string; date: string }
 export interface Reconciliation {
   run_id: string
   periode: { mois: number; annee: number }
@@ -238,6 +240,10 @@ export const api = {
   registres: (runId: string) => request<Registres>(`/v1/runs/${runId}/registres`),
   paymentRegister: (runId: string) => request<PaymentRegister>(`/v1/runs/${runId}/registre-paiement`),
   reconciliation: (runId: string) => request<Reconciliation>(`/v1/runs/${runId}/rapprochement`),
+  generateDocument: (companyId: string, employeeId: string, titre: string) =>
+    request<GeneratedDoc>('/v1/documents/generate', { method: 'POST', body: { company_id: companyId, employee_id: employeeId, titre } }),
+  documentsList: (companyId: string) =>
+    request<{ documents: DocListItem[] }>('/v1/documents' + qs({ company_id: companyId })),
   attestation: (employeeId: string, companyId: string, type: 'travail' | 'salaire' | 'virement') =>
     request<Attestation>(`/v1/employees/${employeeId}/attestation` + qs({ company_id: companyId, type })),
   rupture: (employeeId: string, companyId: string, input: RuptureInput, preview: boolean) =>
