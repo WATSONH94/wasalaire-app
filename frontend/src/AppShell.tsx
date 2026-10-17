@@ -10,6 +10,7 @@ const NAV: NavItem[] = [
   { label: 'Accueil', icon: 'dashboard', to: () => '/' },
   { label: 'Portefeuille', icon: 'folder_shared', to: () => '/portefeuille' },
   { label: 'Équipe', icon: 'group', to: (c) => (c ? `/c/${c}/salaries` : '/portefeuille'), scoped: true },
+  { label: 'Structure', icon: 'account_tree', to: (c) => (c ? `/c/${c}/structure` : '/portefeuille'), scoped: true },
   { label: 'Congés', icon: 'beach_access', to: (c) => (c ? `/c/${c}/conges` : '/portefeuille'), scoped: true },
   { label: 'Paie', icon: 'payments', to: (c) => (c ? `/c/${c}/paie` : '/portefeuille'), scoped: true },
   { label: 'Déclarations', icon: 'description', to: (c) => (c ? `/c/${c}/declarations` : '/portefeuille'), scoped: true },

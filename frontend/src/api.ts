@@ -102,6 +102,9 @@ export interface LeaveRequest {
   id: string; nom: string; matricule: string; type: string
   date_debut: string; date_fin: string; jours: number; statut: string; motif: string | null
 }
+export interface Establishment { id: string; nom: string; adresse: string | null; num_cnss_etab: string | null }
+export interface Department { id: string; nom: string; centre_de_cout: string | null }
+export interface JobPosition { id: string; intitule: string; categorie: string | null; classification_conv: string | null }
 export interface RuptureInput {
   type_rupture: 'licenciement' | 'demission' | 'retraite' | 'fin_cdd' | 'deces'
   anciennete_ans: number
@@ -222,6 +225,18 @@ export const api = {
     }),
   leaves: (companyId: string) =>
     request<{ company_id: string; leaves: LeaveRequest[] }>(`/v1/companies/${companyId}/leaves`),
+  establishments: (companyId: string) =>
+    request<{ etablissements: Establishment[] }>('/v1/establishments' + qs({ company_id: companyId })),
+  createEstablishment: (body: { company_id: string; nom: string; adresse?: string | null; num_cnss_etab?: string | null }) =>
+    request<{ establishment_id: string }>('/v1/establishments', { method: 'POST', body }),
+  departments: (companyId: string) =>
+    request<{ departements: Department[] }>('/v1/departments' + qs({ company_id: companyId })),
+  createDepartment: (body: { company_id: string; nom: string; centre_de_cout?: string | null }) =>
+    request<{ department_id: string }>('/v1/departments', { method: 'POST', body }),
+  positions: (companyId: string) =>
+    request<{ postes: JobPosition[] }>('/v1/positions' + qs({ company_id: companyId })),
+  createPosition: (body: { company_id: string; intitule: string; categorie?: string | null; classification_conv?: string | null }) =>
+    request<{ position_id: string }>('/v1/positions', { method: 'POST', body }),
   createLeave: (body: { company_id: string; employee_id: string; type: string; date_debut: string; date_fin: string; jours: number; motif?: string | null }) =>
     request<{ leave_id: string; statut: string }>('/v1/leaves', { method: 'POST', body }),
   validateLeave: (leaveId: string, accord: boolean) =>

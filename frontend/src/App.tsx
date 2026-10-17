@@ -17,6 +17,7 @@ import Comptabilite from './pages/Comptabilite'
 import Documents from './pages/Documents'
 import SoldeToutCompte from './pages/SoldeToutCompte'
 import Conges from './pages/Conges'
+import Structure from './pages/Structure'
 import Conformite from './pages/Conformite'
 import Parametres from './pages/Parametres'
 
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="documents" element={<Documents />} />
           <Route path="solde-tout-compte" element={<SoldeToutCompte />} />
           <Route path="conges" element={<Conges />} />
+          <Route path="structure" element={<Structure />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
