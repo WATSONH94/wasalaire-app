@@ -1261,7 +1261,14 @@ def _serve_dir(base: Path, full_path: str, spa: bool):
         html = base / ((full_path or "index") + ".html")
         if html.is_file():
             return FileResponse(html)
-    return FileResponse(base / "index.html")   # repli : SPA (routing client) ou accueil vitrine
+    # Un FICHIER statique demandé mais absent (ex. /assets/index-<ancien>.js servi par un
+    # cache / service worker périmé) NE DOIT JAMAIS renvoyer index.html : le navigateur
+    # exécuterait du HTML comme du JavaScript → SyntaxError → page blanche (« rien ne marche »).
+    # On renvoie 404, ce qui force un rechargement propre (le SW autoUpdate reprend le bon bundle).
+    last = full_path.rsplit("/", 1)[-1] if full_path else ""
+    if full_path.startswith("assets/") or "." in last:
+        raise HTTPException(status_code=404, detail="Not found")
+    return FileResponse(base / "index.html")   # repli : routing client (SPA) ou accueil vitrine
 
 if _WEBDIST.exists() or _VITRINE.exists():
     @app.get("/{full_path:path}", include_in_schema=False)
