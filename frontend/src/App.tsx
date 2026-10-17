@@ -20,6 +20,7 @@ import RegistrePaiement from './pages/RegistrePaiement'
 import WaDocs from './pages/WaDocs'
 import Rapprochement from './pages/Rapprochement'
 import Provisions from './pages/Provisions'
+import NotFound from './pages/NotFound'
 import Conges from './pages/Conges'
 import Structure from './pages/Structure'
 import Campagnes from './pages/Campagnes'
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="conges" element={<Conges />} />
           <Route path="structure" element={<Structure />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
