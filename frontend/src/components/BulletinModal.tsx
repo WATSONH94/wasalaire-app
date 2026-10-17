@@ -28,11 +28,16 @@ export default function BulletinModal({
   const brut = d.brut ?? payslip.brut
   const cnssSal = d.cnss_sal ?? 0
   const its = d.its ?? 0
-  const net = d.net ?? payslip.net
+  const net = d.net_a_payer ?? d.net ?? payslip.net
   const cnssPat = d.cnss_pat ?? 0
   const vps = d.vps ?? 0
   const amoPat = d.amo_pat ?? 0
   const cout = d.cout_employeur ?? payslip.cout_employeur
+  const gains = d.lignes?.gains ?? [{ libelle: 'Salaire brut', montant: brut }]
+  const retenues = d.lignes?.retenues ?? [
+    { libelle: 'Cotisation CNSS (part salariale)', montant: cnssSal },
+    { libelle: 'Impôt sur Traitements & Salaires (ITS)', montant: its },
+  ]
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center overflow-y-auto p-4 print:p-0 print:bg-white" onClick={onClose}>
@@ -85,10 +90,15 @@ export default function BulletinModal({
             </thead>
             <tbody>
               <tr className="bg-surface"><td colSpan={3} className="py-1.5 px-3 text-label-md font-bold text-primary uppercase">Gains</td></tr>
-              <Row label="Salaire brut" montant={brut} tone="gain" />
+              {gains.map((g, i) => (
+                <Row key={`g${i}`} label={g.libelle} montant={g.montant} tone="gain" />
+              ))}
               <tr className="bg-surface"><td colSpan={3} className="py-1.5 px-3 text-label-md font-bold text-primary uppercase">Retenues salariales</td></tr>
-              <Row label="Cotisation CNSS (part salariale)" base={d.assiette_cnss} montant={cnssSal} tone="retenue" />
-              <Row label="Impôt sur Traitements & Salaires (ITS)" base={d.base_its} montant={its} tone="retenue" />
+              {retenues.map((r, i) => {
+                const base = /cnss/i.test(r.libelle) ? d.assiette_cnss
+                  : /its|traitements/i.test(r.libelle) ? d.base_its : undefined
+                return <Row key={`r${i}`} label={r.libelle} base={base} montant={r.montant} tone="retenue" />
+              })}
             </tbody>
             <tfoot>
               <tr className="bg-primary/5 border-t-2 border-primary">

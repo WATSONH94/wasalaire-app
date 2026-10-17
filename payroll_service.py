@@ -197,6 +197,21 @@ def calculate_run(conn, company_id: str, period_id: str, periode: date,
         # NET À PAYER est réduit (RG-AVANCE, retenue hors assiettes).
         b["retenue_net"] = arrondi_fcfa(retenue_net)
         b["net_a_payer"] = b["net"] - b["retenue_net"]
+        # Détail des lignes (transparence du bulletin : le non-expert vérifie sa paie).
+        # L'ITS stocké inclut la redevance ORTB ; on les SÉPARE à l'affichage pour
+        # que le non-expert comprenne la variation de l'ITS selon le mois (mars/juin).
+        ortb = b.get("ortb", 0)
+        its_pur = b["its"] - ortb
+        b["lignes"] = {
+            "gains": [{"libelle": r.libelle, "montant": r.montant} for r in rub],
+            "retenues": (
+                [{"libelle": "CNSS (part salariale, 3,6%)", "montant": b["cnss_sal"]},
+                 {"libelle": "Impôt sur Traitements & Salaires (ITS)", "montant": its_pur}]
+                + ([{"libelle": "Redevance ORTB", "montant": ortb}] if ortb else [])
+                + ([{"libelle": "AMO (part salariale)", "montant": b["amo_sal"]}] if b["amo_sal"] else [])
+                + ([{"libelle": "Avance / acompte", "montant": b["retenue_net"]}] if b["retenue_net"] else [])
+            ),
+        }
 
         payslip_id = conn.execute(
             "INSERT INTO payslip(company_id, run_id, employee_id, brut, base_cnss, "
@@ -364,8 +379,9 @@ def reporting_summary(conn, company_id: str) -> dict:
 # ─────────────── Sociétés visibles (scope-RLS) ───────────────
 def list_companies(conn) -> list[dict]:
     rows = conn.execute(
-        "SELECT id, raison_sociale FROM company ORDER BY raison_sociale").fetchall()
-    return [dict(id=str(r[0]), nom=r[1]) for r in rows]
+        "SELECT id, raison_sociale, ifu, num_employeur_cnss "
+        "FROM company ORDER BY raison_sociale").fetchall()
+    return [dict(id=str(r[0]), nom=r[1], ifu=r[2], num_employeur_cnss=r[3]) for r in rows]
 
 
 # ─────────────── Employés (liste) ───────────────
@@ -526,13 +542,18 @@ def run_controls(conn, run_id: str) -> list[dict]:
             continue
         anomalies += controler_bulletin(resultat, float(base or 0), periode, employe=nom)
 
-    # P1-06 : rubrique libre (variable sans pay_element référencé) soumise par défaut
-    # aux 3 assiettes -> avertissement de validation (visibilité, pas de blocage silencieux).
+    # P1-06 : rubrique VRAIMENT libre (ni pay_element société, ni catalogue standard
+    # validé) -> assiettes par défaut -> avertissement de validation (visibilité, pas de
+    # blocage silencieux). Les codes du catalogue STANDARD_RUBRIQUES ont des assiettes
+    # juridiquement fondées : ils ne déclenchent PAS cet avertissement (sinon le non-expert
+    # croit à tort que sa paie est douteuse, ex. indemnité de transport).
     free = conn.execute(
         "SELECT DISTINCT v.type FROM variable v JOIN payroll_run r ON r.id=%s "
         "LEFT JOIN pay_element pe ON pe.company_id=v.company_id AND pe.code=v.type "
         "WHERE v.period_id=r.period_id AND pe.id IS NULL", (run_id,)).fetchall()
     for (typ,) in free:
+        if typ in STANDARD_RUBRIQUES:
+            continue  # assiettes validées par le catalogue -> pas d'avertissement
         anomalies.append({"gravite": "avertissement", "code": "CTRL-RUBRIQUE-LIBRE",
                           "message": f"Rubrique « {typ} » non référencée (assiettes par défaut) : à valider.",
                           "regle": "RG-CTRL-001", "source": "référentiel rubriques", "employe": None})
@@ -557,6 +578,52 @@ def declaration_aggregate(conn, run_id: str) -> dict:
         "cnss": {"salariale": agg["cnss_sal"], "patronale": agg["cnss_pat"], "assiette": agg["assiette_cnss"]},
         "amo": {"salariale": agg["amo_sal"], "patronale": agg["amo_pat"]},
         "net_total": agg["net"],
+    }
+
+
+def pay_registers(conn, run_id: str) -> dict:
+    """Assemble les registres légaux — livre de paie, bordereau CNSS (liste nominative),
+    bordereau DGI (ITS/VPS) — À PARTIR des bulletins déjà calculés et persistés.
+    AUCUNE recomputation : on relit le `resultat` du moteur validé (exactitude garantie).
+    Lève WorkflowError si le run est introuvable (ou hors périmètre RLS)."""
+    meta = conn.execute(
+        "SELECT pp.mois, pp.annee, pp.statut, c.raison_sociale, c.ifu, c.num_employeur_cnss "
+        "FROM payroll_run r JOIN payroll_period pp ON pp.id=r.period_id "
+        "JOIN company c ON c.id=r.company_id WHERE r.id=%s", (run_id,)).fetchone()
+    if not meta:
+        raise WorkflowError("Run introuvable (ou hors périmètre).")
+    mois, annee, statut, raison, ifu, num_cnss_emp = meta
+    rows = conn.execute(
+        "SELECT e.matricule, e.nom, e.num_cnss, p.resultat "
+        "FROM payslip p JOIN employee e ON e.id=p.employee_id "
+        "WHERE p.run_id=%s AND p.resultat IS NOT NULL ORDER BY e.nom", (run_id,)).fetchall()
+
+    cols = ("brut", "assiette_cnss", "cnss_sal", "cnss_pat", "base_its",
+            "its", "vps", "ortb", "net_a_payer", "cout_employeur")
+    tot = {k: 0 for k in cols}
+    livre, cnss_lignes, dgi_lignes = [], [], []
+    for mat, nom, ncnss, res in rows:
+        res = res or {}
+        d = {k: round(res.get(k, 0) or 0) for k in cols}
+        for k in cols:
+            tot[k] += d[k]
+        livre.append({"matricule": mat, "nom": nom, **d})
+        cnss_lignes.append({"num_cnss": ncnss or "", "nom": nom, "assiette": d["assiette_cnss"],
+                            "part_sal": d["cnss_sal"], "part_pat": d["cnss_pat"]})
+        dgi_lignes.append({"matricule": mat, "nom": nom, "base_its": d["base_its"],
+                           "its": d["its"], "vps": d["vps"]})
+    tot = {k: round(v) for k, v in tot.items()}
+    return {
+        "periode": {"mois": int(mois), "annee": int(annee), "statut": statut},
+        "societe": {"raison_sociale": raison, "ifu": ifu, "num_employeur_cnss": num_cnss_emp},
+        "effectif": len(rows),
+        "livre_paie": {"lignes": livre, "totaux": tot},
+        "bordereau_cnss": {"lignes": cnss_lignes, "assiette_totale": tot["assiette_cnss"],
+                           "total_sal": tot["cnss_sal"], "total_pat": tot["cnss_pat"],
+                           "total": tot["cnss_sal"] + tot["cnss_pat"]},
+        "bordereau_dgi": {"lignes": dgi_lignes, "base_its_totale": tot["base_its"],
+                          "its_total": tot["its"], "vps_total": tot["vps"],
+                          "total_a_reverser": tot["its"] + tot["vps"]},
     }
 
 
@@ -698,7 +765,10 @@ def create_payout(conn, company_id: str, run_id: str, gateway=None,
         "FROM payslip p JOIN employee e ON e.id=p.employee_id WHERE p.run_id=%s", (run_id,)).fetchall()
     summary: dict[str, dict] = {}
     for emp_id, methode, momo_op, momo_num, nom, resultat in rows:
-        montant = arrondi_fcfa((resultat or {}).get("net", 0))
+        # On décaisse le NET À PAYER (après avance/acompte), pas le net fiscal : sinon
+        # on verserait l'avance en trop ET on ne la récupérerait jamais (double perte).
+        r_ = resultat or {}
+        montant = arrondi_fcfa(r_.get("net_a_payer", r_.get("net", 0)))
         cle = f"{run_id}:{emp_id}"
         # 1) Outbox : l'intention de paiement est écrite AVANT tout appel externe.
         conn.execute(

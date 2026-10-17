@@ -13,7 +13,10 @@ import FicheSalarie from './pages/FicheSalarie'
 import Declarations from './pages/Declarations'
 import Payroll from './pages/Payroll'
 import Reporting from './pages/Reporting'
-import ComingSoon from './pages/ComingSoon'
+import Comptabilite from './pages/Comptabilite'
+import Documents from './pages/Documents'
+import Conformite from './pages/Conformite'
+import Parametres from './pages/Parametres'
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { session, loading } = useAuth()
@@ -31,14 +34,8 @@ export default function App() {
         <Route path="portefeuille" element={<Companies />} />
         <Route path="mon-compte" element={<MonCompte />} />
         <Route path="nouvelle-societe" element={<Onboarding />} />
-        <Route
-          path="conformite"
-          element={<ComingSoon title="Conformité" icon="verified_user" description="Calendrier réglementaire DGI & CNSS, suivi des barèmes et contrôles de conformité — en cours de portage depuis les maquettes." />}
-        />
-        <Route
-          path="parametres"
-          element={<ComingSoon title="Paramètres" icon="settings" description="Gestion du compte, des utilisateurs, des rôles et des préférences du cabinet — en cours de portage." />}
-        />
+        <Route path="conformite" element={<Conformite />} />
+        <Route path="parametres" element={<Parametres />} />
         <Route path="c/:companyId" element={<CompanyLayout />}>
           <Route index element={<Navigate to="salaries" replace />} />
           <Route path="salaries" element={<Employees />} />
@@ -46,10 +43,8 @@ export default function App() {
           <Route path="paie" element={<Payroll />} />
           <Route path="reporting" element={<Reporting />} />
           <Route path="declarations" element={<Declarations />} />
-          <Route
-            path="comptabilite"
-            element={<ComingSoon title="Comptabilité" icon="account_balance" description="Écritures de paie au format SYSCOHADA et export comptable — en cours de portage." />}
-          />
+          <Route path="comptabilite" element={<Comptabilite />} />
+          <Route path="documents" element={<Documents />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

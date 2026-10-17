@@ -26,8 +26,11 @@ export default function Declarations() {
   useEffect(() => {
     api.companyRuns(cid)
       .then((r) => {
-        setRuns(r.runs)
-        const first = r.runs.find((x) => x.statut === 'cloturee') ?? r.runs[0]
+        // Seuls les cycles ACTIFS sont déclarables : un run superseded (recalculé)
+        // ne doit pas apparaître, sinon le non-expert risque de déclarer de faux montants.
+        const actifs = r.runs.filter((x) => x.actif !== false)
+        setRuns(actifs)
+        const first = actifs.find((x) => x.statut === 'cloturee') ?? actifs[0]
         if (first) setSel(first.run_id)
       })
       .catch((e) => setError(e instanceof ApiError ? e.message : 'Erreur réseau'))

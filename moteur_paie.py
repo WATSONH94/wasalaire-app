@@ -270,7 +270,10 @@ def calcul_bulletin(sal: Salarie, rubriques: list[Rubrique], periode: date,
     base_its = brut_imposable - (cnss_sal if sal.its_base_deduit_cnss else 0)
     tranches = rg.bareme_its_tranches(periode)
     its = bareme_its(base_its, tranches)
-    # Redevance ORTB
+    # Redevance ORTB (perçue AVEC l'ITS certains mois). On la cumule dans `its`
+    # (totaux/déclarations inchangés) MAIS on l'expose séparément (`ortb`) pour la
+    # transparence du bulletin : le non-expert voit pourquoi l'ITS varie selon le mois.
+    montant_ortb = 0
     ortb = rg.ortb(periode)
     if periode.month in ortb:
         montant_ortb = ortb[periode.month]
@@ -298,8 +301,8 @@ def calcul_bulletin(sal: Salarie, rubriques: list[Rubrique], periode: date,
 
     return {
         "brut": brut, "assiette_cnss": assiette_cnss, "base_its": base_its,
-        "cnss_sal": cnss_sal, "its": its, "amo_sal": amo_sal, "net": net,
-        "cnss_pat": cnss_pat, "vps": vps, "amo_pat": amo_pat,
+        "cnss_sal": cnss_sal, "its": its, "ortb": montant_ortb, "amo_sal": amo_sal,
+        "net": net, "cnss_pat": cnss_pat, "vps": vps, "amo_pat": amo_pat,
         "cout_employeur": cout_employeur,
     }
 

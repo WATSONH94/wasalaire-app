@@ -28,7 +28,7 @@ from moteur_paie import param
 from payroll_service import (
     set_scope, open_period, calculate_run, validate_and_close, list_payslips,
     add_variable, run_controls, declaration_aggregate, create_payout, list_payout,
-    persist_declaration, persist_accounting,
+    persist_declaration, persist_accounting, pay_registers,
     list_employees, list_companies, WorkflowError,
     create_campaign, attach_run_to_campaign, campaign_status, reporting_summary,
     import_variables, effective_allowed_roles, set_permission_override,
@@ -553,16 +553,30 @@ def company_runs(company_id: str, ctx: Ctx = Depends(require("run.declaration.re
     """Cycles de paie calculés d'une société (pour Déclarations / historique). RLS-scopé."""
     _require_company(ctx, company_id)
     rows = ctx.conn.execute(
-        "SELECT r.id, pp.mois, pp.annee, pp.statut, r.date_execution "
+        "SELECT r.id, pp.mois, pp.annee, pp.statut, r.date_execution, pp.id, r.actif "
         "FROM payroll_run r JOIN payroll_period pp ON pp.id = r.period_id "
         "WHERE r.company_id = %s ORDER BY r.date_execution DESC", (company_id,)).fetchall()
     return {"runs": [{"run_id": str(r[0]), "mois": r[1], "annee": r[2], "statut": r[3],
-                      "date_execution": r[4].isoformat() if r[4] else None} for r in rows]}
+                      "date_execution": r[4].isoformat() if r[4] else None,
+                      "period_id": str(r[5]), "actif": r[6]} for r in rows]}
 
 @app.get("/v1/employees")
 def employees(company_id: str, ctx: Ctx = Depends(require("employee.read"))):
     _require_company(ctx, company_id)
     return {"company_id": company_id, "employes": list_employees(ctx.conn, company_id)}
+
+
+@app.get("/v1/employees/{employee_id}/attestation")
+def attestation(employee_id: str, company_id: str, type: str = "travail",
+                ctx: Ctx = Depends(require("documents.read"))):
+    # Attestation RH (travail / salaire / virement) : rendu texte depuis les données
+    # réelles (aucun champ inventé). Lecture seule.
+    _require_company(ctx, company_id)
+    from attestations import generate
+    try:
+        return generate(ctx.conn, company_id, employee_id, type)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
 
 
 # ─────────────── RH : entrée / sortie / congés ───────────────
@@ -920,6 +934,15 @@ def controls(run_id: str, ctx: Ctx = Depends(require("run.controls.read"))):
 @app.get("/v1/runs/{run_id}/declaration")
 def declaration(run_id: str, ctx: Ctx = Depends(require("run.declaration.read"))):
     return {"run_id": run_id, **declaration_aggregate(ctx.conn, run_id)}
+
+@app.get("/v1/runs/{run_id}/registres")
+def registres(run_id: str, ctx: Ctx = Depends(require("run.declaration.read"))):
+    # Registres légaux (livre de paie, bordereau CNSS, bordereau DGI) assemblés depuis
+    # les bulletins persistés — aucune recomputation. Lecture seule.
+    try:
+        return {"run_id": run_id, **pay_registers(ctx.conn, run_id)}
+    except WorkflowError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 @app.post("/v1/runs/{run_id}/declarations")
 def declarations_persist(run_id: str, ctx: Ctx = Depends(require("declaration.persist"))):

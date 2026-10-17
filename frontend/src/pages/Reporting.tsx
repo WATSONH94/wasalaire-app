@@ -54,6 +54,31 @@ export default function Reporting() {
   const tauxCharges = masse ? (charges / masse) * 100 : 0
   const hasData = !!data && masse > 0
 
+  /** Exporte le rapport (synthèse + ventilation par salarié) en CSV (séparateur « ; », tableurs FR). */
+  function exportReport() {
+    const n = (v: number) => String(Math.round(v))
+    const lignes: string[][] = [
+      ['# Rapport RH & masse salariale', periode],
+      [],
+      ['Indicateur', 'Valeur (FCFA)'],
+      ['Masse salariale brute', n(masse)],
+      ['Charges patronales (CNSS employeur + VPS)', n(charges)],
+      ['Coût employeur total', n(cout)],
+      ['Net total versé', n(net)],
+      ['Effectif actif', String(eff)],
+      ['Salaire brut moyen', n(moyen)],
+      ['Taux de charges patronales (%)', tauxCharges.toFixed(1)],
+      [],
+      ['Salarié', 'Brut', 'Net versé', 'Coût global'],
+      ...(slips ?? []).map((p) => [p.nom, n(p.brut), n(p.net), n(p.cout_employeur)]),
+    ]
+    const csv = lignes.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(';')).join('\r\n')
+    const url = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }))
+    const a = document.createElement('a')
+    a.href = url; a.download = `rapport-rh-${periode.replace(/\s+/g, '-').toLowerCase()}.csv`; a.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="space-y-6">
       {/* En-tête */}
@@ -65,7 +90,7 @@ export default function Reporting() {
           </div>
           <p className="text-body-md text-muted mt-1 max-w-2xl">Synthèse de la masse salariale, répartition par salarié et indicateurs sociaux conformes aux normes béninoises.</p>
         </div>
-        <button className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-on-primary font-bold rounded-xl hover:bg-primary-container shadow-sm shrink-0"><Icon name="download" className="text-base" />Exporter le rapport</button>
+        <button onClick={exportReport} disabled={!hasData} className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-on-primary font-bold rounded-xl hover:bg-primary-container shadow-sm shrink-0 disabled:opacity-50"><Icon name="download" className="text-base" />Exporter le rapport</button>
       </div>
 
       {error && <div className="p-3 rounded-xl bg-danger/10 border border-danger/20 text-danger text-label-md font-semibold">{error}</div>}

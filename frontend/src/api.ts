@@ -49,7 +49,8 @@ export interface Session { token: string; user_id: string; companies: string[]; 
 export interface Me { user_id: string; companies: string[]; roles: string[]; email?: string | null; platform_role?: string | null; mfa_enrolled?: boolean; mfa_enforced?: boolean }
 export interface Company { id: string; raison_sociale?: string; nom?: string; ifu?: string | null }
 export interface Employee { id: string; nom: string; matricule: string; methode_paiement?: string; salaire_base?: number | null }
-export interface PayslipDetail { its?: number; vps?: number; cnss_sal?: number; cnss_pat?: number; amo_sal?: number; amo_pat?: number; base_its?: number; assiette_cnss?: number; brut?: number; net?: number; cout_employeur?: number }
+export interface LigneBulletin { libelle: string; montant: number }
+export interface PayslipDetail { its?: number; vps?: number; cnss_sal?: number; cnss_pat?: number; amo_sal?: number; amo_pat?: number; base_its?: number; assiette_cnss?: number; brut?: number; net?: number; cout_employeur?: number; retenue_net?: number; net_a_payer?: number; lignes?: { gains: LigneBulletin[]; retenues: LigneBulletin[] } }
 export interface Payslip { nom: string; brut: number; base_its: number; net: number; cout_employeur: number; verrouille: boolean; employee_id?: string; matricule?: string; detail?: PayslipDetail | null }
 export interface Anomaly { nom?: string; gravite: string; message?: string; libelle?: string; code?: string }
 export interface RubriqueCat { code: string; libelle: string; soumis_cnss: boolean; soumis_its: boolean; soumis_vps: boolean; nature: string }
@@ -69,7 +70,34 @@ export interface RegRate { code: string; valeur: number; date_effet: string; sou
 export interface RegBracket { table_code: string; tranche_min: number; tranche_max: number | null; taux: number; date_effet: string; source: string }
 export interface RegReferentials { rates: RegRate[]; brackets: RegBracket[] }
 export interface RegChange { id: string; type: string; cible_code: string; payload: Record<string, number>; date_effet: string | null; source: string; note: string | null; statut: string; propose_par: string | null; valide_par: string | null; created_at: string | null; published_at: string | null }
-export interface Run { run_id: string; mois: number; annee: number; statut: string; date_execution: string | null }
+export interface Run { run_id: string; mois: number; annee: number; statut: string; date_execution: string | null; period_id?: string; actif?: boolean }
+export interface PayoutItem { nom: string; methode: string; montant: number; statut: string }
+export interface PayoutResult { run_id: string; batch_id: string; passerelle: string; par_methode: Record<string, { n: number; montant: number }> }
+export interface AccountingLine { compte: string; libelle: string; debit: number; credit: number }
+export interface AccountingEntry { run_id: string; lignes: AccountingLine[]; total_debit: number; total_credit: number; equilibree?: boolean; deja_persiste?: boolean }
+export interface GovernancePolicy { workspace_id: string; four_eyes_calcul_validation: boolean; four_eyes_validation_paiement: boolean }
+export interface RegulatoryRates { at: string; rates: Record<string, number> }
+export interface RegistreLigne {
+  matricule: string; nom: string; brut: number; assiette_cnss: number; cnss_sal: number
+  cnss_pat: number; base_its: number; its: number; vps: number; ortb: number
+  net_a_payer: number; cout_employeur: number
+}
+export interface Registres {
+  run_id: string
+  periode: { mois: number; annee: number; statut: string }
+  societe: { raison_sociale: string | null; ifu: string | null; num_employeur_cnss: string | null }
+  effectif: number
+  livre_paie: { lignes: RegistreLigne[]; totaux: Omit<RegistreLigne, 'matricule' | 'nom'> }
+  bordereau_cnss: {
+    lignes: { num_cnss: string; nom: string; assiette: number; part_sal: number; part_pat: number }[]
+    assiette_totale: number; total_sal: number; total_pat: number; total: number
+  }
+  bordereau_dgi: {
+    lignes: { matricule: string; nom: string; base_its: number; its: number; vps: number }[]
+    base_its_totale: number; its_total: number; vps_total: number; total_a_reverser: number
+  }
+}
+export interface Attestation { type: string; titre: string; contenu: string; salarie?: string }
 export interface Declaration {
   run_id: string
   bulletins: number
@@ -152,7 +180,18 @@ export const api = {
   declarationFull: (runId: string) => request<Declaration>(`/v1/runs/${runId}/declaration`),
   closeRun: (runId: string, periodId: string) =>
     request<{ run_id: string; statut: string }>(`/v1/runs/${runId}/close` + qs({ period_id: periodId }), { method: 'POST' }),
+  createPayout: (runId: string, companyId: string) =>
+    request<PayoutResult>(`/v1/runs/${runId}/payout` + qs({ company_id: companyId }), { method: 'POST' }),
+  payoutList: (runId: string) => request<{ run_id: string; items: PayoutItem[] }>(`/v1/runs/${runId}/payout`),
+  accounting: (runId: string) => request<AccountingEntry>(`/v1/runs/${runId}/accounting`, { method: 'POST' }),
+  regulatoryRates: (at: string) => request<RegulatoryRates>('/v1/regulatory/rates' + qs({ at })),
+  getGovernance: () => request<GovernancePolicy>('/v1/admin/governance'),
+  setGovernance: (champ: string, valeur: boolean) =>
+    request<GovernancePolicy>('/v1/admin/governance', { method: 'PUT', body: { champ, valeur } }),
   payslips: (runId: string) => request<{ run_id: string; bulletins: Payslip[] }>(`/v1/runs/${runId}/payslips`),
+  registres: (runId: string) => request<Registres>(`/v1/runs/${runId}/registres`),
+  attestation: (employeeId: string, companyId: string, type: 'travail' | 'salaire' | 'virement') =>
+    request<Attestation>(`/v1/employees/${employeeId}/attestation` + qs({ company_id: companyId, type })),
   declaration: (runId: string) => request<Record<string, number | string>>(`/v1/runs/${runId}/declaration`),
   reporting: (companyId: string) => request<Record<string, number>>('/v1/reporting' + qs({ company_id: companyId })),
 }
