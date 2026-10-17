@@ -98,6 +98,12 @@ export interface Registres {
   }
 }
 export interface Attestation { type: string; titre: string; contenu: string; salarie?: string }
+export interface Reconciliation {
+  run_id: string
+  periode: { mois: number; annee: number }
+  lignes: { libelle: string; paie: number; compta: number; ecart: number; ok: boolean }[]
+  total_debit: number; total_credit: number; equilibre: boolean; ecarts: number; concordant: boolean
+}
 export interface PaymentRegister {
   run_id: string
   periode: { mois: number; annee: number; statut: string }
@@ -231,6 +237,7 @@ export const api = {
   payslips: (runId: string) => request<{ run_id: string; bulletins: Payslip[] }>(`/v1/runs/${runId}/payslips`),
   registres: (runId: string) => request<Registres>(`/v1/runs/${runId}/registres`),
   paymentRegister: (runId: string) => request<PaymentRegister>(`/v1/runs/${runId}/registre-paiement`),
+  reconciliation: (runId: string) => request<Reconciliation>(`/v1/runs/${runId}/rapprochement`),
   attestation: (employeeId: string, companyId: string, type: 'travail' | 'salaire' | 'virement') =>
     request<Attestation>(`/v1/employees/${employeeId}/attestation` + qs({ company_id: companyId, type })),
   rupture: (employeeId: string, companyId: string, input: RuptureInput, preview: boolean) =>

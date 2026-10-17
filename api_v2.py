@@ -29,6 +29,7 @@ from payroll_service import (
     set_scope, open_period, calculate_run, validate_and_close, list_payslips,
     add_variable, run_controls, declaration_aggregate, create_payout, list_payout,
     persist_declaration, persist_accounting, pay_registers, payment_register,
+    payroll_accounting_reconciliation,
     list_employees, list_companies, WorkflowError,
     create_campaign, attach_run_to_campaign, campaign_status, payroll_overview, reporting_summary,
     import_variables, effective_allowed_roles, set_permission_override,
@@ -980,6 +981,14 @@ def registre_paiement(run_id: str, ctx: Ctx = Depends(require("payout.read"))):
         return {"run_id": run_id, **payment_register(ctx.conn, run_id)}
     except WorkflowError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+@app.get("/v1/runs/{run_id}/rapprochement")
+def rapprochement(run_id: str, ctx: Ctx = Depends(require("run.declaration.read"))):
+    # Rapprochement paie ↔ comptabilité (contrôle de cohérence). Run clôturé requis.
+    try:
+        return {"run_id": run_id, **payroll_accounting_reconciliation(ctx.conn, run_id)}
+    except WorkflowError as e:
+        raise HTTPException(status_code=409, detail=str(e))
 
 
 # ─────────────── Administration INTERNE WaSalaire (back-office éditeur SaaS) ───────────────

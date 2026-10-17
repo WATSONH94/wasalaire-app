@@ -16,6 +16,7 @@ const NAV: NavItem[] = [
   { label: 'Paie', icon: 'payments', to: (c) => (c ? `/c/${c}/paie` : '/portefeuille'), scoped: true },
   { label: 'Déclarations', icon: 'description', to: (c) => (c ? `/c/${c}/declarations` : '/portefeuille'), scoped: true },
   { label: 'Comptabilité', icon: 'account_balance', to: (c) => (c ? `/c/${c}/comptabilite` : '/portefeuille'), scoped: true },
+  { label: 'Rapprochement', icon: 'fact_check', to: (c) => (c ? `/c/${c}/rapprochement` : '/portefeuille'), scoped: true },
   { label: 'Documents', icon: 'folder', to: (c) => (c ? `/c/${c}/documents` : '/portefeuille'), scoped: true },
   { label: 'Registre paiement', icon: 'receipt_long', to: (c) => (c ? `/c/${c}/registre-paiement` : '/portefeuille'), scoped: true },
   { label: 'Rupture / STC', icon: 'person_remove', to: (c) => (c ? `/c/${c}/solde-tout-compte` : '/portefeuille'), scoped: true },

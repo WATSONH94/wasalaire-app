@@ -650,6 +650,45 @@ def pay_registers(conn, run_id: str) -> dict:
     }
 
 
+def payroll_accounting_reconciliation(conn, run_id: str) -> dict:
+    """Rapprochement paie ↔ comptabilité : confronte l'agrégat de paie (bulletins) au
+    journal SYSCOHADA (écriture consolidée). Les deux dérivent des mêmes bulletins ; tout
+    écart signale une incohérence. Nécessite un run CLÔTURÉ (l'écriture est alors générée)."""
+    company_id, mois, annee = _run_cloture_info(conn, run_id)
+    agg = declaration_aggregate(conn, run_id)
+    brut = float(conn.execute(
+        "SELECT COALESCE(SUM((resultat->>'brut')::numeric),0) FROM payslip "
+        "WHERE run_id=%s AND resultat IS NOT NULL", (run_id,)).fetchone()[0])
+    acc = persist_accounting(conn, run_id, actor=None)   # idempotent : renvoie l'existante
+    deb, cre = {}, {}
+    for l in acc["lignes"]:
+        deb[l["compte"]] = deb.get(l["compte"], 0) + float(l["debit"] or 0)
+        cre[l["compte"]] = cre.get(l["compte"], 0) + float(l["credit"] or 0)
+
+    its = agg["its_vps"]["its_total"]; vps = agg["its_vps"]["vps_total"]
+    cnss_sal = agg["cnss"]["salariale"]; cnss_pat = agg["cnss"]["patronale"]; net = agg["net_total"]
+    points = [
+        ("Rémunérations brutes (66)", brut, deb.get("6611", 0)),
+        ("Charges patronales CNSS (664)", cnss_pat, deb.get("6641", 0)),
+        ("Versement patronal VPS (641)", vps, deb.get("641", 0)),
+        ("CNSS à reverser (431)", cnss_sal + cnss_pat, cre.get("431", 0)),
+        ("ITS à reverser (447)", its, cre.get("4472", 0)),
+        ("VPS à reverser (442)", vps, cre.get("4421", 0)),
+        ("Net à payer au personnel (422)", net, cre.get("422", 0)),
+    ]
+    lignes = [dict(libelle=lib, paie=round(p), compta=round(c), ecart=round(p - c),
+                   ok=(round(p - c) == 0)) for lib, p, c in points]
+    equilibre = round(acc["total_debit"]) == round(acc["total_credit"])
+    return {
+        "periode": {"mois": mois, "annee": annee},
+        "lignes": lignes,
+        "total_debit": round(acc["total_debit"]), "total_credit": round(acc["total_credit"]),
+        "equilibre": equilibre,
+        "ecarts": sum(1 for l in lignes if not l["ok"]) + (0 if equilibre else 1),
+        "concordant": all(l["ok"] for l in lignes) and equilibre,
+    }
+
+
 def payment_register(conn, run_id: str) -> dict:
     """Registre de paiement des salaires (Code du Travail Bénin, art. 224-226) :
     preuve des paiements effectués par salarié (net payé, méthode, date, statut, référence).
@@ -696,6 +735,8 @@ def persist_declaration(conn, run_id: str, actor: str | None = None) -> list[dic
     indicatives et statut 'preparee'. Idempotent (une seule série par run).
     ⚠️ Le dépôt/accusé officiel DGI/CNSS reste une VALIDATION EXTERNE (fichier non homologué)."""
     company_id, mois, annee = _run_cloture_info(conn, run_id)
+    # Verrou transactionnel par run : sérialise les persistances concurrentes (idempotence sûre).
+    conn.execute("SELECT pg_advisory_xact_lock(hashtext(%s))", (f"decl:{run_id}",))
     existing = conn.execute(
         "SELECT id, type, montant, echeance, statut FROM declaration WHERE run_id=%s ORDER BY type",
         (run_id,)).fetchall()
@@ -728,6 +769,9 @@ def persist_accounting(conn, run_id: str, actor: str | None = None) -> dict:
     """Persiste l'écriture comptable consolidée (SYSCOHADA) d'un run CLÔTURÉ.
     Débit = crédit garanti par construction. Idempotent (une seule écriture par run)."""
     company_id, mois, annee = _run_cloture_info(conn, run_id)
+    # Verrou transactionnel par run : sérialise les persistances concurrentes (double POST
+    # React StrictMode, double-clic, retry) → pas de double écriture. Libéré en fin de transaction.
+    conn.execute("SELECT pg_advisory_xact_lock(hashtext(%s))", (f"acc:{run_id}",))
     existing = conn.execute(
         "SELECT compte, libelle, debit, credit FROM accounting_entry WHERE run_id=%s ORDER BY id",
         (run_id,)).fetchall()
