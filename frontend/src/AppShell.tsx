@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from './auth'
-import { api, type Company } from './api'
+import { api, type Company, type SearchResults } from './api'
 import { Icon } from './stitch'
 
 // Navigation console (markup Stitch exact). Items métier scopés à la société courante.
@@ -134,6 +134,8 @@ function Topbar({ onBurger }: { onBurger: () => void }) {
   const { pathname } = useLocation()
   const companyId = currentCompanyId(pathname)
   const [q, setQ] = useState('')
+  const [res, setRes] = useState<SearchResults | null>(null)
+  const [open, setOpen] = useState(false)
   const [company, setCompany] = useState<Company | null>(null)
   const now = new Date()
   const cycle = `${MOIS[now.getMonth() + 1]} ${now.getFullYear()}`
@@ -143,7 +145,23 @@ function Topbar({ onBurger }: { onBurger: () => void }) {
     api.companies().then((r) => setCompany(r.companies.find((c) => c.id === companyId) ?? null)).catch(() => setCompany(null))
   }, [companyId])
 
-  const submit = (e: React.FormEvent) => { e.preventDefault(); navigate('/portefeuille' + (q ? `?q=${encodeURIComponent(q)}` : '')) }
+  // Recherche globale débouncée (sociétés + salariés).
+  useEffect(() => {
+    const term = q.trim()
+    if (term.length < 2) { setRes(null); setOpen(false); return }
+    const t = setTimeout(() => {
+      api.search(term).then((r) => { setRes(r); setOpen(true) }).catch(() => setRes(null))
+    }, 250)
+    return () => clearTimeout(t)
+  }, [q])
+
+  const go = (path: string) => { setOpen(false); setQ(''); navigate(path) }
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (res?.salaries[0]) go(`/c/${res.salaries[0].company_id}/salaries/${res.salaries[0].id}`)
+    else if (res?.societes[0]) go(`/c/${res.societes[0].id}`)
+  }
+  const nb = (res?.societes.length ?? 0) + (res?.salaries.length ?? 0)
   const societe = company?.raison_sociale ?? company?.nom
 
   return (
@@ -161,9 +179,50 @@ function Topbar({ onBurger }: { onBurger: () => void }) {
           </>}
         </div>
         {/* Recherche globale */}
-        <form onSubmit={submit} className="relative w-56 xl:w-80 hidden sm:block">
+        <form onSubmit={submit} className="relative w-56 xl:w-80 hidden sm:block" role="search">
           <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-[18px]" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} className="w-full pl-9 pr-4 py-1.5 text-body-md bg-surface-container-low border border-border rounded-xl focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" placeholder="Rechercher une société, un salarié…" type="text" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} onFocus={() => { if (nb) setOpen(true) }}
+            onBlur={() => setTimeout(() => setOpen(false), 150)}
+            onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false) }}
+            className="w-full pl-9 pr-4 py-1.5 text-body-md bg-surface-container-low border border-border rounded-xl focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" placeholder="Rechercher une société, un salarié…" type="text" />
+          {open && res && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-surface border border-border rounded-xl shadow-xl z-50 overflow-hidden max-h-96 overflow-y-auto">
+              {nb === 0 ? (
+                <div className="px-4 py-3 text-label-md text-muted">Aucun résultat pour « {q.trim()} ».</div>
+              ) : (
+                <>
+                  {res.societes.length > 0 && (
+                    <div>
+                      <div className="px-4 pt-2 pb-1 text-[11px] font-bold text-muted uppercase tracking-wide">Sociétés</div>
+                      {res.societes.map((s) => (
+                        <button key={s.id} type="button" onMouseDown={() => go(`/c/${s.id}`)}
+                          className="w-full text-left px-4 py-2 flex items-center gap-2 hover:bg-surface-container-low">
+                          <Icon name="apartment" className="text-primary text-[18px]" />
+                          <span className="font-semibold text-ink text-body-sm">{s.nom}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {res.salaries.length > 0 && (
+                    <div className="border-t border-border">
+                      <div className="px-4 pt-2 pb-1 text-[11px] font-bold text-muted uppercase tracking-wide">Salariés</div>
+                      {res.salaries.map((e) => (
+                        <button key={e.id} type="button" onMouseDown={() => go(`/c/${e.company_id}/salaries/${e.id}`)}
+                          className="w-full text-left px-4 py-2 flex items-center justify-between gap-2 hover:bg-surface-container-low">
+                          <span className="flex items-center gap-2 min-w-0">
+                            <Icon name="person" className="text-secondary text-[18px]" />
+                            <span className="font-semibold text-ink text-body-sm truncate">{e.nom}</span>
+                            <span className="text-label-md text-muted font-mono shrink-0">{e.matricule}</span>
+                          </span>
+                          <span className="text-label-md text-muted truncate shrink-0 max-w-[8rem]">{e.societe}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
         </form>
       </div>
       <div className="flex items-center gap-3 lg:gap-4">

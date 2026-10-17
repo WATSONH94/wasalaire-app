@@ -400,6 +400,26 @@ def reporting_summary(conn, company_id: str) -> dict:
 
 
 # ─────────────── Sociétés visibles (scope-RLS) ───────────────
+def global_search(conn, q: str) -> dict:
+    """Recherche globale (sous périmètre RLS) : sociétés par raison sociale,
+    salariés par nom ou matricule. Retourne au plus 8 résultats de chaque type."""
+    like = f"%{q.strip()}%"
+    comps = conn.execute(
+        "SELECT id, raison_sociale FROM company "
+        "WHERE workspace_id IS NOT NULL AND raison_sociale ILIKE %s "
+        "ORDER BY raison_sociale LIMIT 8", (like,)).fetchall()
+    emps = conn.execute(
+        "SELECT e.id, e.nom, e.matricule, e.company_id, c.raison_sociale "
+        "FROM employee e JOIN company c ON c.id = e.company_id "
+        "WHERE e.deleted_at IS NULL AND (e.nom ILIKE %s OR e.matricule ILIKE %s) "
+        "ORDER BY e.nom LIMIT 8", (like, like)).fetchall()
+    return {
+        "societes": [{"id": str(r[0]), "nom": r[1]} for r in comps],
+        "salaries": [{"id": str(r[0]), "nom": r[1], "matricule": r[2],
+                      "company_id": str(r[3]), "societe": r[4]} for r in emps],
+    }
+
+
 def list_companies(conn) -> list[dict]:
     rows = conn.execute(
         "SELECT id, raison_sociale, ifu, num_employeur_cnss "

@@ -30,7 +30,7 @@ from payroll_service import (
     add_variable, run_controls, declaration_aggregate, create_payout, list_payout,
     persist_declaration, persist_accounting, pay_registers, payment_register,
     payroll_accounting_reconciliation,
-    list_employees, list_companies, WorkflowError,
+    list_employees, list_companies, global_search, WorkflowError,
     create_campaign, attach_run_to_campaign, campaign_status, payroll_overview, provisions, reporting_summary,
     import_variables, effective_allowed_roles, set_permission_override,
     list_permission_overrides, get_governance_policy, set_governance_policy,
@@ -523,6 +523,13 @@ def me(ctx: Ctx = Depends(require("me.read"))):
 @app.get("/v1/companies")
 def companies(ctx: Ctx = Depends(require("company.read"))):
     return {"companies": list_companies(ctx.conn)}
+
+@app.get("/v1/search")
+def search(q: str, ctx: Ctx = Depends(require("company.read"))):
+    # Recherche globale sous périmètre (sociétés + salariés). 2 caractères minimum.
+    if len((q or "").strip()) < 2:
+        return {"societes": [], "salaries": []}
+    return global_search(ctx.conn, q)
 
 @app.get("/v1/org/admin-nodes")
 def org_admin_nodes(ctx: Ctx = Depends(require("me.read"))):

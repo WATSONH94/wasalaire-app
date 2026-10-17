@@ -97,6 +97,10 @@ export interface Registres {
     base_its_totale: number; its_total: number; vps_total: number; total_a_reverser: number
   }
 }
+export interface SearchResults {
+  societes: { id: string; nom: string }[]
+  salaries: { id: string; nom: string; matricule: string; company_id: string; societe: string }[]
+}
 export interface Attestation { type: string; titre: string; contenu: string; salarie?: string }
 export interface Provisions {
   company_id: string; annee: number; effectif: number
@@ -230,6 +234,7 @@ export const api = {
     request<{ run_id: string; bulletins: number }>('/v1/periods/calculate', { method: 'POST', body }),
   controls: (runId: string) => request<Controls>(`/v1/runs/${runId}/controls`),
   companyRuns: (companyId: string) => request<{ runs: Run[] }>(`/v1/companies/${companyId}/runs`),
+  search: (q: string) => request<SearchResults>('/v1/search' + qs({ q })),
   declarationFull: (runId: string) => request<Declaration>(`/v1/runs/${runId}/declaration`),
   closeRun: (runId: string, periodId: string) =>
     request<{ run_id: string; statut: string }>(`/v1/runs/${runId}/close` + qs({ period_id: periodId }), { method: 'POST' }),
