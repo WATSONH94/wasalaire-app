@@ -31,7 +31,7 @@ from payroll_service import (
     persist_declaration, persist_accounting, pay_registers, payment_register,
     payroll_accounting_reconciliation,
     list_employees, list_companies, WorkflowError,
-    create_campaign, attach_run_to_campaign, campaign_status, payroll_overview, reporting_summary,
+    create_campaign, attach_run_to_campaign, campaign_status, payroll_overview, provisions, reporting_summary,
     import_variables, effective_allowed_roles, set_permission_override,
     list_permission_overrides, get_governance_policy, set_governance_policy,
 )
@@ -762,6 +762,12 @@ def campaign_stat(campaign_id: str, ctx: Ctx = Depends(require("campaign.manage"
 def org_payroll_overview(mois: int, annee: int, ctx: Ctx = Depends(require("company.read"))):
     # Avancement de la paie du mois pour toutes les sociétés du périmètre (RLS).
     return payroll_overview(ctx.conn, mois, annee)
+
+@app.get("/v1/companies/{company_id}/provisions")
+def company_provisions(company_id: str, ctx: Ctx = Depends(require("run.declaration.read"))):
+    # Provisions sociales indicatives (congés payés + engagement IFC) par salarié actif.
+    _require_company(ctx, company_id)
+    return {"company_id": company_id, **provisions(ctx.conn, company_id)}
 
 @app.get("/v1/reporting")
 def reporting(company_id: str, ctx: Ctx = Depends(require("reporting.read"))):

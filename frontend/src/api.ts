@@ -98,6 +98,11 @@ export interface Registres {
   }
 }
 export interface Attestation { type: string; titre: string; contenu: string; salarie?: string }
+export interface Provisions {
+  company_id: string; annee: number; effectif: number
+  lignes: { matricule: string; nom: string; anciennete_ans: number; jours_cp: number; provision_conges: number; engagement_ifc: number }[]
+  total_provision_conges: number; total_engagement_ifc: number
+}
 export interface GeneratedDoc { document_id: string; titre: string; contenu: string; hash: string; storage_uri: string | null }
 export interface DocListItem { titre: string; statut: string; date: string }
 export interface Reconciliation {
@@ -240,6 +245,7 @@ export const api = {
   registres: (runId: string) => request<Registres>(`/v1/runs/${runId}/registres`),
   paymentRegister: (runId: string) => request<PaymentRegister>(`/v1/runs/${runId}/registre-paiement`),
   reconciliation: (runId: string) => request<Reconciliation>(`/v1/runs/${runId}/rapprochement`),
+  provisions: (companyId: string) => request<Provisions>(`/v1/companies/${companyId}/provisions`),
   generateDocument: (companyId: string, employeeId: string, titre: string) =>
     request<GeneratedDoc>('/v1/documents/generate', { method: 'POST', body: { company_id: companyId, employee_id: employeeId, titre } }),
   documentsList: (companyId: string) =>

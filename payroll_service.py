@@ -718,6 +718,45 @@ def payment_register(conn, run_id: str) -> dict:
     }
 
 
+def provisions(conn, company_id: str) -> dict:
+    """Provisions sociales INDICATIVES par salarié actif :
+    - Provision congés payés = (jours acquis non pris sur l'année) × (salaire journalier, 1/30e).
+      Acquis = droit_conges_annuels (Art. 152/158) ; pris = congés annuels validés de l'année.
+    - Engagement IFC (indemnité de fin de carrière) = indemnité de départ à la retraite À DATE
+      (CCGT Art. 57, min 3 mois). Montant dû si le salarié partait aujourd'hui (non actualisé).
+    ⚠️ Estimation de gestion, NON certifiée (une provision IFC actuarielle actualisée relève
+    d'un actuaire). À faire valider par un expert-comptable avant inscription au bilan."""
+    from datetime import date as _date
+    from conges_maternite import droit_conges_annuels, indemnite_depart_retraite
+    today = _date.today(); an = today.year
+    rows = conn.execute(
+        "SELECT e.id, e.matricule, e.nom, c.date_debut, c.salaire_base "
+        "FROM employee e JOIN contract c ON c.employee_id=e.id AND c.statut='actif' "
+        "WHERE e.company_id=%s AND e.deleted_at IS NULL ORDER BY e.nom", (company_id,)).fetchall()
+    lignes = []
+    for eid, mat, nom, dd, sal in rows:
+        sal = float(sal or 0)
+        anc_ans = max(0.0, (today - dd).days / 365.25) if dd else 0.0
+        mois_service = max(0, (today.year - dd.year) * 12 + today.month - dd.month) if dd else 0
+        acquis = droit_conges_annuels(mois_service=min(mois_service, 12),
+                                      anciennete_ans=int(anc_ans))["jours_acquis"]
+        pris = float(conn.execute(
+            "SELECT COALESCE(SUM(jours),0) FROM leave_request WHERE employee_id=%s "
+            "AND type='conge_annuel' AND statut='valide' AND EXTRACT(YEAR FROM date_debut)=%s",
+            (eid, an)).fetchone()[0])
+        solde_j = max(0.0, acquis - pris)
+        prov_conges = round(solde_j * sal / 30)
+        ifc = indemnite_depart_retraite(sal, anc_ans)["montant"] if anc_ans > 0 else 0
+        lignes.append(dict(matricule=mat, nom=nom, anciennete_ans=round(anc_ans, 1),
+                           jours_cp=round(solde_j, 1), provision_conges=prov_conges,
+                           engagement_ifc=ifc))
+    return {
+        "annee": an, "effectif": len(lignes), "lignes": lignes,
+        "total_provision_conges": sum(l["provision_conges"] for l in lignes),
+        "total_engagement_ifc": sum(l["engagement_ifc"] for l in lignes),
+    }
+
+
 def _run_cloture_info(conn, run_id: str):
     """(company_id, mois, annee) si le run existe et sa période est clôturée, sinon lève."""
     info = conn.execute(

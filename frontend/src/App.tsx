@@ -19,6 +19,7 @@ import SoldeToutCompte from './pages/SoldeToutCompte'
 import RegistrePaiement from './pages/RegistrePaiement'
 import WaDocs from './pages/WaDocs'
 import Rapprochement from './pages/Rapprochement'
+import Provisions from './pages/Provisions'
 import Conges from './pages/Conges'
 import Structure from './pages/Structure'
 import Campagnes from './pages/Campagnes'
@@ -53,6 +54,7 @@ export default function App() {
           <Route path="declarations" element={<Declarations />} />
           <Route path="comptabilite" element={<Comptabilite />} />
           <Route path="rapprochement" element={<Rapprochement />} />
+          <Route path="provisions" element={<Provisions />} />
           <Route path="documents" element={<Documents />} />
           <Route path="registre-paiement" element={<RegistrePaiement />} />
           <Route path="wadocs" element={<WaDocs />} />
