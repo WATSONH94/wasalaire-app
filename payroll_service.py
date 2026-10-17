@@ -347,6 +347,29 @@ def campaign_status(conn, campaign_id: str) -> dict:
             "total_bulletins": sum(s["bulletins"] for s in societes)}
 
 
+def payroll_overview(conn, mois: int, annee: int) -> dict:
+    """Vue multi-société de l'avancement de la paie pour un mois donné : pour CHAQUE
+    société du périmètre (RLS), le statut de la période + nombre de bulletins + net.
+    Ne dépend pas du rattachement à une campagne (agrège directement par période)."""
+    rows = conn.execute(
+        "SELECT c.id, c.raison_sociale, pp.statut, "
+        "  COALESCE((SELECT count(*) FROM payslip p JOIN payroll_run r ON r.id=p.run_id "
+        "            WHERE r.period_id=pp.id AND p.resultat IS NOT NULL),0) AS nb, "
+        "  COALESCE((SELECT SUM(p.net_a_payer) FROM payslip p JOIN payroll_run r ON r.id=p.run_id "
+        "            WHERE r.period_id=pp.id AND p.resultat IS NOT NULL),0) AS net "
+        "FROM company c "
+        "LEFT JOIN payroll_period pp ON pp.company_id=c.id AND pp.mois=%s AND pp.annee=%s "
+        "WHERE c.workspace_id IS NOT NULL "
+        "ORDER BY c.raison_sociale", (mois, annee)).fetchall()
+    societes = [dict(company_id=str(r[0]), raison_sociale=r[1], statut=(r[2] or "aucune"),
+                     bulletins=int(r[3] or 0), net=float(r[4] or 0)) for r in rows]
+    traitees = sum(1 for s in societes if s["statut"] not in ("aucune", "ouverte"))
+    return {"mois": int(mois), "annee": int(annee), "societes": societes,
+            "nb_societes": len(societes), "nb_traitees": traitees,
+            "total_net": sum(s["net"] for s in societes),
+            "total_bulletins": sum(s["bulletins"] for s in societes)}
+
+
 # ─────────────── Reporting (agrégats réels depuis la BD) ───────────────
 def reporting_summary(conn, company_id: str) -> dict:
     rows = conn.execute(

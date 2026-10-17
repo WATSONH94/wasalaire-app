@@ -102,6 +102,11 @@ export interface LeaveRequest {
   id: string; nom: string; matricule: string; type: string
   date_debut: string; date_fin: string; jours: number; statut: string; motif: string | null
 }
+export interface PayrollOverviewRow { company_id: string; raison_sociale: string; statut: string; bulletins: number; net: number }
+export interface PayrollOverview {
+  mois: number; annee: number; societes: PayrollOverviewRow[]
+  nb_societes: number; nb_traitees: number; total_net: number; total_bulletins: number
+}
 export interface Establishment { id: string; nom: string; adresse: string | null; num_cnss_etab: string | null }
 export interface Department { id: string; nom: string; centre_de_cout: string | null }
 export interface JobPosition { id: string; intitule: string; categorie: string | null; classification_conv: string | null }
@@ -225,6 +230,8 @@ export const api = {
     }),
   leaves: (companyId: string) =>
     request<{ company_id: string; leaves: LeaveRequest[] }>(`/v1/companies/${companyId}/leaves`),
+  payrollOverview: (mois: number, annee: number) =>
+    request<PayrollOverview>('/v1/org/payroll-overview' + qs({ mois: String(mois), annee: String(annee) })),
   establishments: (companyId: string) =>
     request<{ etablissements: Establishment[] }>('/v1/establishments' + qs({ company_id: companyId })),
   createEstablishment: (body: { company_id: string; nom: string; adresse?: string | null; num_cnss_etab?: string | null }) =>

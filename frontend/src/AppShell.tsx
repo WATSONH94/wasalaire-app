@@ -9,6 +9,7 @@ type NavItem = { label: string; icon: string; to: (c?: string) => string; scoped
 const NAV: NavItem[] = [
   { label: 'Accueil', icon: 'dashboard', to: () => '/' },
   { label: 'Portefeuille', icon: 'folder_shared', to: () => '/portefeuille' },
+  { label: 'Multi-société', icon: 'apartment', to: () => '/campagnes' },
   { label: 'Équipe', icon: 'group', to: (c) => (c ? `/c/${c}/salaries` : '/portefeuille'), scoped: true },
   { label: 'Structure', icon: 'account_tree', to: (c) => (c ? `/c/${c}/structure` : '/portefeuille'), scoped: true },
   { label: 'Congés', icon: 'beach_access', to: (c) => (c ? `/c/${c}/conges` : '/portefeuille'), scoped: true },

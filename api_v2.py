@@ -30,7 +30,7 @@ from payroll_service import (
     add_variable, run_controls, declaration_aggregate, create_payout, list_payout,
     persist_declaration, persist_accounting, pay_registers,
     list_employees, list_companies, WorkflowError,
-    create_campaign, attach_run_to_campaign, campaign_status, reporting_summary,
+    create_campaign, attach_run_to_campaign, campaign_status, payroll_overview, reporting_summary,
     import_variables, effective_allowed_roles, set_permission_override,
     list_permission_overrides, get_governance_policy, set_governance_policy,
 )
@@ -756,6 +756,11 @@ def campaign_create(body: CampaignIn, ctx: Ctx = Depends(require("campaign.manag
 @app.get("/v1/campaigns/{campaign_id}/status")
 def campaign_stat(campaign_id: str, ctx: Ctx = Depends(require("campaign.manage"))):
     return campaign_status(ctx.conn, campaign_id)
+
+@app.get("/v1/org/payroll-overview")
+def org_payroll_overview(mois: int, annee: int, ctx: Ctx = Depends(require("company.read"))):
+    # Avancement de la paie du mois pour toutes les sociétés du périmètre (RLS).
+    return payroll_overview(ctx.conn, mois, annee)
 
 @app.get("/v1/reporting")
 def reporting(company_id: str, ctx: Ctx = Depends(require("reporting.read"))):

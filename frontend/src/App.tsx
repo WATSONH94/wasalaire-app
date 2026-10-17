@@ -18,6 +18,7 @@ import Documents from './pages/Documents'
 import SoldeToutCompte from './pages/SoldeToutCompte'
 import Conges from './pages/Conges'
 import Structure from './pages/Structure'
+import Campagnes from './pages/Campagnes'
 import Conformite from './pages/Conformite'
 import Parametres from './pages/Parametres'
 
@@ -35,6 +36,7 @@ export default function App() {
       <Route path="/" element={<RequireAuth><AppShell /></RequireAuth>}>
         <Route index element={<Dashboard />} />
         <Route path="portefeuille" element={<Companies />} />
+        <Route path="campagnes" element={<Campagnes />} />
         <Route path="mon-compte" element={<MonCompte />} />
         <Route path="nouvelle-societe" element={<Onboarding />} />
         <Route path="conformite" element={<Conformite />} />
