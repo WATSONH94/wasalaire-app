@@ -16,6 +16,7 @@ import Reporting from './pages/Reporting'
 import Comptabilite from './pages/Comptabilite'
 import Documents from './pages/Documents'
 import SoldeToutCompte from './pages/SoldeToutCompte'
+import RegistrePaiement from './pages/RegistrePaiement'
 import Conges from './pages/Conges'
 import Structure from './pages/Structure'
 import Campagnes from './pages/Campagnes'
@@ -50,6 +51,7 @@ export default function App() {
           <Route path="declarations" element={<Declarations />} />
           <Route path="comptabilite" element={<Comptabilite />} />
           <Route path="documents" element={<Documents />} />
+          <Route path="registre-paiement" element={<RegistrePaiement />} />
           <Route path="solde-tout-compte" element={<SoldeToutCompte />} />
           <Route path="conges" element={<Conges />} />
           <Route path="structure" element={<Structure />} />

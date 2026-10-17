@@ -650,6 +650,35 @@ def pay_registers(conn, run_id: str) -> dict:
     }
 
 
+def payment_register(conn, run_id: str) -> dict:
+    """Registre de paiement des salaires (Code du Travail Bénin, art. 224-226) :
+    preuve des paiements effectués par salarié (net payé, méthode, date, statut, référence).
+    Lu depuis les ordres de décaissement (payout). Vide tant qu'aucun décaissement n'a eu lieu."""
+    meta = conn.execute(
+        "SELECT pp.mois, pp.annee, pp.statut, c.raison_sociale, c.ifu, c.num_employeur_cnss "
+        "FROM payroll_run r JOIN payroll_period pp ON pp.id=r.period_id "
+        "JOIN company c ON c.id=r.company_id WHERE r.id=%s", (run_id,)).fetchone()
+    if not meta:
+        raise WorkflowError("Run introuvable (ou hors périmètre).")
+    mois, annee, statut, raison, ifu, num_cnss_emp = meta
+    rows = conn.execute(
+        "SELECT e.matricule, e.nom, e.num_cnss, i.montant, i.methode, i.statut, "
+        "       i.reference_operateur, b.created_at "
+        "FROM payout_item i JOIN payout_batch b ON b.id=i.batch_id "
+        "JOIN employee e ON e.id=i.employee_id "
+        "WHERE b.run_id=%s ORDER BY e.nom", (run_id,)).fetchall()
+    lignes = [dict(matricule=r[0], nom=r[1], num_cnss=r[2] or "", net_paye=float(r[3]),
+                   methode=str(r[4]), statut=r[5], reference=r[6] or "",
+                   date_paiement=str(r[7])[:10]) for r in rows]
+    return {
+        "periode": {"mois": int(mois), "annee": int(annee), "statut": statut},
+        "societe": {"raison_sociale": raison, "ifu": ifu, "num_employeur_cnss": num_cnss_emp},
+        "nb_paiements": len(lignes),
+        "total_paye": round(sum(l["net_paye"] for l in lignes)),
+        "lignes": lignes,
+    }
+
+
 def _run_cloture_info(conn, run_id: str):
     """(company_id, mois, annee) si le run existe et sa période est clôturée, sinon lève."""
     info = conn.execute(

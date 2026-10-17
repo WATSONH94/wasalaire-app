@@ -28,7 +28,7 @@ from moteur_paie import param
 from payroll_service import (
     set_scope, open_period, calculate_run, validate_and_close, list_payslips,
     add_variable, run_controls, declaration_aggregate, create_payout, list_payout,
-    persist_declaration, persist_accounting, pay_registers,
+    persist_declaration, persist_accounting, pay_registers, payment_register,
     list_employees, list_companies, WorkflowError,
     create_campaign, attach_run_to_campaign, campaign_status, payroll_overview, reporting_summary,
     import_variables, effective_allowed_roles, set_permission_override,
@@ -972,6 +972,14 @@ def payout(run_id: str, company_id: str, ctx: Ctx = Depends(require("payout.crea
 @app.get("/v1/runs/{run_id}/payout")
 def payout_list(run_id: str, ctx: Ctx = Depends(require("payout.read"))):
     return {"run_id": run_id, "items": list_payout(ctx.conn, run_id)}
+
+@app.get("/v1/runs/{run_id}/registre-paiement")
+def registre_paiement(run_id: str, ctx: Ctx = Depends(require("payout.read"))):
+    # Registre légal des paiements (Code du Travail art. 224-226). Lecture seule.
+    try:
+        return {"run_id": run_id, **payment_register(ctx.conn, run_id)}
+    except WorkflowError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 # ─────────────── Administration INTERNE WaSalaire (back-office éditeur SaaS) ───────────────

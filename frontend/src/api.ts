@@ -98,6 +98,14 @@ export interface Registres {
   }
 }
 export interface Attestation { type: string; titre: string; contenu: string; salarie?: string }
+export interface PaymentRegister {
+  run_id: string
+  periode: { mois: number; annee: number; statut: string }
+  societe: { raison_sociale: string | null; ifu: string | null; num_employeur_cnss: string | null }
+  nb_paiements: number
+  total_paye: number
+  lignes: { matricule: string; nom: string; num_cnss: string; net_paye: number; methode: string; statut: string; reference: string; date_paiement: string }[]
+}
 export interface LeaveRequest {
   id: string; nom: string; matricule: string; type: string
   date_debut: string; date_fin: string; jours: number; statut: string; motif: string | null
@@ -222,6 +230,7 @@ export const api = {
     request<GovernancePolicy>('/v1/admin/governance', { method: 'PUT', body: { champ, valeur } }),
   payslips: (runId: string) => request<{ run_id: string; bulletins: Payslip[] }>(`/v1/runs/${runId}/payslips`),
   registres: (runId: string) => request<Registres>(`/v1/runs/${runId}/registres`),
+  paymentRegister: (runId: string) => request<PaymentRegister>(`/v1/runs/${runId}/registre-paiement`),
   attestation: (employeeId: string, companyId: string, type: 'travail' | 'salaire' | 'virement') =>
     request<Attestation>(`/v1/employees/${employeeId}/attestation` + qs({ company_id: companyId, type })),
   rupture: (employeeId: string, companyId: string, input: RuptureInput, preview: boolean) =>
