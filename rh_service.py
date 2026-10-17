@@ -39,7 +39,10 @@ def create_employee(conn, company_id: str, matricule: str, nom: str,
 def rupture(conn, company_id: str, employee_id: str, type_rupture: str,
             anciennete_ans: float, jours_travailles_dernier_mois: int = 30,
             jours_conges_acquis_non_pris: int = 0, preavis_indemnite: float = 0.0,
-            actor: str | None = None) -> dict:
+            actor: str | None = None, preview: bool = False) -> dict:
+    """Calcule le solde de tout compte. `preview=True` : CALCUL SEUL, aucun effet
+    (ne clôt pas le contrat, pas d'audit) → sert à montrer les montants avant de confirmer.
+    `preview=False` : COMMIT = clôt le contrat actif + trace l'opération."""
     if type_rupture not in TYPES_RUPTURE:
         raise ValueError(f"type_rupture ∈ {sorted(TYPES_RUPTURE)}")
     # Filtre company_id : ne jamais agir sur le salarié d'une autre société (P0-06/P2-02).
@@ -55,9 +58,12 @@ def rupture(conn, company_id: str, employee_id: str, type_rupture: str,
         anciennete_ans=anciennete_ans, jours_travailles_dernier_mois=jours_travailles_dernier_mois,
         jours_conges_acquis_non_pris=jours_conges_acquis_non_pris,
         salaires_12m_pour_conges=salaire * 12, preavis_indemnite=preavis_indemnite)
+    res.pop("detail_fiscal", None)
+    res["preview"] = bool(preview)
+    if preview:
+        return res   # aucun effet de bord : le contrat reste actif
     conn.execute("UPDATE contract SET statut='clos' WHERE employee_id=%s AND company_id=%s "
                  "AND statut='actif'", (employee_id, company_id))
-    res.pop("detail_fiscal", None)
     audit(conn, "employee.rupture", "contract", company_id, actor,
           apres={"employee_id": str(employee_id), "type_rupture": type_rupture,
                  "anciennete_ans": anciennete_ans})
@@ -81,6 +87,18 @@ def validate_leave(conn, request_id: str, user_id: str | None, accord: bool) -> 
     if row:
         audit(conn, "leave.validate", "leave_request", str(row[0]), user_id,
               avant={"statut": row[1]}, apres={"statut": "valide" if accord else "refuse"})
+
+
+def list_leaves(conn, company_id: str) -> list[dict]:
+    """Liste les demandes de congé/absence d'une société (RLS : périmètre déjà posé)."""
+    rows = conn.execute(
+        "SELECT l.id, e.nom, e.matricule, l.type, l.date_debut, l.date_fin, l.jours, "
+        "       l.statut, l.motif "
+        "FROM leave_request l JOIN employee e ON e.id = l.employee_id "
+        "WHERE l.company_id = %s ORDER BY l.created_at DESC LIMIT 200", (company_id,)).fetchall()
+    return [dict(id=str(r[0]), nom=r[1], matricule=r[2], type=r[3],
+                 date_debut=str(r[4]), date_fin=str(r[5]), jours=float(r[6]),
+                 statut=r[7], motif=r[8]) for r in rows]
 
 
 def leave_balance(conn, employee_id: str, mois_service: int = 12, anciennete_ans: int = 0,

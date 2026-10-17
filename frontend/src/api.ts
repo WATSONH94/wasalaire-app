@@ -98,6 +98,30 @@ export interface Registres {
   }
 }
 export interface Attestation { type: string; titre: string; contenu: string; salarie?: string }
+export interface LeaveRequest {
+  id: string; nom: string; matricule: string; type: string
+  date_debut: string; date_fin: string; jours: number; statut: string; motif: string | null
+}
+export interface RuptureInput {
+  type_rupture: 'licenciement' | 'demission' | 'retraite' | 'fin_cdd' | 'deces'
+  anciennete_ans: number
+  jours_travailles_dernier_mois: number
+  jours_conges_acquis_non_pris: number
+  preavis_indemnite: number
+}
+export interface SoldeToutCompte {
+  type_rupture: string
+  salaire_mois_prorata: number
+  indemnite_conges: number
+  indemnite_preavis: number
+  indemnite_rupture: number
+  total_brut: number
+  its_estime: number
+  abattement_rupture: number
+  net_estime: number
+  source: string
+  preview: boolean
+}
 export interface Declaration {
   run_id: string
   bulletins: number
@@ -192,6 +216,16 @@ export const api = {
   registres: (runId: string) => request<Registres>(`/v1/runs/${runId}/registres`),
   attestation: (employeeId: string, companyId: string, type: 'travail' | 'salaire' | 'virement') =>
     request<Attestation>(`/v1/employees/${employeeId}/attestation` + qs({ company_id: companyId, type })),
+  rupture: (employeeId: string, companyId: string, input: RuptureInput, preview: boolean) =>
+    request<SoldeToutCompte>(`/v1/employees/${employeeId}/rupture`, {
+      method: 'POST', body: { company_id: companyId, ...input, preview },
+    }),
+  leaves: (companyId: string) =>
+    request<{ company_id: string; leaves: LeaveRequest[] }>(`/v1/companies/${companyId}/leaves`),
+  createLeave: (body: { company_id: string; employee_id: string; type: string; date_debut: string; date_fin: string; jours: number; motif?: string | null }) =>
+    request<{ leave_id: string; statut: string }>('/v1/leaves', { method: 'POST', body }),
+  validateLeave: (leaveId: string, accord: boolean) =>
+    request<{ leave_id: string; statut: string }>(`/v1/leaves/${leaveId}/validate` + qs({ accord: String(accord) }), { method: 'POST' }),
   declaration: (runId: string) => request<Record<string, number | string>>(`/v1/runs/${runId}/declaration`),
   reporting: (companyId: string) => request<Record<string, number>>('/v1/reporting' + qs({ company_id: companyId })),
 }

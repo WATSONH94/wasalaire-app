@@ -35,7 +35,7 @@ from payroll_service import (
     list_permission_overrides, get_governance_policy, set_governance_policy,
 )
 from rh_service import (create_employee as rh_create_employee, rupture as rh_rupture,
-                        request_leave, validate_leave, leave_balance)
+                        request_leave, validate_leave, leave_balance, list_leaves)
 from onboarding_service import (
     create_establishment, list_establishments, create_department, list_departments,
     create_position, list_positions, create_contract, list_contracts,
@@ -596,6 +596,7 @@ class RuptureIn(BaseModel):
     jours_travailles_dernier_mois: int = 30
     jours_conges_acquis_non_pris: int = 0
     preavis_indemnite: float = 0.0
+    preview: bool = False   # True = calcul seul (ne clôt pas le contrat)
 
 class LeaveIn(BaseModel):
     company_id: str
@@ -628,7 +629,7 @@ def emp_rupture(employee_id: str, body: RuptureIn, ctx: Ctx = Depends(require("e
         return rh_rupture(ctx.conn, body.company_id, employee_id, body.type_rupture,
                           body.anciennete_ans, body.jours_travailles_dernier_mois,
                           body.jours_conges_acquis_non_pris, body.preavis_indemnite,
-                          actor=ctx.user_id)
+                          actor=ctx.user_id, preview=body.preview)
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
 
@@ -648,6 +649,11 @@ def leave_validate(leave_id: str, accord: bool = True, ctx: Ctx = Depends(requir
 def leave_bal(employee_id: str, mois_service: int = 12, anciennete_ans: int = 0,
               ctx: Ctx = Depends(require("leave.balance.read"))):
     return leave_balance(ctx.conn, employee_id, mois_service, anciennete_ans)
+
+@app.get("/v1/companies/{company_id}/leaves")
+def company_leaves(company_id: str, ctx: Ctx = Depends(require("leave.balance.read"))):
+    _require_company(ctx, company_id)
+    return {"company_id": company_id, "leaves": list_leaves(ctx.conn, company_id)}
 
 
 # ─────────────── Structure société : établissement / département / poste / contrat ───────────────
