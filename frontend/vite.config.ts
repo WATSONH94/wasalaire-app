@@ -7,18 +7,13 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig({
   plugins: [
     react(),
+    // Service worker en AUTO-DESTRUCTION : le SW déployé se désinscrit et vide tous les
+    // caches chez CHAQUE visiteur (y compris ceux coincés sur une ancienne version en cache).
+    // Un SaaS de paie n'a pas besoin de mode hors-ligne ; la fiabilité prime sur l'installabilité.
+    // (Les anciens SW periment la console → « rien ne fonctionne ». Cette option les tue proprement.)
     VitePWA({
+      selfDestroying: true,
       registerType: 'autoUpdate',
-      manifest: {
-        name: 'WaSalaire',
-        short_name: 'WaSalaire',
-        description: 'La paie simplifiée et conforme au Bénin.',
-        lang: 'fr',
-        theme_color: '#1E2A78',
-        background_color: '#F8FAFC',
-        display: 'standalone',
-        start_url: '/',
-      },
     }),
   ],
   server: {
