@@ -10,6 +10,7 @@ import Audit from './pages/Audit'
 import AdminPlaceholder from './pages/AdminPlaceholder'
 import Referentials from './pages/Referentials'
 import Abonnements from '../pages/admin/Abonnements'
+import Login from '../pages/Login'
 
 function RequireInternal({ children }: { children: React.ReactNode }) {
   const { session, loading } = useAuth()
@@ -34,6 +35,7 @@ function RequireInternal({ children }: { children: React.ReactNode }) {
 export default function AdminApp() {
   return (
     <Routes>
+      <Route path="/login" element={<Login />} />
       <Route path="/" element={<RequireInternal><AdminShell /></RequireInternal>}>
         <Route index element={<AdminDashboard />} />
         <Route path="organizations" element={<Organizations />} />
