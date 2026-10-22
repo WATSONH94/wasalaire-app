@@ -65,6 +65,14 @@ if not DEV and (_SECRET_RAW in _WEAK_SECRETS or len(_SECRET_RAW) < 16):
         "WASALAIRE_SECRET faible ou absent en production : démarrage refusé (fail-closed). "
         "Définir un secret fort (>= 16 caractères, en coffre) ou, pour une démo, WASALAIRE_DEV=1.")
 
+# Defense en profondeur (R07) : le mode DEV expose l'OTP en clair et ne doit JAMAIS
+# tourner en production. Comme DEV=1 est le defaut, on l'annonce bruyamment au demarrage
+# pour qu'un deploiement en mode demo ne passe jamais inapercu (jamais silencieux).
+if DEV:
+    import sys as _sys
+    print("[WaSalaire][AVERTISSEMENT] WASALAIRE_DEV=1 (mode demo) : OTP expose en clair, "
+          "ne pas utiliser en production. Definir WASALAIRE_DEV=0 pour la prod.", file=_sys.stderr)
+
 app = FastAPI(title="WaSalaire API v2 (persistante)", version="2.0.0")
 
 from fastapi.requests import Request

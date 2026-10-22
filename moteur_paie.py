@@ -21,9 +21,23 @@ from decimal import Decimal, ROUND_HALF_UP
 # ─────────────────────────────────────────────────────────────
 POLITIQUE_ARRONDI = "FCFA entier, half-up (0,5 -> sup.)"
 
+def _D(x) -> Decimal:
+    """Convertit en Decimal exact (via str) ; neutre si la valeur est déjà Decimal."""
+    return x if isinstance(x, Decimal) else Decimal(str(x))
+
 def arrondi_fcfa(x) -> int:
     """Arrondit un montant au franc CFA entier, 0,5 vers le haut."""
-    return int(Decimal(str(x)).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+    return int(_D(x).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+
+def mul_fcfa(*facteurs) -> int:
+    """Produit calcule en Decimal (exact) PUIS arrondi FCFA (R12).
+    Evite la derive des flottants AVANT l'arrondi : le half-up s'applique a la
+    valeur decimale exacte. Ex. 375 x 0,036 = 13,5 -> 14 (et non 13 via float,
+    car 0,036 n'est pas representable exactement en binaire)."""
+    prod = Decimal("1")
+    for f in facteurs:
+        prod *= _D(f)
+    return arrondi_fcfa(prod)
 
 # ─────────────────────────────────────────────────────────────
 # 1) PARAMÈTRES RÉGLEMENTAIRES VERSIONNÉS (règles en données)
@@ -207,7 +221,7 @@ def prime_amo_mensuelle_anps(nb_adultes: int = 1, nb_enfants: int = 0,
 
     nb_enfants = min(max(nb_enfants, 0), 4)
     annuel = nb_adultes * tarif("amo_anps_adulte") + nb_enfants * tarif("amo_anps_enfant")
-    return arrondi_fcfa(annuel / 12)
+    return arrondi_fcfa(_D(annuel) / _D(12))
 
 
 # ─────────────────────────────────────────────────────────────
@@ -229,7 +243,8 @@ class Salarie:
     categorie: str = "employe"      # employe | cadre | ouvrier_horaire
     at_mp: float = 0.02             # taux AT/MP notifié par la CNSS (1-4%)
     regime_vps: str = "normal"      # normal | enseignement
-    prime_amo_mensuelle: float = 0.0  # part prime AMO (par contrat/assureur)
+    prime_amo_mensuelle: float = 0.0  # prime AMO mensuelle du contrat (assureur/ANPS, Art.18)
+    amo_contrat: str = "collectif"  # collectif | individuel (Art.124 : incidence ITS distincte)
     its_base_deduit_cnss: bool = False  # FALSE = conforme CGI (base brute)
 
 
@@ -241,11 +256,12 @@ def bareme_its(base: float, tranches=None) -> int:
     `tranches` : liste (plafond, taux) ; défaut = barème en code (rétro-compatible)."""
     if tranches is None:
         tranches = BAREME_ITS["tranches"]
-    taxe, prev = 0.0, 0
+    taxe, prev = Decimal("0"), 0          # accumulation en Decimal (R12)
     for plafond, taux in tranches:
         hi = plafond if plafond is not None else float("inf")
         if base > prev:
-            taxe += (min(base, hi) - prev) * taux
+            borne = base if hi == float("inf") else min(base, hi)
+            taxe += (_D(borne) - _D(prev)) * _D(taux)
             prev = hi
         else:
             break
@@ -261,13 +277,33 @@ def calcul_bulletin(sal: Salarie, rubriques: list[Rubrique], periode: date,
     brut = sum(r.montant for r in rubriques)
     assiette_cnss = sum(r.montant for r in rubriques if r.soumis_cnss)
     brut_imposable = sum(r.montant for r in rubriques if r.soumis_its)
-    base_vps = sum(r.montant for r in rubriques if r.soumis_vps)
 
-    # CNSS salarié (3,6 %, pas de plafond)
-    cnss_sal = arrondi_fcfa(assiette_cnss * rg.taux("taux_pension_sal", periode))
+    # AMO (calculée AVANT l'ITS car un avantage imposable éventuel entre dans la base ITS).
+    # Appliquée UNIQUEMENT si la date d'effet est officiellement renseignée (amo_active)
+    # et qu'une prime est connue. Par défaut inactive (P0-05).
+    amo_sal = amo_pat = amo_avantage_its = 0
+    PART_MIN_AMO = _D("0.80")   # Art.10 : part du souscripteur AU MOINS 80 % (R15).
+    if amo_active(periode) and sal.prime_amo_mensuelle > 0:
+        part = _D(rg.taux("part_souscripteur_amo", periode))
+        if part < PART_MIN_AMO:          # jamais sous le minimum légal (clamp au plancher)
+            part = PART_MIN_AMO
+        amo_pat = mul_fcfa(sal.prime_amo_mensuelle, part)          # charge patronale (>= 80 %)
+        amo_sal = mul_fcfa(sal.prime_amo_mensuelle, _D(1) - part)  # retenue salariale (<= 20 %)
+        # R16 / CGI Art.124 : prime d'un contrat COLLECTIF employeur = hors base ITS ;
+        # contrat INDIVIDUEL exonéré jusqu'à 80 %, part employeur au-delà de 80 % =
+        # avantage imposable (05-FISCALITE-PAIE/its-vps.md, confiance A).
+        if sal.amo_contrat == "individuel" and part > PART_MIN_AMO:
+            amo_avantage_its = mul_fcfa(sal.prime_amo_mensuelle, part - PART_MIN_AMO)
 
-    # Base ITS : brute (conforme CGI) ou Brut-CNSS (pratique désactivée par défaut)
-    base_its = brut_imposable - (cnss_sal if sal.its_base_deduit_cnss else 0)
+    # CNSS salarié (3,6 %, pas de plafond) — produit en Decimal (R12)
+    cnss_sal = mul_fcfa(assiette_cnss, rg.taux("taux_pension_sal", periode))
+
+    # Base ITS : brute (conforme CGI) + avantage AMO individuel imposable (Art.124),
+    # moins CNSS salarié uniquement si la pratique Brut-CNSS est activée (désactivée par défaut).
+    base_its = brut_imposable + amo_avantage_its - (cnss_sal if sal.its_base_deduit_cnss else 0)
+    # VPS : assiette IDENTIQUE à celle de l'ITS (CGI Art.193). Le flag Rubrique.soumis_vps
+    # est conservé pour l'affichage mais n'autorise PAS une assiette VPS divergente (R11).
+    base_vps = base_its
     tranches = rg.bareme_its_tranches(periode)
     its = bareme_its(base_its, tranches)
     # Redevance ORTB (perçue AVEC l'ITS certains mois). On la cumule dans `its`
@@ -281,27 +317,21 @@ def calcul_bulletin(sal: Salarie, rubriques: list[Rubrique], periode: date,
             montant_ortb = 0  # exonération du 3000 si <= 1re tranche
         its += montant_ortb
 
-    # AMO : appliquée UNIQUEMENT si la date d'effet est officiellement renseignée
-    # (amo_active) et qu'une prime est connue. Par défaut inactive (P0-05).
-    amo_sal = amo_pat = 0
-    if amo_active(periode) and sal.prime_amo_mensuelle > 0:
-        part = rg.taux("part_souscripteur_amo", periode)
-        amo_pat = arrondi_fcfa(sal.prime_amo_mensuelle * part)
-        amo_sal = arrondi_fcfa(sal.prime_amo_mensuelle * (1 - part))
-
     net = brut - cnss_sal - its - amo_sal
 
     # Charges patronales
     taux_vps = (rg.taux("taux_vps_enseignement", periode)
                 if sal.regime_vps == "enseignement" else rg.taux("taux_vps", periode))
-    cnss_pat = arrondi_fcfa(assiette_cnss * (rg.taux("taux_pf", periode)
-                     + rg.taux("taux_pension_emp", periode) + sal.at_mp))
-    vps = arrondi_fcfa(base_vps * taux_vps)
+    cnss_pat = arrondi_fcfa(_D(assiette_cnss) * (_D(rg.taux("taux_pf", periode))
+                     + _D(rg.taux("taux_pension_emp", periode)) + _D(sal.at_mp)))
+    vps = mul_fcfa(base_vps, taux_vps)
     cout_employeur = brut + cnss_pat + vps + amo_pat
 
     return {
         "brut": brut, "assiette_cnss": assiette_cnss, "base_its": base_its,
+        "base_vps": base_vps,
         "cnss_sal": cnss_sal, "its": its, "ortb": montant_ortb, "amo_sal": amo_sal,
+        "amo_avantage_its": amo_avantage_its,
         "net": net, "cnss_pat": cnss_pat, "vps": vps, "amo_pat": amo_pat,
         "cout_employeur": cout_employeur,
     }

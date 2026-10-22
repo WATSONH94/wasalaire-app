@@ -38,8 +38,9 @@ def declaration_its_vps(
     lignes: list[LigneITS] = []
     for sal, rubriques, matricule, nom in salaries:
         b = calcul_bulletin(sal, rubriques, periode)
-        # base VPS = base soumise VPS (= base ITS si mêmes rubriques ; Art. 193/195)
-        base_vps = sum(r.montant for r in rubriques if r.soumis_vps)
+        # base VPS = base ITS (CGI Art.193) : valeur unique fournie par le moteur (R11),
+        # plus de recalcul independant susceptible de diverger.
+        base_vps = b["base_vps"]
         lignes.append(LigneITS(matricule, nom, b["brut"], b["base_its"],
                                b["its"], base_vps, b["vps"]))
 

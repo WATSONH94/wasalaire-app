@@ -1,0 +1,25 @@
+# Base PostgreSQL EPHEMERE pour la recette automatisee (P08 / R14).
+# Donnees en tmpfs (RAM) : demarrage rapide, aucun residu entre deux CI.
+#
+# Usage :
+#   docker compose -f docker-compose.test.yml up -d
+#   PGHOST=127.0.0.1 PGPORT=5546 PGUSER=postgres PGPASSWORD=wasa_test_pwd \
+#   WASALAIRE_DB_PASSWORD=wasa_app_pwd WASALAIRE_SECRET=... WASALAIRE_DEV=1 \
+#   WASALAIRE_AMO_DATE_EFFET=2026-10-29 ./run_tests.sh
+#   docker compose -f docker-compose.test.yml down -v
+services:
+  test-db:
+    image: postgres:16-alpine
+    container_name: wasalaire-test-db
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: wasa_test_pwd
+    ports:
+      - "127.0.0.1:5546:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
