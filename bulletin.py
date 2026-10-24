@@ -1,5 +1,5 @@
 """
-Générateur de bulletin de paie PDF — Bénin.
+Générateur de bulletin de paie PDF (Bénin.
 Branché sur moteur_paie.calcul_bulletin ; rend un bulletin lisible respectant
 les mentions du Code du travail (Art. 224) : identité employeur/salarié, période,
 emploi, brut, retenues (CNSS, ITS, AMO), net à payer, et volet patronal.
@@ -103,11 +103,11 @@ def generer_bulletin_pdf(
     # Bloc employeur / salarié
     bloc = Table([
         [Paragraph(f"<b>Employeur</b><br/>{employeur.raison_sociale}<br/>"
-                   f"IFU : {employeur.ifu or '—'} · CNSS : {employeur.num_cnss or '—'}<br/>"
+                   f"IFU : {employeur.ifu or 'n/c'} · CNSS : {employeur.num_cnss or 'n/c'}<br/>"
                    f"{employeur.adresse}", h),
          Paragraph(f"<b>Salarié</b><br/>{infos.nom}<br/>"
-                   f"Emploi : {infos.emploi or '—'} · Catégorie : {infos.categorie or sal.categorie}<br/>"
-                   f"N° CNSS : {infos.num_cnss or '—'}"
+                   f"Emploi : {infos.emploi or 'n/c'} · Catégorie : {infos.categorie or sal.categorie}<br/>"
+                   f"N° CNSS : {infos.num_cnss or 'n/c'}"
                    + (f" · Embauché le {infos.date_embauche.strftime('%d/%m/%Y')}"
                       if infos.date_embauche else ""), h)],
     ], colWidths=[90*mm, 90*mm])
@@ -122,7 +122,7 @@ def generer_bulletin_pdf(
     el.append(Spacer(1, 5*mm))
 
     # Rubriques de gains + marqueurs d'assiette
-    def marque(flag): return "Oui" if flag else "—"
+    def marque(flag): return "Oui" if flag else "Non"
     data = [["Rubrique", "Montant", "CNSS", "ITS", "VPS"]]
     for r in rubriques:
         data.append([r.libelle, _f(r.montant), marque(r.soumis_cnss),
@@ -189,9 +189,8 @@ def generer_bulletin_pdf(
     el.append(tp)
     el.append(Spacer(1, 6*mm))
     el.append(Paragraph(
-        "Prototype — 3 assiettes distinctes (CNSS ≠ ITS ≠ VPS). Base ITS = brute "
-        "(CGI Art. 122-124). Mentions selon Code du travail Art. 224. "
-        "À contresigner (DGI/CNSS/expert) avant production.", petit))
+        "Assiettes distinctes (CNSS, ITS, VPS). Base ITS brute (CGI Art. 122-124). "
+        "Mentions selon Code du travail Art. 224.", petit))
 
     doc.build(el)
     return {**b, "fichier": chemin_pdf, "format": "pdf"}
